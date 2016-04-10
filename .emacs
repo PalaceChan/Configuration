@@ -34,15 +34,29 @@
 (put 'downcase-region 'disabled nil)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                     CODE COMPLETION
+;;                                           HELM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'load-path "~/.emacs.d/elpa/popup-20141215.349")
-(add-to-list 'load-path "~/.emacs.d/elpa/auto-complete-20141228.633")
-(require 'auto-complete)
-(require 'auto-complete-config)
-(ac-config-default)
-(global-auto-complete-mode t)
+(add-to-list 'load-path "~/.emacs.d/helm")
+(add-to-list 'load-path "~/.emacs.d/async")
+(require 'helm-config)
+(helm-mode 1)
+
+(global-set-key (kbd "M-x")                          'undefined)
+(global-set-key (kbd "M-x")                          'helm-M-x)
+(global-set-key (kbd "M-y")                          'helm-show-kill-ring)
+(global-set-key (kbd "C-x C-f")                      'helm-find-files)
+(global-set-key (kbd "C-c <SPC>")                    'helm-all-mark-rings)
+(global-set-key (kbd "C-h r")                        'helm-info-emacs)
+(global-set-key (kbd "C-:")                          'helm-eval-expression-with-eldoc)
+(global-set-key (kbd "C-,")                          'helm-calcul-expression)
+(global-set-key (kbd "C-h i")                        'helm-info-at-point)
+(global-set-key (kbd "C-h a")                        'helm-apropos)
+(define-key global-map [remap jump-to-register]      'helm-register)
+(define-key global-map [remap list-buffers]          'helm-mini)
+(define-key global-map [remap dabbrev-expand]        'helm-dabbrev)
+(define-key global-map [remap find-tag]              'helm-etags-select)
+(define-key global-map [remap xref-find-definitions] 'helm-etags-select)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                               CODE NAVIGATION & COMPILATION
@@ -126,10 +140,6 @@
 
 ;;Enlarge the undo-outer limit for large files (50MB)
 (setq undo-outer-limit 50000000)
-
-;;Enable ido mode for buffer name auto-complete
-(require 'ido)
-(ido-mode t)
 
 ;;Dired mode date display and file size display
 (setq dired-listing-switches "-Al --si --time-style long-iso")
