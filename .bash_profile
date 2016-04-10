@@ -15,12 +15,12 @@ function mg()
 
 function xmlg()
 {
-    find .\( -iname "*.xml" \) | parallel -j150% -n 1000 "grep -nHi "$1" {}"
+    find . \( -iname "*.xml" \) | parallel -j150% -n 1000 "grep -nHi "$1" {}"
 }
 
 function rg()
 {
-    find .\( -iname "*.R" \) | parallel -j150% -n 1000 "grep -nHi "$1" {}"
+    find . \( -iname "*.R" \) | parallel -j150% -n 1000 "grep -nHi "$1" {}"
 }
 
 function mgrep()
