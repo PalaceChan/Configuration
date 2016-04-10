@@ -3,9 +3,24 @@ function ff()
 	find -type f -iname "*${1}*"
 }
 
-function cpp()
+function cg()
 {
-	g++ -x c++ -o a.out - && echo && echo "------------------------------------Output------------------------------------" && ./a.out && rm a.out
+    find . \( -iname "*.[CcHh]" -o -iname "*.cpp" -o -iname "*.hpp" \) | parallel -j150% -n 1000 "grep -nHi "$1" {}"
+}
+
+function mg()
+{
+    find . \( -iname "*.mk" -o -iname "*makefile*" \) -exec grep -nHi "$1" {} \;
+}
+
+function xmlg()
+{
+    find .\( -iname "*.xml" \) | parallel -j150% -n 1000 "grep -nHi "$1" {}"
+}
+
+function rg()
+{
+    find .\( -iname "*.R" \) | parallel -j150% -n 1000 "grep -nHi "$1" {}"
 }
 
 function mgrep()
@@ -20,9 +35,14 @@ function mgrep()
 
 ################################################################################
 
+alias e='emacs -nw'
 alias hist='cat /home/andres/history/history.txt'
+alias ls='ls --color=auto -h'
+alias reset='echo -e \\033c'
 
 ################################################################################
+
+export LESS='-iMFXR' #cat if fits
 
 EDITOR='emacs -nw'
 export EDITOR
@@ -30,11 +50,6 @@ export EDITOR
 PROMPT_COMMAND='history | tail -n1 | /home/andres/history/dump_history.sh'
 export PROMPT_COMMAND
 
-#rawdog android
-#PATH=$PATH:/home/andres/android-sdk-linux/tools
-#export PATH
-
 PATH=$PATH:/home/andres/rabbit
 export PATH
 
-source ~/.bash_aliases
