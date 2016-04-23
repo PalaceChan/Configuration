@@ -36,7 +36,7 @@ function mgrep()
 ################################################################################
 
 alias e='emacs -nw'
-alias hist='cat /home/andres/history/history.txt'
+alias hist='cat ~/history/history.txt'
 alias ls='ls --color=auto -h'
 alias reset='echo -e \\033c'
 
@@ -47,7 +47,7 @@ export LESS='-iMFXR' #cat if fits
 EDITOR='emacs -nw'
 export EDITOR
 
-PROMPT_COMMAND='history | tail -n1 | /home/andres/history/dump_history.sh'
+PROMPT_COMMAND='history | tail -n1 | ~/history/dump_history.sh'
 export PROMPT_COMMAND
 
 PATH=$PATH:/home/andres/rabbit
