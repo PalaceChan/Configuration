@@ -41,6 +41,14 @@
 (add-to-list 'load-path "~/.emacs.d/async")
 (require 'helm-config)
 (helm-mode 1)
+(semantic-mode 1)
+
+(helm-autoresize-mode 1)
+(setq helm-autoresize-min-height 25)
+(setq helm-autoresize-max-height 25)
+
+(global-set-key (kbd "C-c h")                        'helm-command-prefix)
+(global-unset-key (kbd "C-x c"))
 
 (global-set-key (kbd "M-x")                          'undefined)
 (global-set-key (kbd "M-x")                          'helm-M-x)
@@ -52,11 +60,24 @@
 (global-set-key (kbd "C-,")                          'helm-calcul-expression)
 (global-set-key (kbd "C-h i")                        'helm-info-at-point)
 (global-set-key (kbd "C-h a")                        'helm-apropos)
+(global-set-key (kbd "C-c h o")                      'helm-occur)
+(global-set-key (kbd "C-c h x")                      'helm-register)
+
+(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+(define-key helm-map (kbd "C-i")   'helm-execute-persistent-action)
+(define-key helm-map (kbd "C-z")   'helm-select-action)
+
 (define-key global-map [remap jump-to-register]      'helm-register)
 (define-key global-map [remap list-buffers]          'helm-mini)
 (define-key global-map [remap dabbrev-expand]        'helm-dabbrev)
 (define-key global-map [remap find-tag]              'helm-etags-select)
 (define-key global-map [remap xref-find-definitions] 'helm-etags-select)
+
+(setq helm-split-window-in-side-p           t;
+      helm-move-to-line-cycle-in-source     t;
+      helm-ff-search-library-in-sexp        t;
+      helm-scroll-amount                    8;
+      helm-ff-file-name-history-use-recentf t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                               CODE NAVIGATION & COMPILATION
@@ -178,7 +199,7 @@
 (autoload 'pylookup-lookup "pylookup" "Lookup SEARCH-TERM in the Python HTML indexes." t)
 (autoload 'pylookup-update "pylookup" "Run pylookup-update and create the database at `pylookup-db-file'." t)
 ;(setq browse-url-browser-function "w3m-browse-url")
-(global-set-key "\C-ch" 'pylookup-lookup)
+(global-set-key "\C-cp" 'pylookup-lookup)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      ESS STATISTICS

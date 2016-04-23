@@ -53,3 +53,4 @@ export PROMPT_COMMAND
 PATH=$PATH:/home/andres/rabbit
 export PATH
 
+export PS1='\h: '
