@@ -191,7 +191,7 @@
 (setq py-smart-indentation t)
 
 ;;use pylookup
-(setq pylookup-dir "/home/andres/.emacs.d/pylookup")
+(setq pylookup-dir "~/.emacs.d/pylookup")
 (add-to-list 'load-path pylookup-dir)
 (eval-when-compile (require 'pylookup))
 (setq pylookup-program (concat pylookup-dir "/pylookup.py"))
