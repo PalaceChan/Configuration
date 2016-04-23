@@ -1,0 +1,24 @@
+[core]
+    excludefiles = ~/.gitignore
+    editor = 'emacs -nw'
+    pager = less
+
+[color]
+    ui = auto
+    grep = auto
+
+[alias]
+    br = branch
+    st = status
+    co = checkout
+    ci = commit
+    k = !gitk
+    g = gui
+    amend = commit --amend --no-edit
+    glot = log --graph --pretty='format:|%C(yellow) %h | %C(red) %ad | %C(green) %an | %C(reset) %s %d'
+
+[user]
+	name = YYY
+	email = XXX
+[credential]
+	helper = cache --timeout=3600
