@@ -41,7 +41,7 @@
 (add-to-list 'load-path "~/.emacs.d/async")
 (require 'helm-config)
 (helm-mode 1)
-(semantic-mode 1)
+;;(semantic-mode 1)
 
 (helm-autoresize-mode 1)
 (setq helm-autoresize-min-height 25)
@@ -139,7 +139,7 @@
 ;; '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil)))))
 
 (load-theme 'manoj-dark t)
-(set-default-font "Monospace-10")
+(set-default-font "Monospace-14")
 
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
