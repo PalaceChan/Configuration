@@ -1,14 +1,17 @@
-library(data.table, lib.loc='~/R')
-library(lazyeval, lib.loc='~/R')
-library(magrittr, lib.loc='~/R')
-library(dplyr, lib.loc='~/R')
-library(cframe, lib.loc='~/R')
-library(ggplot2, lib.loc='~/R')
-library(labeling, lib.loc='~/R')
-library(digest, lib.loc='~/R')
-library(bit, lib.loc='~/R')
-library(bit64, lib.loc='~/R')
-library(lubridate, lib.loc='~/R')
+suppressMessages(local({
+    library(data.table, lib.loc='~/R')
+    library(lazyeval, lib.loc='~/R')
+    library(magrittr, lib.loc='~/R')
+    library(dplyr, lib.loc='~/R')
+    library(scales, lib.loc='~/R')
+    library(cframe, lib.loc='~/R')
+    library(ggplot2, lib.loc='~/R')
+    library(labeling, lib.loc='~/R')
+    library(digest, lib.loc='~/R')
+    library(bit, lib.loc='~/R')
+    library(bit64, lib.loc='~/R')
+    library(lubridate, lib.loc='~/R')}))
+
 #library(doMC, lib.loc='~/R')
 #registerDoMC(cores=2)
 #install.packages('bit64', lib='~/R', dep=TRUE)
@@ -22,7 +25,14 @@ library(lubridate, lib.loc='~/R')
 }
 .adjustWidthCallBack <- addTaskCallback(.adjustWidth)
 
+#aliases
 h <- utils::head
+
+#read multiple files
+glob <- function(dir, fkey, hdr, classes=NA) {
+    cmd <- sprintf("cat %s/%s | sed '1!{/%s/d}'", dir, fkey, hdr)
+    data.table(read.csv(pipe(cmd), header=TRUE, colClasses=classes))
+}
 
 #parse ini config
 parse.INI <- function(INI.filename) {
