@@ -230,7 +230,7 @@
 (setq org-log-done 'note)
 
 (setq org-confirm-babel-evaluate nil)
-(org-babel-do-load-languages 'org-babel-load-languages '( (emacs-list . t) (sh . t) (R . t) ))
+(org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (sh . t) (R . t) ))
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 (setq org-agenda-files (quote ("~/todo.org")))
