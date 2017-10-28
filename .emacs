@@ -24,7 +24,7 @@
 (setq grep-highlight-matches t)
 
 ;;Load the common lisp library & allow for long output
-(require 'cl)
+;;(require 'cl)
 
 ;;Load environment for aliases to work
 (setq shell-file-name "bash")
@@ -32,52 +32,16 @@
 
 (setq x-alt-keysym 'meta)
 (put 'downcase-region 'disabled nil)
+(setq scroll-step 1)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                           HELM
+;;                                       MISC OVERRIDES
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(add-to-list 'load-path "~/.emacs.d/helm")
-(add-to-list 'load-path "~/.emacs.d/async")
-(require 'helm-config)
-(helm-mode 1)
-;;(semantic-mode 1)
-
-(helm-autoresize-mode 1)
-(setq helm-autoresize-min-height 25)
-(setq helm-autoresize-max-height 25)
-
-(global-set-key (kbd "C-c h")                        'helm-command-prefix)
-(global-unset-key (kbd "C-x c"))
-
-(global-set-key (kbd "M-x")                          'undefined)
-(global-set-key (kbd "M-x")                          'helm-M-x)
-(global-set-key (kbd "M-y")                          'helm-show-kill-ring)
-(global-set-key (kbd "C-x C-f")                      'helm-find-files)
-(global-set-key (kbd "C-c <SPC>")                    'helm-all-mark-rings)
-(global-set-key (kbd "C-h r")                        'helm-info-emacs)
-(global-set-key (kbd "C-:")                          'helm-eval-expression-with-eldoc)
-(global-set-key (kbd "C-,")                          'helm-calcul-expression)
-(global-set-key (kbd "C-h i")                        'helm-info-at-point)
-(global-set-key (kbd "C-h a")                        'helm-apropos)
-(global-set-key (kbd "C-c h o")                      'helm-occur)
-(global-set-key (kbd "C-c h x")                      'helm-register)
-
-(define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-(define-key helm-map (kbd "C-i")   'helm-execute-persistent-action)
-(define-key helm-map (kbd "C-z")   'helm-select-action)
-
-(define-key global-map [remap jump-to-register]      'helm-register)
-(define-key global-map [remap list-buffers]          'helm-mini)
-(define-key global-map [remap dabbrev-expand]        'helm-dabbrev)
-(define-key global-map [remap find-tag]              'helm-etags-select)
-(define-key global-map [remap xref-find-definitions] 'helm-etags-select)
-
-(setq helm-split-window-in-side-p           t;
-      helm-move-to-line-cycle-in-source     t;
-      helm-ff-search-library-in-sexp        t;
-      helm-scroll-amount                    8;
-      helm-ff-file-name-history-use-recentf t)
+;;override timezones of interest
+(setq display-time-world-list '(
+                                ("America/Chicago" "Chicago") ("Asia/Tokyo" "Japan")
+                                ("Europe/Berlin" "Frankfurt") ("Australia/Sydney" "Australia") ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                               CODE NAVIGATION & COMPILATION
@@ -130,7 +94,10 @@
  '(show-paren-mode t)
  '(tab-width 4)
  '(indent-tabs-mode nil)
+ '(package-selected-packages (quote (dired-subtree ess use-package yasnippet)))
+ '(send-mail-function (quote sendmail-send-it))
  )
+
 (setq c-default-style "linux"
       c-basic-offset 4)
 (c-set-offset 'innamespace 0)
@@ -139,7 +106,7 @@
 ;; '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil)))))
 
 (load-theme 'manoj-dark t)
-(set-default-font "Monospace-14")
+(set-default-font "Monospace-12")
 
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
@@ -165,6 +132,124 @@
 ;;Dired mode date display and file size display
 (setq dired-listing-switches "-Al --si --time-style long-iso")
 
+;;ansi-term keep more lines than 2048
+(setq term-buffer-maximum-size 262144)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                      PACKAGE REPOS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                           USE-PACKAGE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(package-initialize)
+(defvar avelazqu/default-install-packages
+  (list 'yasnippet 'use-package 'bind-key 'diminish)
+  "Packages that should be installed by default.")
+(unless package-archive-contents
+  (package-refresh-contents))
+(dolist (package avelazqu/default-install-packages)
+  (unless (package-installed-p package)
+    (package-install package)))
+(require 'bind-key)
+(require 'use-package)
+(require 'diminish)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                           HELM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package helm
+             :demand t
+             :diminish helm-mode
+             :init
+             (progn
+               (require 'helm-config)
+               (setq helm-candidate-number-limit 100)
+               (setq helm-idle-delay 0.0
+                     helm-input-idle-delay 0.01
+                     helm-yas-display-key-on-candidate t
+                     helm-quick-update t
+                     helm-M-x-requires-pattern nil)
+               (helm-mode)
+               )
+             :bind (
+                    ("C-h a" . helm-apropos)
+                    ("C-x C-b" . helm-buffers-list)
+                    ("C-x b" . helm-buffers-list)
+                    ("M-y" . helm-show-kill-ring)
+                    ("M-x" . helm-M-x)
+                    ("C-x C-f" . helm-find-files)
+                    ("C-c h o" . helm-occur)
+                    ("C-c h r" . helm-register)
+                    ("C-c h b" . helm-resume)
+                    )
+             :config
+             (setq helm-command-prefix-key "C-c h")
+             (setq helm-autoresize-min-height 25)
+             (setq helm-autoresize-max-height 25)
+             (setq helm-split-window-in-side-p t
+                   helm-move-to-line-cycle-in-source t
+                   helm-ff-search-library-in-sexp t
+                   helm-scroll-amount 8
+                   helm-ff-file-name-history-use-recentf t)
+             (helm-mode 1)
+             (helm-autoresize-mode 1)
+             (define-key  helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+             (define-key  helm-map (kbd "C-i") 'helm-execute-persistent-action)
+             (define-key  helm-map (kbd "C-z") 'helm-select-action)
+             :ensure helm)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                        HIPPIE EXPAND
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package hippie-expand
+             :init
+             (setq hippie-expand-try-functions-list
+                   '(try-complete-file-name-partially
+                     try-complete-file-name
+                     try-expand-dabbrev
+                     try-expand-dabbrev-all-buffers
+                     try-expand-dabbrev-from-kill))
+             :bind
+             ("M-/" . hippie-expand))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                         ORG AND AGENDA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq org-use-speed-commands 1)
+(setq org-list-description-max-indent 5)
+(setq org-export-html-postamble nil)
+(setq org-log-done 'note)
+
+(setq org-confirm-babel-evaluate nil)
+(org-babel-do-load-languages 'org-babel-load-languages '( (emacs-list . t) (sh . t) (R . t) ))
+
+(global-set-key (kbd "C-c a") 'org-agenda)
+(setq org-agenda-files (quote ("~/todo.org")))
+(setq org-agenda-window-setup (quote current-window))
+
+(define-key global-map (kbd "C-c l") 'org-store-link)
+(define-key global-map (kbd "C-c c") 'org-capture)
+(setq org-capture-templates '(("t" "todo" entry (file+headline "~/todo.org" "Tasks") "* TODO %?")))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                       DIRED SUBTREE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package dired-subtree
+             :config
+             (define-key dired-mode-map "i" 'dired-subtree-insert)
+             (define-key dired-mode-map ";" 'dired-subtree-remove)
+             :ensure dired-subtree)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                           W3M
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -172,44 +257,16 @@
 (setq browse-url-browser-function 'w3m-goto-url-new-session)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                          PYTHON
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;;use ipython
-(add-to-list 'load-path "~/.emacs.d/elpa/python-mode-6.1.3")
-(require 'python-mode)
-(setq-default py-shell-name "~/.local/bin/ipython")
-(setq-default py-which-bufname "IPython")
-(setq py-python-command-args '("--gui=wx" "--pylab=wx" "--colors" "Linux"))
-(setq py-force-py-shell-name-p t)
-; switch to the interpreter after executing code
-;(setq py-shell-switch-buffers-on-execute-p t)
-;(setq py-switch-buffers-on-execute-p t)
-; don't split windows
-(setq py-split-windows-on-execute-p nil)
-; try to automagically figure out indentation
-(setq py-smart-indentation t)
-
-;;use pylookup
-(setq pylookup-dir "~/.emacs.d/pylookup")
-(add-to-list 'load-path pylookup-dir)
-(eval-when-compile (require 'pylookup))
-(setq pylookup-program (concat pylookup-dir "/pylookup.py"))
-(setq pylookup-db-file (concat pylookup-dir "/pylookup.db"))
-(autoload 'pylookup-lookup "pylookup" "Lookup SEARCH-TERM in the Python HTML indexes." t)
-(autoload 'pylookup-update "pylookup" "Run pylookup-update and create the database at `pylookup-db-file'." t)
-;(setq browse-url-browser-function "w3m-browse-url")
-(global-set-key "\C-cp" 'pylookup-lookup)
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      ESS STATISTICS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;ESS Statistics
-(add-to-list 'load-path "~/.emacs.d/elpa/ess-20150903.35/lisp/")
-(add-to-list 'load-path "~/.emacs.d/elpa/julia-mode-20150827.747/")
-(load "ess-site.el")
-(setq inferior-R-program-name "/usr/bin/R")
+(use-package ess
+             :init (require 'ess-site)
+             :config
+             (setq inferior-R-program-name "/usr/bin/R")
+             (setq ess-eval-visibly-p nil)
+             (setq ess-directory "/home/andres")
+             :ensure ess)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      CUSTOM FUNCTIONS
@@ -244,9 +301,31 @@
 (global-set-key (kbd "C-x |") 'toggle-window-split)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                      PACKAGE REPOS
+;;                                          PYTHON
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")))
+;;;use ipython
+;(add-to-list 'load-path "~/.emacs.d/elpa/python-mode-6.1.3")
+;(require 'python-mode)
+;(setq-default py-shell-name "~/.local/bin/ipython")
+;(setq-default py-which-bufname "IPython")
+;(setq py-python-command-args '("--gui=wx" "--pylab=wx" "--colors" "Linux"))
+;(setq py-force-py-shell-name-p t)
+;; switch to the interpreter after executing code
+;;(setq py-shell-switch-buffers-on-execute-p t)
+;;(setq py-switch-buffers-on-execute-p t)
+;; don't split windows
+;(setq py-split-windows-on-execute-p nil)
+;; try to automagically figure out indentation
+;(setq py-smart-indentation t)
+;
+;;;use pylookup
+;(setq pylookup-dir "~/.emacs.d/pylookup")
+;(add-to-list 'load-path pylookup-dir)
+;(eval-when-compile (require 'pylookup))
+;(setq pylookup-program (concat pylookup-dir "/pylookup.py"))
+;(setq pylookup-db-file (concat pylookup-dir "/pylookup.db"))
+;(autoload 'pylookup-lookup "pylookup" "Lookup SEARCH-TERM in the Python HTML indexes." t)
+;(autoload 'pylookup-update "pylookup" "Run pylookup-update and create the database at `pylookup-db-file'." t)
+;;(setq browse-url-browser-function "w3m-browse-url")
+;(global-set-key "\C-cp" 'pylookup-lookup)
