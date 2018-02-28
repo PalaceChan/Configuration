@@ -88,15 +88,20 @@
 
 ;;DISPLAY OPTIONS
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(display-time-mode t)
  '(ecb-options-version "2.40")
- '(show-paren-mode t)
- '(tab-width 4)
  '(indent-tabs-mode nil)
- '(package-selected-packages (quote (dired-subtree ess use-package yasnippet)))
+ '(package-selected-packages
+   (quote
+    (wrap-region company dired-subtree ess use-package yasnippet)))
  '(send-mail-function (quote sendmail-send-it))
- )
+ '(show-paren-mode t)
+ '(tab-width 4))
 
 (setq c-default-style "linux"
       c-basic-offset 4)
@@ -106,7 +111,7 @@
 ;; '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil)))))
 
 (load-theme 'manoj-dark t)
-(set-default-font "Monospace-12")
+(set-default-font "Monospace-11")
 
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
@@ -206,19 +211,31 @@
              :ensure helm)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                        HIPPIE EXPAND
+;;                                        COMPANY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package hippie-expand
-             :init
-             (setq hippie-expand-try-functions-list
-                   '(try-complete-file-name-partially
-                     try-complete-file-name
-                     try-expand-dabbrev
-                     try-expand-dabbrev-all-buffers
-                     try-expand-dabbrev-from-kill))
-             :bind
-             ("M-/" . hippie-expand))
+(use-package company
+  :ensure t
+  :pin melpa
+  :config
+  (add-hook 'after-init-hook 'global-company-mode)
+  ;; setup tab to manually trigger company completion
+  (define-key company-mode-map (kbd "TAB") 'company-indent-or-complete-common)
+  (define-key company-active-map (kbd "TAB") 'company-complete-common)
+  ;; setup M-h to show documentation for items on the autocomplete menu
+  (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
+  )
+
+;;(use-package hippie-expand
+;;             :init
+;;             (setq hippie-expand-try-functions-list
+;;                   '(try-complete-file-name-partially
+;;                     try-complete-file-name
+;;                     try-expand-dabbrev
+;;                     try-expand-dabbrev-all-buffers
+;;                     try-expand-dabbrev-from-kill))
+;;             :bind
+;;             ("M-/" . hippie-expand))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                         ORG AND AGENDA
@@ -249,6 +266,15 @@
              (define-key dired-mode-map "i" 'dired-subtree-insert)
              (define-key dired-mode-map ";" 'dired-subtree-remove)
              :ensure dired-subtree)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                       WRAP REGION
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package wrap-region
+  :ensure wrap-region
+  :config (wrap-region-global-mode t)
+  :diminish wrap-region-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                           W3M
@@ -300,6 +326,16 @@
 
 (global-set-key (kbd "C-x |") 'toggle-window-split)
 
+(defun copy-fname-to-killring ()
+  "copy current buffer filename to kill ring"
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (kill-new filename)
+      (message "%s copied to kill ring." filename))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                          PYTHON
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -329,3 +365,9 @@
 ;(autoload 'pylookup-update "pylookup" "Run pylookup-update and create the database at `pylookup-db-file'." t)
 ;;(setq browse-url-browser-function "w3m-browse-url")
 ;(global-set-key "\C-cp" 'pylookup-lookup)
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
