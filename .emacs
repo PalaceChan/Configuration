@@ -293,6 +293,9 @@
              (setq inferior-R-program-name "/usr/bin/R")
              (setq ess-eval-visibly-p nil)
              (setq ess-directory "/home/andres")
+             (defun ava-ess-settings () ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
+               (setq ess-indent-with-fancy-comments nil))
+             (add-hook 'ess-mode-hook #'ava-ess-settings)
              :ensure ess)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
