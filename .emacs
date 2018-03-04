@@ -224,6 +224,7 @@
   (define-key company-active-map (kbd "TAB") 'company-complete-common)
   ;; setup M-h to show documentation for items on the autocomplete menu
   (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
+  (setq company-global-modes '(not term-mode))
   )
 
 ;;(use-package hippie-expand
