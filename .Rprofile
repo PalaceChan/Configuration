@@ -4,14 +4,8 @@ if (interactive()) {
     suppressWarnings(suppressMessages(local({
         library(lazyeval, lib.loc='~/R')
         library(Hmisc) #cut2
+        library(data.table, lib.loc='~/R') #fread/fwrite
         library(scales, lib.loc='~/R')
-        #library(magrittr, lib.loc='~/R')    
-        #library(ggplot2, lib.loc='~/R')
-        #library(data.table, lib.loc='~/R')
-        #library(dplyr, lib.loc='~/R')
-        #library(tibble, lib.loc='~/R')
-        #library(tidyr, lib.loc='~/R')
-        #library(purrr, lib.loc='~/R')
         library(labeling, lib.loc='~/R')
         library(digest, lib.loc='~/R')
         library(bit, lib.loc='~/R')
