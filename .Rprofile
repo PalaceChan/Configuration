@@ -1,19 +1,30 @@
-suppressMessages(local({
-    library(data.table, lib.loc='~/R')
-    library(lazyeval, lib.loc='~/R')
-    library(magrittr, lib.loc='~/R')
-    library(dplyr, lib.loc='~/R')
-    library(scales, lib.loc='~/R')
-    library(ggplot2, lib.loc='~/R')
-    library(labeling, lib.loc='~/R')
-    library(digest, lib.loc='~/R')
-    library(bit, lib.loc='~/R')
-    library(bit64, lib.loc='~/R')
-    library(lubridate, lib.loc='~/R')}))
+.libPaths(c('/home/andres/R', .libPaths()))
 
-#library(doMC, lib.loc='~/R')
-#registerDoMC(cores=2)
-#install.packages('bit64', lib='~/R', dep=TRUE)
+if (interactive()) {
+    suppressWarnings(suppressMessages(local({
+        library(lazyeval, lib.loc='~/R')
+        library(Hmisc) #cut2
+        library(scales, lib.loc='~/R')
+        #library(magrittr, lib.loc='~/R')    
+        #library(ggplot2, lib.loc='~/R')
+        #library(data.table, lib.loc='~/R')
+        #library(dplyr, lib.loc='~/R')
+        #library(tibble, lib.loc='~/R')
+        #library(tidyr, lib.loc='~/R')
+        #library(purrr, lib.loc='~/R')
+        library(labeling, lib.loc='~/R')
+        library(digest, lib.loc='~/R')
+        library(bit, lib.loc='~/R')
+        library(bit64, lib.loc='~/R')
+        library(lubridate, lib.loc='~/R')
+        library(tidyverse, lib.loc='~/R')
+    })))
+}
+
+Sys.setenv(R_HISTSIZE='999999')
+
+options(max.print=1000)
+options(tibble.width=Inf)
 
 .adjustWidth <- function(...) {
     sys.width = Sys.getenv("COLUMNS")
@@ -24,17 +35,41 @@ suppressMessages(local({
 }
 .adjustWidthCallBack <- addTaskCallback(.adjustWidth)
 
-#aliases
-h <- utils::head
+#my own functions in this env
+.startupEnv <- new.env()
+
+#ls as a data frame with more info
+.startupEnv$lsa <- function() {
+    objL <- ls(envir = .GlobalEnv)
+    objClassV <- vapply(objL, function(x) class(get(x, envir = .GlobalEnv)), character(1))
+    objSizeV <- vapply(objL, function(x) format(object.size(get(x, envir = .GlobalEnv)), unit='auto'), character(1))
+    objDF <- data.frame(obj=names(objClassV), class=objClassV, size=objSizeV)
+    rownames(objDF) <- NULL
+    objDF
+}
+
+#ls for functions in a package
+.startupEnv$lsp <-function(package, pattern, all.names = FALSE) {
+    package <- deparse(substitute(package))
+    ls(
+        pos = paste("package", package, sep = ":"),
+        all.names = all.names,
+        pattern = pattern
+    )
+}
+
+#head shortcut & head tail
+.startupEnv$h <- utils::head
+.startupEnv$ht <- function(d, n=6) rbind(head(d,n), tail(d,n))
 
 #read multiple files
-glob <- function(dir, fkey, hdr, classes=NA) {
+.startupEnv$glob <- function(dir, fkey, hdr, classes=NA) {
     cmd <- sprintf("cat %s/%s | sed '1!{/%s/d}'", dir, fkey, hdr)
     data.table(read.csv(pipe(cmd), header=TRUE, colClasses=classes))
 }
 
 #parse ini config
-parse.INI <- function(INI.filename) {
+.startupEnv$parse.INI <- function(INI.filename) {
     l <- readLines(INI.filename)
     l <- sub('\\#.*$', '', l)
     l <- chartr("[]", "==", l)
@@ -53,3 +88,5 @@ parse.INI <- function(INI.filename) {
 
     return(INI.list)
 }
+
+attach(.startupEnv)
