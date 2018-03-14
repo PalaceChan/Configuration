@@ -12,7 +12,6 @@
   inhibit-startup-echo-area-message t
   initial-scratch-message nil)
 
-
 ;;Disable Column Goal Warning/Region Upcase Warning/Region Narrow Warning
 (put 'set-goal-column 'disabled nil)
 (put 'upcase-region 'disabled nil)
@@ -33,6 +32,11 @@
 (setq x-alt-keysym 'meta)
 (put 'downcase-region 'disabled nil)
 (setq scroll-step 1)
+
+;;save history and desktop
+;(desktop-save-mode 1)
+(savehist-mode 1)
+(setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                       MISC OVERRIDES
@@ -224,7 +228,7 @@
   (define-key company-active-map (kbd "TAB") 'company-complete-common)
   ;; setup M-h to show documentation for items on the autocomplete menu
   (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
-  (setq company-global-modes '(not term-mode))
+  (setq company-global-modes '(not term-mode not compilation-mode))
   )
 
 ;;(use-package hippie-expand

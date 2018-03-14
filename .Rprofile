@@ -19,6 +19,7 @@ Sys.setenv(R_HISTSIZE='999999')
 
 options(max.print=1000)
 options(tibble.width=Inf)
+options(digits=10)
 
 .adjustWidth <- function(...) {
     sys.width = Sys.getenv("COLUMNS")
@@ -35,7 +36,7 @@ options(tibble.width=Inf)
 #ls as a data frame with more info
 .startupEnv$lsa <- function() {
     objL <- ls(envir = .GlobalEnv)
-    objClassV <- vapply(objL, function(x) class(get(x, envir = .GlobalEnv)), character(1))
+    objClassV <- vapply(objL, function(x) paste(class(get(x, envir = .GlobalEnv)), collapse=':'), character(1))
     objSizeV <- vapply(objL, function(x) format(object.size(get(x, envir = .GlobalEnv)), unit='auto'), character(1))
     objDF <- data.frame(obj=names(objClassV), class=objClassV, size=objSizeV)
     rownames(objDF) <- NULL
