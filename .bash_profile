@@ -57,4 +57,5 @@ export PATH
 
 export PS1='\h: '
 
-export R_LIBS_USER=/home/andres/R
+#export R_LIBS_USER=/home/andres/R
+export R_LIBS_USER=/home/andres/R-3.4.4

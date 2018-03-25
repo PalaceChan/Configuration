@@ -294,7 +294,7 @@
 (use-package ess
              :init (require 'ess-site)
              :config
-             (setq inferior-R-program-name "/usr/bin/R")
+             (setq inferior-R-program-name "/usr/local/bin/R")
              (setq ess-eval-visibly-p nil)
              (setq ess-directory "/home/andres")
              (defun ava-ess-settings () ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region

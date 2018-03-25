@@ -1,25 +1,28 @@
-.libPaths(c('/home/andres/R', .libPaths()))
+suppressWarnings(suppressMessages(local({
+    library(lazyeval)
+    library(abind)
+    library(data.table)
+    library(scales)
+    library(digest)
+    library(bit)
+    library(bit64)
+    library(hash)
+    library(lubridate)
+    library(nanotime)
+    library(ggplot2)
+    library(dtplyr)
+    library(dplyr)
+    library(purrr)
+    library(tibble)
+})))
 
-if (interactive()) {
-    suppressWarnings(suppressMessages(local({
-        library(lazyeval, lib.loc='~/R')
-        library(Hmisc) #cut2
-        library(data.table, lib.loc='~/R') #fread/fwrite
-        library(scales, lib.loc='~/R')
-        library(labeling, lib.loc='~/R')
-        library(digest, lib.loc='~/R')
-        library(bit, lib.loc='~/R')
-        library(bit64, lib.loc='~/R')
-        library(lubridate, lib.loc='~/R')
-        library(tidyverse, lib.loc='~/R')
-    })))
-}
 
 Sys.setenv(R_HISTSIZE='999999')
 
-options(max.print=1000)
+options(max.print=5000)
 options(tibble.width=Inf)
 options(digits=10)
+options(nanotimeTz='EST')
 
 .adjustWidth <- function(...) {
     sys.width = Sys.getenv("COLUMNS")
