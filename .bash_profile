@@ -35,10 +35,12 @@ function mgrep()
 
 ################################################################################
 
-alias e='emacs -nw'
+alias e='/usr/bin/emacs25 -nw'
+alias em='/usr/bin/emacs25'
 alias hist='cat ~/history/history.txt'
 alias ls='ls --color=auto -h'
 alias reset='echo -e \\033c'
+alias rc='source ~/.bash_profile'
 
 ################################################################################
 
@@ -50,7 +52,9 @@ export EDITOR
 PROMPT_COMMAND='history | tail -n1 | ~/history/dump_history.sh'
 export PROMPT_COMMAND
 
-PATH=$PATH:/home/andres/rabbit
+PATH=$PATH:~/rabbit
 export PATH
 
 export PS1='\h: '
+
+export R_LIBS_USER=/home/andres/R
