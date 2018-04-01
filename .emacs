@@ -96,13 +96,13 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
- '(display-time-mode t)
  '(display-battery-mode t)
+ '(display-time-mode t)
  '(ecb-options-version "2.40")
  '(indent-tabs-mode nil)
  '(package-selected-packages
    (quote
-    (exwm wrap-region company dired-subtree ess use-package yasnippet)))
+    (irony company-irony exwm wrap-region company dired-subtree ess use-package yasnippet)))
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
  '(tab-width 4))
@@ -260,7 +260,13 @@
   :ensure t
   :pin melpa
   :config
+  (setq company-idle-delay 0)
   (add-hook 'after-init-hook 'global-company-mode)
+  ;; use normal C-n and C-p to move across options
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-n") 'company-select-next)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous)
   ;; setup tab to manually trigger company completion
   (define-key company-mode-map (kbd "TAB") 'company-indent-or-complete-common)
   (define-key company-active-map (kbd "TAB") 'company-complete-common)
@@ -268,6 +274,22 @@
   (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
   (setq company-global-modes '(not term-mode not compilation-mode))
   )
+
+(use-package company-irony
+  :ensure t
+  :config
+  (require 'company)
+  (add-to-list 'company-backends 'company-irony))
+
+;;Had to apt-get install libclang-3.5-dev for the irony install to work (find clang include and the .so)
+;;https://github.com/Andersbakken/rtags/issues/983
+;;https://github.com/Sarcasm/irony-mode/issues/167
+(use-package irony
+  :ensure t
+  :config
+  (add-hook 'c++-mode-hook 'irony-mode)
+  (add-hook 'c-mode-hook 'irony-mode)
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                         ORG AND AGENDA
