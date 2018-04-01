@@ -201,7 +201,8 @@
           ([?\C-v] . [next])
           ([?\C-d] . [delete])
           ([?\C-k] . [S-end delete])
-          ([?\C-s] . [?\C-f])))  
+          ([?\C-s] . [?\C-f])
+          ([?\C-t] . [?\C-n])))
   (exwm-enable)
   )
 
