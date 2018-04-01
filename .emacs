@@ -34,7 +34,6 @@
 (setq scroll-step 1)
 
 ;;save history and desktop
-;(desktop-save-mode 1)
 (savehist-mode 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
 
@@ -98,11 +97,12 @@
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(display-time-mode t)
+ '(display-battery-mode t)
  '(ecb-options-version "2.40")
  '(indent-tabs-mode nil)
  '(package-selected-packages
    (quote
-    (wrap-region company dired-subtree ess use-package yasnippet)))
+    (exwm wrap-region company dired-subtree ess use-package yasnippet)))
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
  '(tab-width 4))
@@ -115,7 +115,7 @@
 ;; '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil)))))
 
 (load-theme 'manoj-dark t)
-(set-default-font "Monospace-11")
+(set-frame-font "DejaVuSansMono-11")
 
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
@@ -170,6 +170,42 @@
 (require 'diminish)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                           EXWM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package exwm :ensure t
+  :init
+  :config
+  (setq exwm-workspace-number 4)
+  (defun exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer exwm-title))
+  (add-hook 'exwm-update-title-hook 'exwm-rename-buffer-to-title)
+  (exwm-input-set-key (kbd "s-r") #'exwm-reset)
+  (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch)
+  (dotimes (i 10)
+    (exwm-input-set-key (kbd (format "s-%d" i))
+                        `(lambda ()
+                           (interactive)
+                           (exwm-workspace-switch-create ,i))))
+  (exwm-input-set-key (kbd "s-&")
+                      (lambda (command)
+                        (interactive (list (read-shell-command "$ ")))
+                        (start-process-shell-command command nil command)))
+  (setq exwm-input-simulation-keys
+        '(([?\C-b] . [left])
+          ([?\C-f] . [right])
+          ([?\C-p] . [up])
+          ([?\C-n] . [down])
+          ([?\C-a] . [home])
+          ([?\C-e] . [end])
+          ([?\M-v] . [prior])
+          ([?\C-v] . [next])
+          ([?\C-d] . [delete])
+          ([?\C-k] . [S-end delete])
+          ([?\C-s] . [?\C-f])))  
+  (exwm-enable)
+  )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                           HELM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -207,6 +243,7 @@
                    helm-ff-search-library-in-sexp t
                    helm-scroll-amount 8
                    helm-ff-file-name-history-use-recentf t)
+             (setq helm-buffer-max-length nil)
              (helm-mode 1)
              (helm-autoresize-mode 1)
              (define-key  helm-map (kbd "<tab>") 'helm-execute-persistent-action)
@@ -230,17 +267,6 @@
   (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
   (setq company-global-modes '(not term-mode not compilation-mode))
   )
-
-;;(use-package hippie-expand
-;;             :init
-;;             (setq hippie-expand-try-functions-list
-;;                   '(try-complete-file-name-partially
-;;                     try-complete-file-name
-;;                     try-expand-dabbrev
-;;                     try-expand-dabbrev-all-buffers
-;;                     try-expand-dabbrev-from-kill))
-;;             :bind
-;;             ("M-/" . hippie-expand))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                         ORG AND AGENDA
