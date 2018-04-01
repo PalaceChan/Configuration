@@ -22,12 +22,8 @@
 ;;Enable grep highlighting and paren-mode highlighting
 (setq grep-highlight-matches t)
 
-;;Load the common lisp library & allow for long output
-;;(require 'cl)
-
 ;;Load environment for aliases to work
 (setq shell-file-name "bash")
-;;(setq shell-command-switch "-ic")
 
 (setq x-alt-keysym 'meta)
 (put 'downcase-region 'disabled nil)
@@ -81,6 +77,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                        SHORTCUTS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+;;default to bash when starting ansi term
+(defvar my-term-shell "/bin/bash")
+(defadvice ansi-term (before force-bash)
+  (interactive (list my-term-shell)))
+(ad-activate 'ansi-term)
 
 (global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-x l") 'align-regexp)
