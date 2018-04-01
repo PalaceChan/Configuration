@@ -97,12 +97,13 @@
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(display-battery-mode t)
+ '(display-time-24hr-format t)
  '(display-time-mode t)
  '(ecb-options-version "2.40")
  '(indent-tabs-mode nil)
  '(package-selected-packages
    (quote
-    (irony company-irony exwm wrap-region company dired-subtree ess use-package yasnippet)))
+    (dmenu which-key irony company-irony exwm wrap-region company dired-subtree ess use-package yasnippet)))
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
  '(tab-width 4))
@@ -331,10 +332,22 @@
   :diminish wrap-region-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                           W3M
+;;                                       WHICH KEY
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq browse-url-browser-function 'w3m-goto-url-new-session)
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                        DMENU
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package dmenu
+  :ensure t
+  :bind
+  ("s-SPC" . dmenu))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      ESS STATISTICS
