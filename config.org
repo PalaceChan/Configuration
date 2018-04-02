@@ -1,0 +1,367 @@
+* startup
+** theme
+#+BEGIN_SRC emacs-lisp
+(load-theme 'manoj-dark t)
+(set-frame-font "DejaVuSansMono-11")
+(global-font-lock-mode t)
+(setq font-lock-maximum-decoration t)
+#+END_SRC
+** start
+Disable a bunch of visuals
+#+BEGIN_SRC emacs-lisp
+(menu-bar-mode 0)
+(tool-bar-mode 0)
+(transient-mark-mode 0)
+#+END_SRC
+Disable startup messages and text in scratch
+#+BEGIN_SRC emacs-lisp
+(setq inhibit-startup-message t
+  inhibit-startup-echo-area-message t
+  initial-scratch-message nil)
+#+END_SRC
+** warnings
+Disable common warnings
+#+BEGIN_SRC emacs-lisp
+(put 'set-goal-column 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
+(put 'erase-buffer 'disabled nil)
+(put 'downcase-region 'disabled nil)
+(setq large-file-warning-threshold nil)
+#+END_SRC
+** basic settings
+*** navigation
+#+BEGIN_SRC emacs-lisp
+(setq scroll-step 1)
+#+END_SRC
+*** simple quality of life improvements
+#+BEGIN_SRC emacs-lisp
+(setq grep-highlight-matches t)
+(setq shell-file-name "bash")
+(setq x-alt-keysym 'meta)
+(setq kill-ring-max 100)
+(setq dired-listing-switches "-Al --si --time-style long-iso")
+(setq term-buffer-maximum-size 262144)
+(setq undo-outer-limit 50000000)
+(setq make-backup-files nil)
+(setq show-paren-mode t)
+(add-to-list 'same-window-buffer-names "*Buffer List*")
+(add-to-list 'same-window-buffer-names "*grep*")
+#+END_SRC
+** save history
+Save some history across sessions
+#+BEGIN_SRC emacs-lisp
+(savehist-mode 1)
+(setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
+#+END_SRC
+** mode bar
+show battery, column number and nicely formatted time
+#+BEGIN_SRC emacs-lisp
+(setq display-battery-mode t)
+(setq column-number-mode t)
+(setq display-time-24hr-format t)
+(setq display-time-format "%H:%M - %Y%m%d")
+(setq display-time-mode t)
+#+END_SRC
+** misc
+override default timezones for the world clock view
+#+BEGIN_SRC emacs-lisp
+(setq display-time-world-list '(
+                                ("America/Chicago" "Chicago") ("Asia/Tokyo" "Japan")
+                                ("Europe/Berlin" "Frankfurt") ("Australia/Sydney" "Australia") ))
+#+END_SRC
+* shortcuts
+ansi-term defaults to bash
+#+BEGIN_SRC emacs-lisp
+(defvar my-term-shell "/bin/bash")
+(defadvice ansi-term (before force-bash)
+  (interactive (list my-term-shell)))
+(ad-activate 'ansi-term)
+#+END_SRC
+aliases and global bindings
+#+BEGIN_SRC emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+(global-set-key (kbd "M-g") 'goto-line)
+(global-set-key (kbd "C-x l") 'align-regexp)
+#+END_SRC
+* development
+** general
+#+BEGIN_SRC emacs-lisp
+(setq indent-tabs-mode nil)
+(setq tab-width 4)
+#+END_SRC
+** tags
+follow default tag in etags without prompting
+#+BEGIN_SRC emacs-lisp
+(fset 'tagmac
+   "\C-[xfind tag\C-m\C-m")
+(define-key global-map (kbd "M-.") 'tagmac)
+#+END_SRC
+** c/c++
+indentation related
+#+BEGIN_SRC emacs-lisp
+(setq c-default-style "linux"
+      c-basic-offset 4)
+(c-set-offset 'innamespace 0)
+#+END_SRC
+toggle between implementation and header
+#+BEGIN_SRC emacs-lisp
+(setq cc-search-directories
+'( "/usr/include" "/usr/include/sys" "/usr/include/linux"
+   "."
+  )
+)
+(setq cc-other-file-alist
+'(("\\.cpp$" (".h" ".hpp"))
+("\\.h$" (".cpp" ".c"))
+("\\.hpp$" (".cpp" ".c"))
+("\\.C$" (".H"))
+("\\.H$" (".C"))
+))
+(add-hook 'c-mode-common-hook (lambda() (global-set-key (kbd "C-c o") 'ff-find-other-file)))
+#+END_SRC
+
+** compilation
+#+BEGIN_SRC emacs-lisp
+(setq compile-command "make")
+(setq compilation-read-command nil)
+#+END_SRC
+* custom functions
+kill current buffer no prompt [[http://www.dotemacs.de/dotfiles/DaveGallucci.emacs.html][DaveGallucci]]
+#+BEGIN_SRC emacs-lisp
+(defun kill-current-buffer ()
+  "Kill the current buffer, without confirmation."
+  (interactive)
+  (kill-buffer (current-buffer)))
+(global-set-key "\C-xk" 'kill-current-buffer)
+#+END_SRC
+toggle between horizontal and vertical split with C-x |
+#+BEGIN_SRC emacs-lisp
+(defun toggle-window-split ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
+
+(global-set-key (kbd "C-x |") 'toggle-window-split)
+#+END_SRC
+copies current filename to kill-ring
+#+BEGIN_SRC emacs-lisp
+(defun copy-fname-to-killring ()
+  "copy current buffer filename to kill ring"
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (kill-new filename)
+      (message "%s copied to kill ring." filename))))
+#+END_SRC
+* exwm
+#+BEGIN_SRC emacs-lisp
+(use-package exwm :ensure t
+  :init
+  :config
+  (setq exwm-workspace-number 4)
+  (defun exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer exwm-title))
+  (add-hook 'exwm-update-title-hook 'exwm-rename-buffer-to-title)
+  (exwm-input-set-key (kbd "s-r") #'exwm-reset)
+  (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch)
+  (dotimes (i 10)
+    (exwm-input-set-key (kbd (format "s-%d" i))
+                        `(lambda ()
+                           (interactive)
+                           (exwm-workspace-switch-create ,i))))
+  (exwm-input-set-key (kbd "s-&")
+                      (lambda (command)
+                        (interactive (list (read-shell-command "$ ")))
+                        (start-process-shell-command command nil command)))
+  (setq exwm-input-simulation-keys
+        '(([?\C-b] . [left])
+          ([?\C-f] . [right])
+          ([?\C-p] . [up])
+          ([?\C-n] . [down])
+          ([?\C-a] . [home])
+          ([?\C-e] . [end])
+          ([?\M-v] . [prior])
+          ([?\C-v] . [next])
+          ([?\C-d] . [delete])
+          ([?\C-k] . [S-end delete])
+          ([?\C-s] . [?\C-f])
+          ([?\C-t] . [?\C-n])))
+  (exwm-enable)
+  )
+#+END_SRC
+* helm
+#+BEGIN_SRC emacs-lisp
+(use-package helm
+             :demand t
+             :diminish helm-mode
+             :init
+             (progn
+               (require 'helm-config)
+               (setq helm-candidate-number-limit 100)
+               (setq helm-idle-delay 0.0
+                     helm-input-idle-delay 0.01
+                     helm-yas-display-key-on-candidate t
+                     helm-quick-update t
+                     helm-M-x-requires-pattern nil)
+               (helm-mode)
+               )
+             :bind (
+                    ("C-h a" . helm-apropos)
+                    ("C-x C-b" . helm-buffers-list)
+                    ("C-x b" . helm-buffers-list)
+                    ("M-y" . helm-show-kill-ring)
+                    ("M-x" . helm-M-x)
+                    ("C-x C-f" . helm-find-files)
+                    ("C-c h o" . helm-occur)
+                    ("C-c h r" . helm-register)
+                    ("C-c h b" . helm-resume)
+                    )
+             :config
+             (setq helm-command-prefix-key "C-c h")
+             (setq helm-autoresize-min-height 25)
+             (setq helm-autoresize-max-height 25)
+             (setq helm-split-window-in-side-p t
+                   helm-move-to-line-cycle-in-source t
+                   helm-ff-search-library-in-sexp t
+                   helm-scroll-amount 8
+                   helm-ff-file-name-history-use-recentf t)
+             (setq helm-buffer-max-length nil)
+             (helm-mode 1)
+             (helm-autoresize-mode 1)
+             (define-key  helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+             (define-key  helm-map (kbd "C-i") 'helm-execute-persistent-action)
+             (define-key  helm-map (kbd "C-z") 'helm-select-action)
+             :ensure helm)
+#+END_SRC
+* company
+** general company
+#+BEGIN_SRC 
+(use-package company
+  :ensure t
+  :pin melpa
+  :config
+  (setq company-idle-delay 0)
+  (add-hook 'after-init-hook 'global-company-mode)
+  ;; use normal C-n and C-p to move across options
+  (define-key company-active-map (kbd "M-n") nil)
+  (define-key company-active-map (kbd "M-p") nil)
+  (define-key company-active-map (kbd "C-n") 'company-select-next)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous)
+  ;; setup tab to manually trigger company completion
+  (define-key company-mode-map (kbd "TAB") 'company-indent-or-complete-common)
+  (define-key company-active-map (kbd "TAB") 'company-complete-common)
+  ;; setup M-h to show documentation for items on the autocomplete menu
+  (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
+  (setq company-global-modes '(not term-mode not compilation-mode))
+  )
+#+END_SRC
+** irony for c/c++ completion
+#+BEGIN_SRC emacs-lisp
+(use-package company-irony
+  :ensure t
+  :config
+  (require 'company)
+  (add-to-list 'company-backends 'company-irony))
+#+END_SRC
+irony itself, I had to apt-get install libclang-3.5-dev for the irony install to work. I also had to apt-get install cmake
+[[https://github.com/Andersbakken/rtags/issues/983][Issue 983]]
+[[https://github.com/Sarcasm/irony-mode/issues/167][Issue 167]]
+#+BEGIN_SRC emacs-lisp
+(use-package irony
+  :ensure t
+  :config
+  (add-hook 'c++-mode-hook 'irony-mode)
+  (add-hook 'c-mode-hook 'irony-mode)
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+#+END_SRC
+* org
+#+BEGIN_SRC emacs-lisp
+(setq org-use-speed-commands 1)
+(setq org-list-description-max-indent 5)
+(setq org-export-html-postamble nil)
+(setq org-log-done 'note)
+
+(setq org-confirm-babel-evaluate nil)
+(org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (sh . t) (R . t) ))
+
+(global-set-key (kbd "C-c a") 'org-agenda)
+(setq org-agenda-files (quote ("~/todo.org")))
+(setq org-agenda-window-setup (quote current-window))
+
+(define-key global-map (kbd "C-c l") 'org-store-link)
+(define-key global-map (kbd "C-c c") 'org-capture)
+(setq org-capture-templates '(("t" "todo" entry (file+headline "~/todo.org" "Tasks") "* TODO %?")))
+#+END_SRC
+* dired subtree
+a much nicer dired (can in-place expand subdirectory contents)
+#+BEGIN_SRC emacs-lisp
+(use-package dired-subtree
+             :config
+             (define-key dired-mode-map "i" 'dired-subtree-insert)
+             (define-key dired-mode-map ";" 'dired-subtree-remove)
+             :ensure dired-subtree)
+#+END_SRC
+* wrap region
+automatically encloses double quotes or parens
+#+BEGIN_SRC emacs-lisp
+(use-package wrap-region
+  :ensure wrap-region
+  :config (wrap-region-global-mode t)
+  :diminish wrap-region-mode)
+#+END_SRC
+* which key
+show options for bindings in realtime
+#+BEGIN_SRC emacs-lisp
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode))
+#+END_SRC
+* dmenu
+for exwm
+#+BEGIN_SRC emacs-lisp
+(use-package dmenu
+  :ensure t
+  :bind
+  ("s-SPC" . dmenu))
+#+END_SRC
+* magit
+#+BEGIN_SRC emacs-lisp
+(use-package magit :ensure t)
+#+END_SRC
+* ess
+#+BEGIN_SRC emacs-lisp
+(use-package ess
+             :init (require 'ess-site)
+             :config
+             (setq inferior-R-program-name "/usr/local/bin/R")
+             (setq ess-eval-visibly-p nil)
+             (setq ess-directory "/home/andres")
+             (defun ava-ess-settings () ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
+               (setq ess-indent-with-fancy-comments nil))
+             (add-hook 'ess-mode-hook #'ava-ess-settings)
+             :ensure ess)
+#+END_SRC
