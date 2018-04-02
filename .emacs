@@ -29,6 +29,9 @@
 (put 'downcase-region 'disabled nil)
 (setq scroll-step 1)
 
+;;more kill-ring history
+(setq kill-ring-max 100)
+
 ;;save history and desktop
 (savehist-mode 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
@@ -102,12 +105,13 @@
  '(column-number-mode t)
  '(display-battery-mode t)
  '(display-time-24hr-format t)
+ '(display-time-format "%H:%M - %Y%m%d")
  '(display-time-mode t)
  '(ecb-options-version "2.40")
  '(indent-tabs-mode nil)
  '(package-selected-packages
    (quote
-    (dmenu which-key irony company-irony exwm wrap-region company dired-subtree ess use-package yasnippet)))
+    (magit dmenu which-key irony company-irony exwm wrap-region company dired-subtree ess use-package yasnippet)))
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
  '(tab-width 4))
@@ -352,6 +356,12 @@
   :ensure t
   :bind
   ("s-SPC" . dmenu))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;                                          MAGIT
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package magit :ensure t)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                      ESS STATISTICS
