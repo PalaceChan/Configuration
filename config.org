@@ -298,6 +298,14 @@ irony itself, I had to apt-get install libclang-3.5-dev for the irony install to
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 * org
+first bullet mode
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+now configure org (default installed)
 #+BEGIN_SRC emacs-lisp
 (setq org-use-speed-commands 1)
 (setq org-list-description-max-indent 5)

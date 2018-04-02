@@ -111,7 +111,7 @@
  '(indent-tabs-mode nil)
  '(package-selected-packages
    (quote
-    (magit dmenu which-key irony company-irony exwm wrap-region company dired-subtree ess use-package yasnippet)))
+    (org-bullets magit dmenu which-key irony company-irony exwm wrap-region company dired-subtree ess use-package yasnippet)))
  '(send-mail-function (quote sendmail-send-it))
  '(show-paren-mode t)
  '(tab-width 4))
@@ -119,9 +119,6 @@
 (setq c-default-style "linux"
       c-basic-offset 4)
 (c-set-offset 'innamespace 0)
-
-;;(custom-set-faces
-;; '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil)))))
 
 (load-theme 'manoj-dark t)
 (set-frame-font "DejaVuSansMono-11")
@@ -303,6 +300,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                         ORG AND AGENDA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
 
 (setq org-use-speed-commands 1)
 (setq org-list-description-max-indent 5)
