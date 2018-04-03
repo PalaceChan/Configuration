@@ -30,12 +30,8 @@ Disable common warnings
 (setq large-file-warning-threshold nil)
 #+END_SRC
 ** basic settings
-*** navigation
 #+BEGIN_SRC emacs-lisp
 (setq scroll-step 1)
-#+END_SRC
-*** simple quality of life improvements
-#+BEGIN_SRC emacs-lisp
 (setq grep-highlight-matches t)
 (setq shell-file-name "bash")
 (setq x-alt-keysym 'meta)
@@ -52,6 +48,9 @@ Disable common warnings
 Save some history across sessions
 #+BEGIN_SRC emacs-lisp
 (savehist-mode 1)
+(setq history-length t)
+(setq history-delete-duplicates t)
+(setq savehist-save-minibuffer-history 1)
 (setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
 #+END_SRC
 ** mode bar
@@ -263,13 +262,13 @@ copies current filename to kill-ring
   :ensure t
   :pin melpa
   :config
-  (setq company-idle-delay 0)
+  (setq company-idle-delay nil)
   (add-hook 'after-init-hook 'global-company-mode)
   ;; use normal C-n and C-p to move across options
   (define-key company-active-map (kbd "M-n") nil)
   (define-key company-active-map (kbd "M-p") nil)
-  (define-key company-active-map (kbd "M-j") 'company-select-previous)
-  (define-key company-active-map (kbd "M-k") 'company-select-next)
+  (define-key company-active-map (kbd "C-p") 'company-select-previous)
+  (define-key company-active-map (kbd "C-n") 'company-select-next)
   ;; setup tab to manually trigger company completion
   (define-key company-mode-map (kbd "TAB") 'company-indent-or-complete-common)
   (define-key company-active-map (kbd "TAB") 'company-complete-common)
@@ -372,4 +371,17 @@ to launch applications from exwm
                (setq ess-indent-with-fancy-comments nil))
              (add-hook 'ess-mode-hook #'ava-ess-settings)
              :ensure ess)
+#+END_SRC
+* erc
+#+BEGIN_SRC emacs-lisp
+  (use-package erc
+    :ensure t
+    :config
+    (setq erc-hide-list '("PART" "QUIT" "JOIN"))
+    (setq erc-autojoin-channels-alist '(("freenode.net"
+                                         "#math"
+                                         "#emacs"))
+          erc-server "irc.freenode.net"
+          erc-nick "hooxen")
+    )
 #+END_SRC
