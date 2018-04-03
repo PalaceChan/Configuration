@@ -298,7 +298,7 @@ irony itself, I had to apt-get install libclang-3.5-dev for the irony install to
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
 #+END_SRC
 * org
-first bullet mode
+use bullet mode
 #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
   :ensure t
@@ -336,7 +336,7 @@ a much nicer dired (can in-place expand subdirectory contents)
 automatically encloses double quotes or parens
 #+BEGIN_SRC emacs-lisp
 (use-package wrap-region
-  :ensure wrap-region
+  :ensure t
   :config (wrap-region-global-mode t)
   :diminish wrap-region-mode)
 #+END_SRC
@@ -349,7 +349,7 @@ show options for bindings in realtime
   (which-key-mode))
 #+END_SRC
 * dmenu
-for exwm
+to launch applications from exwm
 #+BEGIN_SRC emacs-lisp
 (use-package dmenu
   :ensure t
@@ -367,7 +367,7 @@ for exwm
              :config
              (setq inferior-R-program-name "/usr/local/bin/R")
              (setq ess-eval-visibly-p nil)
-             (setq ess-directory "/home/andres")
+             (setq ess-directory "~/")
              (defun ava-ess-settings () ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
                (setq ess-indent-with-fancy-comments nil))
              (add-hook 'ess-mode-hook #'ava-ess-settings)
