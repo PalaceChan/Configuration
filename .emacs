@@ -271,8 +271,8 @@
   ;; use normal C-n and C-p to move across options
   (define-key company-active-map (kbd "M-n") nil)
   (define-key company-active-map (kbd "M-p") nil)
-  (define-key company-active-map (kbd "C-n") 'company-select-next)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous)
+  (define-key company-active-map (kbd "M-j") 'company-select-previous)
+  (define-key company-active-map (kbd "M-k") 'company-select-next)
   ;; setup tab to manually trigger company completion
   (define-key company-mode-map (kbd "TAB") 'company-indent-or-complete-common)
   (define-key company-active-map (kbd "TAB") 'company-complete-common)
