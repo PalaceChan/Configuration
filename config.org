@@ -257,25 +257,26 @@ copies current filename to kill-ring
 #+END_SRC
 * company
 ** general company
-#+BEGIN_SRC 
-(use-package company
-  :ensure t
-  :pin melpa
-  :config
-  (setq company-idle-delay nil)
-  (add-hook 'after-init-hook 'global-company-mode)
-  ;; use normal C-n and C-p to move across options
-  (define-key company-active-map (kbd "M-n") nil)
-  (define-key company-active-map (kbd "M-p") nil)
-  (define-key company-active-map (kbd "C-p") 'company-select-previous)
-  (define-key company-active-map (kbd "C-n") 'company-select-next)
-  ;; setup tab to manually trigger company completion
-  (define-key company-mode-map (kbd "TAB") 'company-indent-or-complete-common)
-  (define-key company-active-map (kbd "TAB") 'company-complete-common)
-  ;; setup M-h to show documentation for items on the autocomplete menu
-  (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
-  (setq company-global-modes '(not term-mode not compilation-mode))
-  )
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :pin melpa
+    :config
+    (setq company-idle-delay nil)
+    (setq company-dabbrev-downcase nil)
+    (add-hook 'after-init-hook 'global-company-mode)
+    ;; TODO fix not being able to use C-n and C-p
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "M-j") 'company-select-previous)
+    (define-key company-active-map (kbd "M-k") 'company-select-next)
+    ;; setup tab to manually trigger company completion
+    (define-key company-mode-map (kbd "TAB") 'company-indent-or-complete-common)
+    (define-key company-active-map (kbd "TAB") 'company-complete-common)
+    ;; setup M-h to show documentation for items on the autocomplete menu
+    (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
+    (setq company-global-modes '(not term-mode not compilation-mode))
+    )
 #+END_SRC
 ** irony for c/c++ completion
 #+BEGIN_SRC emacs-lisp
@@ -306,21 +307,23 @@ use bullet mode
 #+END_SRC
 now configure org (default installed)
 #+BEGIN_SRC emacs-lisp
-(setq org-use-speed-commands 1)
-(setq org-list-description-max-indent 5)
-(setq org-export-html-postamble nil)
-(setq org-log-done 'note)
+  (setq org-use-speed-commands 1)
+  (setq org-list-description-max-indent 5)
+  (setq org-export-html-postamble nil)
+  (setq org-log-done 'note)
 
-(setq org-confirm-babel-evaluate nil)
-(org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (sh . t) (R . t) ))
+  (add-hook 'org-mode-hook 'org-indent-mode)
 
-(global-set-key (kbd "C-c a") 'org-agenda)
-(setq org-agenda-files (quote ("~/todo.org")))
-(setq org-agenda-window-setup (quote current-window))
+  (setq org-confirm-babel-evaluate nil)
+  (org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (sh . t) (R . t) ))
 
-(define-key global-map (kbd "C-c l") 'org-store-link)
-(define-key global-map (kbd "C-c c") 'org-capture)
-(setq org-capture-templates '(("t" "todo" entry (file+headline "~/todo.org" "Tasks") "* TODO %?")))
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (setq org-agenda-files (quote ("~/todo.org")))
+  (setq org-agenda-window-setup (quote current-window))
+
+  (define-key global-map (kbd "C-c l") 'org-store-link)
+  (define-key global-map (kbd "C-c c") 'org-capture)
+  (setq org-capture-templates '(("t" "todo" entry (file+headline "~/todo.org" "Tasks") "* TODO %?")))
 #+END_SRC
 * dired subtree
 a much nicer dired (can in-place expand subdirectory contents)
