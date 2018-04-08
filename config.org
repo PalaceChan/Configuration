@@ -360,7 +360,9 @@ to launch applications from exwm
 #+END_SRC
 * magit
 #+BEGIN_SRC emacs-lisp
-(use-package magit :ensure t)
+(use-package magit :ensure t
+:bind
+("C-x g" . magit-status))
 #+END_SRC
 * ess
 #+BEGIN_SRC emacs-lisp
