@@ -47,11 +47,9 @@ Disable common warnings
 ** save history
 Save some history across sessions
 #+BEGIN_SRC emacs-lisp
-(savehist-mode 1)
-(setq history-length t)
+(setq history-length 300)
 (setq history-delete-duplicates t)
-(setq savehist-save-minibuffer-history 1)
-(setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
+(add-to-list 'desktop-globals-to-save 'kill-ring)
 #+END_SRC
 ** mode bar
 show battery, column number and nicely formatted time
