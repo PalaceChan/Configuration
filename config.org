@@ -45,11 +45,18 @@ Disable common warnings
 (add-to-list 'same-window-buffer-names "*grep*")
 #+END_SRC
 ** save history
-Save some history across sessions
+Save some history across sessions. (savehist-mode) on auto-save can be slow so we rely on desktop-save instead
 #+BEGIN_SRC emacs-lisp
-(setq history-length 300)
-(setq history-delete-duplicates t)
-(add-to-list 'desktop-globals-to-save 'kill-ring)
+  (setq history-length 300)
+  (setq history-delete-duplicates t)
+  (desktop-save-mode -1)
+  (setq desktop-globals-to-save
+        (append
+         '(desktop-missing-file-waning
+           tags-file-name tags-table-list
+           (search-ring . 800) (regexp-search-ring . 800)
+           register-alist file-name-history (kill-ring . 8000)
+           (minibuffer-history . 800) query-replace-history regexp-history)))
 #+END_SRC
 ** mode bar
 show battery, column number and nicely formatted time
