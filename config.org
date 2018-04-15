@@ -67,6 +67,11 @@ show battery, column number and nicely formatted time
 (setq display-time-format "%H:%M - %Y%m%d")
 (setq display-time-mode t)
 #+END_SRC
+** highlighting
+#+BEGIN_SRC emacs-lisp
+(global-hi-lock-mode 1)
+(setq hi-lock-auto-select-face t)
+#+END_SRC
 ** misc
 override default timezones for the world clock view
 #+BEGIN_SRC emacs-lisp
