@@ -90,8 +90,6 @@ ansi-term defaults to bash
 aliases and global bindings
 #+BEGIN_SRC emacs-lisp
 (defalias 'yes-or-no-p 'y-or-n-p)
-
-(global-set-key (kbd "M-g") 'goto-line)
 (global-set-key (kbd "C-x l") 'align-regexp)
 #+END_SRC
 * development
@@ -283,7 +281,7 @@ copies current filename to kill-ring
     :bind (("C-:" . avy-goto-word-1)
            ("M-g" . avy-goto-line))
     :config
-    (setq avy-background t)
+    (when (display-graphic-p) (setq avy-background t))
     )
 #+END_SRC
 * company
