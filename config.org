@@ -265,6 +265,27 @@ copies current filename to kill-ring
              (define-key  helm-map (kbd "C-z") 'helm-select-action)
              :ensure helm)
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-swoop
+    :ensure t
+    :bind (("C-c h s" . helm-multi-swoop))
+    :init
+    (bind-key "M-i" 'helm-swoop-from-isearch isearch-mode-map)
+    :config
+    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-current-mode-from-helm-swoop)
+    )
+#+END_SRC
+* avy
+#+BEGIN_SRC emacs-lisp
+  (use-package avy
+    :ensure t
+    :bind (("C-:" . avy-goto-word-1)
+           ("M-g" . avy-goto-line))
+    :config
+    (setq avy-background t)
+    )
+#+END_SRC
 * company
 ** general company
 #+BEGIN_SRC emacs-lisp
