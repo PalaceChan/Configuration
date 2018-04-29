@@ -61,11 +61,11 @@ Save some history across sessions. (savehist-mode) on auto-save can be slow so w
 ** mode bar
 show battery, column number and nicely formatted time
 #+BEGIN_SRC emacs-lisp
-(setq display-battery-mode t)
 (setq column-number-mode t)
 (setq display-time-24hr-format t)
 (setq display-time-format "%H:%M - %Y%m%d")
-(setq display-time-mode t)
+(display-battery-mode t)
+(display-time-mode 1)
 #+END_SRC
 ** highlighting
 #+BEGIN_SRC emacs-lisp
