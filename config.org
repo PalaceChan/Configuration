@@ -336,23 +336,27 @@ use bullet mode
 #+END_SRC
 now configure org (default installed)
 #+BEGIN_SRC emacs-lisp
-  (setq org-use-speed-commands 1)
-  (setq org-list-description-max-indent 5)
-  (setq org-export-html-postamble nil)
-  (setq org-log-done 'note)
+    (setq org-use-speed-commands 1)
+    (setq org-list-description-max-indent 5)
+    (setq org-export-html-postamble nil)
+    (setq org-log-done 'note)
 
-  (add-hook 'org-mode-hook 'org-indent-mode)
+    (add-hook 'org-mode-hook 'org-indent-mode)
 
-  (setq org-confirm-babel-evaluate nil)
-  (org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (sh . t) (R . t) ))
+    (setq org-confirm-babel-evaluate nil)
+    (org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (sh . t) (R . t) ))
 
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (setq org-agenda-files (quote ("~/todo.org")))
-  (setq org-agenda-window-setup (quote current-window))
+    (global-set-key (kbd "C-c a") 'org-agenda)
+    (setq org-agenda-files (quote ("~/todo.org")))
+    (setq org-agenda-window-setup (quote current-window))
 
-  (define-key global-map (kbd "C-c l") 'org-store-link)
-  (define-key global-map (kbd "C-c c") 'org-capture)
-  (setq org-capture-templates '(("t" "todo" entry (file+headline "~/todo.org" "Tasks") "* TODO %?")))
+    (define-key global-map (kbd "C-c l") 'org-store-link)
+    (define-key global-map (kbd "C-c c") 'org-capture)
+    (setq org-capture-templates 
+          '(("t" "Todo" entry (file+headline "~/todo.org" "Tasks")
+             "* TODO %?")
+            ("l" "Link" entry (file+headline "~/todo.org" "Links")
+             "* %^L %? %^g")))
 #+END_SRC
 * dired subtree
 a much nicer dired (can in-place expand subdirectory contents)
