@@ -281,6 +281,7 @@ copies current filename to kill-ring
     :bind (("C-:" . avy-goto-char-timer)
            ("M-g" . avy-goto-line))
     :config
+    (setq avy-timeout-seconds 0.2)
     (when (display-graphic-p) (setq avy-background t))
     )
 #+END_SRC
