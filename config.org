@@ -278,7 +278,7 @@ copies current filename to kill-ring
 #+BEGIN_SRC emacs-lisp
   (use-package avy
     :ensure t
-    :bind (("C-:" . avy-goto-word-1)
+    :bind (("C-:" . avy-goto-char-timer)
            ("M-g" . avy-goto-line))
     :config
     (when (display-graphic-p) (setq avy-background t))
