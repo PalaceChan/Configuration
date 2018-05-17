@@ -41,6 +41,7 @@ Disable common warnings
 (setq undo-outer-limit 50000000)
 (setq make-backup-files nil)
 (setq show-paren-mode t)
+(setq browse-url-browser-function 'eww-browse-url)
 (add-to-list 'same-window-buffer-names "*Buffer List*")
 (add-to-list 'same-window-buffer-names "*grep*")
 #+END_SRC
@@ -149,35 +150,6 @@ kill current buffer no prompt [[http://www.dotemacs.de/dotfiles/DaveGallucci.ema
   (kill-buffer (current-buffer)))
 (global-set-key "\C-xk" 'kill-current-buffer)
 #+END_SRC
-toggle between horizontal and vertical split with C-x |
-#+BEGIN_SRC emacs-lisp
-(defun toggle-window-split ()
-  (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-             (next-win-buffer (window-buffer (next-window)))
-             (this-win-edges (window-edges (selected-window)))
-             (next-win-edges (window-edges (next-window)))
-             (this-win-2nd (not (and (<= (car this-win-edges)
-                                         (car next-win-edges))
-                                     (<= (cadr this-win-edges)
-                                         (cadr next-win-edges)))))
-             (splitter
-              (if (= (car this-win-edges)
-                     (car (window-edges (next-window))))
-                  'split-window-horizontally
-                'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-win-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-win-buffer)
-          (set-window-buffer (next-window) next-win-buffer)
-          (select-window first-win)
-          (if this-win-2nd (other-window 1))))))
-
-(global-set-key (kbd "C-x |") 'toggle-window-split)
-#+END_SRC
 copies current filename to kill-ring
 #+BEGIN_SRC emacs-lisp
 (defun copy-fname-to-killring ()
@@ -284,8 +256,8 @@ copies current filename to kill-ring
 #+BEGIN_SRC emacs-lisp
   (use-package avy
     :ensure t
-    :bind (("C-:" . avy-goto-char-timer)
-           ("M-g" . avy-goto-line))
+    :bind (("M-g c" . avy-goto-char-timer)
+           ("M-g M-g" . avy-goto-line))
     :config
     (setq avy-timeout-seconds 0.3)
     (when (display-graphic-p) (setq avy-background t))
@@ -313,6 +285,15 @@ copies current filename to kill-ring
     (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
     (setq company-global-modes '(not term-mode not compilation-mode))
     )
+#+END_SRC
+** helm company (unmantained but pretty neat)
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-company
+    :ensure t
+    :config
+    (progn
+      (define-key company-mode-map (kbd "C-:") 'helm-company)
+      (define-key company-active-map (kbd "C-:") 'helm-company)))
 #+END_SRC
 ** irony for c/c++ completion
 #+BEGIN_SRC emacs-lisp
@@ -382,6 +363,14 @@ automatically encloses double quotes or parens
   :config (wrap-region-global-mode t)
   :diminish wrap-region-mode)
 #+END_SRC
+* expand region
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :commands er/expand-region
+    :bind ("C-=" . er/expand-region)
+    )
+#+END_SRC
 * which key
 show options for bindings in realtime
 #+BEGIN_SRC emacs-lisp
@@ -389,6 +378,16 @@ show options for bindings in realtime
   :ensure t
   :init
   (which-key-mode))
+#+END_SRC
+* transpose frame
+#+BEGIN_SRC emacs-lisp
+  (use-package transpose-frame
+    :ensure t
+    :bind (
+           ("C-x |" . rotate-frame-clockwise)
+           ("C-x \\" . rotate-frame-anticlockwise)
+           )
+    )
 #+END_SRC
 * dmenu
 to launch applications from exwm
