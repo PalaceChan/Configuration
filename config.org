@@ -106,11 +106,24 @@ aliases and global bindings
 (setq tab-width 4)
 #+END_SRC
 ** tags
-follow default tag in etags without prompting
+If you make ctags uncomment below. To make tags use the following 
+command (and save the stdout - it is useful to know if it indexed as desired)
+~ctags -e --verbose -totals=yes --links=no --c++-kinds=+p --languages=c++:+.I.inl -R {folder1 folder2...}~
 #+BEGIN_SRC emacs-lisp
-(fset 'tagmac
-   "\C-[xfind tag\C-m\C-m")
-(define-key global-map (kbd "M-.") 'tagmac)
+;;(setq tags-file-name "path/to/TAGS")
+#+END_SRC
+** semantic mode
+use semantic without it interfering with completion and without auto-parsing in idle time
+(only use it for helm-semantic-or-imenu and thus parses buffer on demand)
+#+BEGIN_SRC emacs-lisp
+  (require 'semantic)
+  (add-hook 'semantic-mode-hook
+            (lambda ()
+              (dolist (x (default-value 'completion-at-point-functions))
+                (when (string-prefix-p "semantic-" (symbol-name x))
+                  (remove-hook 'completion-at-point-functions x)))))
+  (setq semantic-default-submodes '(global-semanticdb-minor-mode))
+  (semantic-mode 1)
 #+END_SRC
 ** c/c++
 indentation related
