@@ -48,12 +48,13 @@ Disable common warnings
 ** save history
 Save some history across sessions. (savehist-mode) on auto-save can be slow so we rely on desktop-save instead
 #+BEGIN_SRC emacs-lisp
-  (setq history-length 300)
+  (setq history-length 800)
   (setq history-delete-duplicates t)
   (desktop-save-mode -1)
   (setq desktop-globals-to-save
         (append
          '(desktop-missing-file-waning
+           (shell-command-history 800)
            tags-file-name tags-table-list
            (search-ring . 800) (regexp-search-ring . 800)
            register-alist file-name-history (kill-ring . 8000)
