@@ -446,6 +446,30 @@ to launch applications from exwm
              (add-hook 'ess-mode-hook #'ava-ess-settings)
              :ensure ess)
 #+END_SRC
+* elpy
+#+BEGIN_SRC emacs-lisp
+  (use-package elpy
+    :ensure t
+    :commands elpy-enable
+    :init
+    (progn
+      (elpy-enable)
+      (setq elpy-modules
+            '(elpy-module-sane-defaults
+              elpy-module-flymake
+              elpy-module-highlight-indentation
+              elpy-module-pyvenv
+              elpy-module-yasnippet))
+      (eval-after-load "elpy"
+        '(cl-dolist (key '("C-<return>" "C-<up>" "C-<down>" "C-<left>" "C-<right>"))
+           (define-key elpy-mode-map (kbd key) nil)))
+      :config
+      (setq python-shell-interpreter "/usr/bin/python")
+      (setq python-shell-interpreter-args "-i")
+      (setq elpy-rpc-python-command "/usr/bin/python")
+      (setq elpy-rpc-timeout 10)
+      ))
+#+END_SRC
 * erc
 #+BEGIN_SRC emacs-lisp
   (use-package erc
