@@ -433,6 +433,19 @@ to launch applications from exwm
 :bind
 ("C-x g" . magit-status))
 #+END_SRC
+* clang-format
+#+BEGIN_SRC emacs-lisp
+  (use-package clang-format
+    :ensure t
+    :commands clang-format-buffer clang-format-region
+    ;:config
+    ;(setq clang-format-executable "TODO")
+    :bind(
+          ("C-c b" . clang-format-buffer)
+          ("C-c r" . clang-format-region)
+          )
+    )
+#+END_SRC
 * ess
 #+BEGIN_SRC emacs-lisp
 (use-package ess
