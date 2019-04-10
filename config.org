@@ -482,6 +482,7 @@ to launch applications from exwm
       (setq python-shell-interpreter-args "-i")
       (setq elpy-rpc-python-command "/usr/bin/python")
       (setq elpy-rpc-timeout 10)
+      (setq python-shell-prompt-detect-failure-warning nil)
       ))
 #+END_SRC
 * erc
