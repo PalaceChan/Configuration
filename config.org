@@ -40,7 +40,7 @@ Disable common warnings
 (setq term-buffer-maximum-size 262144)
 (setq undo-outer-limit 50000000)
 (setq make-backup-files nil)
-(setq show-paren-mode t)
+(show-paren-mode t)
 (setq browse-url-browser-function 'eww-browse-url)
 (add-to-list 'same-window-buffer-names "*Buffer List*")
 (add-to-list 'same-window-buffer-names "*grep*")
