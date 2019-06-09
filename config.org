@@ -36,6 +36,7 @@ Disable common warnings
 (setq shell-file-name "bash")
 (setq x-alt-keysym 'meta)
 (setq kill-ring-max 100)
+(require 'dired-x)
 (setq dired-listing-switches "-Al --si --time-style long-iso")
 (setq term-buffer-maximum-size 262144)
 (setq undo-outer-limit 50000000)
@@ -432,6 +433,18 @@ to launch applications from exwm
 (use-package magit :ensure t
 :bind
 ("C-x g" . magit-status))
+#+END_SRC
+* git-timemachine
+#+BEGIN_SRC emacs-lisp
+  (use-package git-timemachine
+    :ensure t)
+#+END_SRC
+* git-gutter
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter
+    :ensure t
+    :init
+    (global-git-gutter-mode +1))
 #+END_SRC
 * clang-format
 #+BEGIN_SRC emacs-lisp
