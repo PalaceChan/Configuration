@@ -428,6 +428,27 @@ to launch applications from exwm
   :bind
   ("s-SPC" . dmenu))
 #+END_SRC
+* hydra
+great for git-gutter
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure hydra
+    :init
+    (global-set-key
+     (kbd "C-c g")
+     (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
+                                           :hint nil)
+       ("n" git-gutter:next-hunk "next hunk")
+       ("p" git-gutter:previous-hunk "previous hunk")
+       ("h" (progn (goto-char (point-min)) (git-gutter:next-hunk 1)) "first hunk")
+       ("l" (progn (goto-char (point-min)) (git-gutter:previous-hunk 1)) "last hunk")
+       ("\\t" git-gutter:popup-hunk "popup hunk")
+       ("s" git-gutter:stage-hunk "stage hunk")
+       ("r" git-gutter:revert-hunk "revert hunk")
+       ("q" nil "quit"))
+     )
+    )
+#+END_SRC
 * magit
 #+BEGIN_SRC emacs-lisp
 (use-package magit :ensure t
