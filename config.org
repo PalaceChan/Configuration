@@ -178,39 +178,40 @@ copies current filename to kill-ring
       (message "%s copied to kill ring." filename))))
 #+END_SRC
 * exwm
+comment out for now as not in use
 #+BEGIN_SRC emacs-lisp
-(use-package exwm :ensure t
-  :init
-  :config
-  (setq exwm-workspace-number 4)
-  (defun exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer exwm-title))
-  (add-hook 'exwm-update-title-hook 'exwm-rename-buffer-to-title)
-  (exwm-input-set-key (kbd "s-r") #'exwm-reset)
-  (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch)
-  (dotimes (i 10)
-    (exwm-input-set-key (kbd (format "s-%d" i))
-                        `(lambda ()
-                           (interactive)
-                           (exwm-workspace-switch-create ,i))))
-  (exwm-input-set-key (kbd "s-&")
-                      (lambda (command)
-                        (interactive (list (read-shell-command "$ ")))
-                        (start-process-shell-command command nil command)))
-  (setq exwm-input-simulation-keys
-        '(([?\C-b] . [left])
-          ([?\C-f] . [right])
-          ([?\C-p] . [up])
-          ([?\C-n] . [down])
-          ([?\C-a] . [home])
-          ([?\C-e] . [end])
-          ([?\M-v] . [prior])
-          ([?\C-v] . [next])
-          ([?\C-d] . [delete])
-          ([?\C-k] . [S-end delete])
-          ([?\C-s] . [?\C-f])
-          ([?\C-t] . [?\C-n])))
-  (exwm-enable)
-  )
+  ;;(use-package exwm :ensure t
+  ;;  :init
+  ;;  :config
+  ;;  (setq exwm-workspace-number 4)
+  ;;  (defun exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer exwm-title))
+  ;;  (add-hook 'exwm-update-title-hook 'exwm-rename-buffer-to-title)
+  ;;  (exwm-input-set-key (kbd "s-r") #'exwm-reset)
+  ;;  (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch)
+  ;;  (dotimes (i 10)
+  ;;    (exwm-input-set-key (kbd (format "s-%d" i))
+  ;;                        `(lambda ()
+  ;;                           (interactive)
+  ;;                           (exwm-workspace-switch-create ,i))))
+  ;;  (exwm-input-set-key (kbd "s-&")
+  ;;                      (lambda (command)
+  ;;                        (interactive (list (read-shell-command "$ ")))
+  ;;                        (start-process-shell-command command nil command)))
+  ;;  (setq exwm-input-simulation-keys
+  ;;        '(([?\C-b] . [left])
+  ;;          ([?\C-f] . [right])
+  ;;          ([?\C-p] . [up])
+  ;;          ([?\C-n] . [down])
+  ;;          ([?\C-a] . [home])
+  ;;          ([?\C-e] . [end])
+  ;;          ([?\M-v] . [prior])
+  ;;          ([?\C-v] . [next])
+  ;;          ([?\C-d] . [delete])
+  ;;          ([?\C-k] . [S-end delete])
+  ;;          ([?\C-s] . [?\C-f])
+  ;;          ([?\C-t] . [?\C-n])))
+  ;;  (exwm-enable)
+  ;;  )
 #+END_SRC
 * helm
 #+BEGIN_SRC emacs-lisp
@@ -314,7 +315,7 @@ copies current filename to kill-ring
     (define-key company-active-map (kbd "TAB") 'company-complete-common)
     ;; setup M-h to show documentation for items on the autocomplete menu
     (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
-    (setq company-global-modes '(not term-mode not compilation-mode))
+    (setq company-global-modes '(not term-mode compilation-mode magit-mode))
     )
 #+END_SRC
 ** helm company (unmantained but pretty neat)
