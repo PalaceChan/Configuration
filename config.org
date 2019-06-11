@@ -484,18 +484,21 @@ great for git-gutter
 * ess
 #+BEGIN_SRC emacs-lisp
   (use-package ess
-               :init (require 'ess-site)
-               :config
-               (setq inferior-R-program-name "/usr/local/bin/R")
-               (setq inferior-R-args "--no-save")
-               (setq ess-eval-visibly-p nil)
-               (setq ess-directory "~/")
-               (defun ava-ess-settings () ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
-                 (setq ess-indent-with-fancy-comments nil))
-               (add-hook 'ess-mode-hook #'ava-ess-settings)
-               (define-key ess-r-mode-map "_" #'ess-insert-assign)
-               (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign)
-               :ensure ess)
+    :init
+    ;my hook mysteriously stopped working so override here
+    (setq ess-indent-with-fancy-comments nil)
+    (require 'ess-site)
+    :config
+    (setq inferior-R-program-name "/usr/local/bin/R")
+    (setq inferior-R-args "--no-save")
+    (setq ess-eval-visibly-p nil)
+    (setq ess-directory "~/")
+    (defun ava-ess-settings () ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
+      (setq ess-indent-with-fancy-comments nil))
+    (add-hook 'ess-mode-hook #'ava-ess-settings)
+    (define-key ess-r-mode-map "_" #'ess-insert-assign)
+    (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign)
+    :ensure ess)
 #+END_SRC
 * elpy
 #+BEGIN_SRC emacs-lisp
