@@ -2,7 +2,7 @@
 ** theme
 #+BEGIN_SRC emacs-lisp
 (load-theme 'manoj-dark t)
-(set-frame-font "DejaVuSansMono-11")
+(set-frame-font "Inconsolata-11")
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 #+END_SRC
@@ -364,7 +364,7 @@ now configure org (default installed)
     (add-hook 'org-mode-hook 'org-indent-mode)
 
     (setq org-confirm-babel-evaluate nil)
-    (org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (sh . t) (R . t) ))
+    (org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (shell . t) (R . t) ))
 
     (global-set-key (kbd "C-c a") 'org-agenda)
     (setq org-agenda-files (quote ("~/todo.org")))
