@@ -14,11 +14,14 @@
     ci = commit
     k = !gitk
     g = gui
-    amend = commit --amend --no-edit
-    glot = log --graph --pretty='format:|%C(yellow) %h | %C(red) %ad | %C(green) %an | %C(reset) %s %d'
+    last = log -1 HEAD
+    onel = log --oneline --decorate
+    onelx = log --oneline --decorate -30 HEAD
+    graph = log --oneline --graph --pretty='format:|%C(yellow) %h | %C(red) %ad | %C(green) %an | %C(reset) %s %d'
 
 [user]
-	name = YYY
-	email = XXX
+    name = YYY
+    email = XXX
 [credential]
-	helper = cache --timeout=3600
+    helper = cache --timeout=3600
+

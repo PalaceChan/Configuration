@@ -35,8 +35,9 @@ function mgrep()
 
 ################################################################################
 
-alias e='/usr/bin/emacs25 -nw'
-alias em='/usr/bin/emacs25'
+alias e='/usr/bin/emacsclient -n'
+alias ew='/usr/bin/emacs -nw'
+alias em='/usr/bin/emacs'
 alias hist='cat ~/history/history.txt'
 alias ls='ls --color=auto -h'
 alias reset='echo -e \\033c'
@@ -57,5 +58,5 @@ export PATH
 
 export PS1='\h: '
 
-#export R_LIBS_USER=/home/andres/R
-export R_LIBS_USER=/home/andres/R-3.4.4
+export HISTSIZE=
+export HISTFILESIZE=
