@@ -2,7 +2,7 @@
 ** theme
 #+BEGIN_SRC emacs-lisp
 (load-theme 'manoj-dark t)
-(set-frame-font "Inconsolata-11")
+(set-frame-font "Inconsolata-14")
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 #+END_SRC
@@ -489,7 +489,7 @@ great for git-gutter
     (setq ess-indent-with-fancy-comments nil)
     (require 'ess-site)
     :config
-    (setq inferior-R-program-name "/usr/local/bin/R")
+    (setq inferior-R-program-name "/usr/bin/R")
     (setq inferior-R-args "--no-save")
     (setq ess-eval-visibly-p nil)
     (setq ess-directory "~/")

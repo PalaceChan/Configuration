@@ -1,1 +1,1 @@
-source .bash_profile
+source /home/$USER/.bash_profile
