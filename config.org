@@ -532,11 +532,8 @@ great for git-gutter
     :ensure t
     :config
     (setq erc-hide-list '("PART" "QUIT" "JOIN"))
-    (setq erc-autojoin-channels-alist '(("freenode.net"
-                                         "#math"
-                                         "#emacs"))
-          erc-server "irc.freenode.net"
-          erc-nick "hooxen")
+    (setq erc-server "irc.freenode.net")
+    (setq erc-nick "hooxen")
     )
 #+END_SRC
 * elfeed
