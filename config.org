@@ -1,7 +1,8 @@
 * startup
 ** theme
 #+BEGIN_SRC emacs-lisp
-(load-theme 'manoj-dark t)
+(use-package doom-themes :ensure t :defer t)
+(load-theme 'doom-one t)
 (set-frame-font "Inconsolata-14")
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
@@ -536,5 +537,22 @@ great for git-gutter
                                          "#emacs"))
           erc-server "irc.freenode.net"
           erc-nick "hooxen")
+    )
+#+END_SRC
+* elfeed
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed
+    :ensure   t
+    :commands elfeed
+    :config
+    (setq elfeed-feeds
+          '("https://www.archlinux.org/feeds/news/"
+            "http://planet.emacsen.org/atom.xml"
+            "http://sachachua.com/blog/category/emacs-news/feed"
+            "http://endlessparentheses.com/atom.xml"
+            "http://www.masteringemacs.org/feed/"
+            "http://emacs-fu.blogspot.com/feeds/posts/default"
+            "http://emacsredux.com/atom.xml")
+          )
     )
 #+END_SRC
