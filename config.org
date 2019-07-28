@@ -543,13 +543,15 @@ great for git-gutter
     :commands elfeed
     :config
     (setq elfeed-feeds
-          '("https://www.archlinux.org/feeds/news/"
-            "http://planet.emacsen.org/atom.xml"
-            "http://sachachua.com/blog/category/emacs-news/feed"
-            "http://endlessparentheses.com/atom.xml"
-            "http://www.masteringemacs.org/feed/"
-            "http://emacs-fu.blogspot.com/feeds/posts/default"
-            "http://emacsredux.com/atom.xml")
+          '(("https://www.archlinux.org/feeds/news/" arch)
+            ("http://planet.emacsen.org/atom.xml" emacs)
+            ("http://sachachua.com/blog/category/emacs-news/feed" emacs sacha)
+            ("http://endlessparentheses.com/atom.xml" emacs)
+            ("http://www.masteringemacs.org/feed/" emacs)
+            ("http://emacs-fu.blogspot.com/feeds/posts/default" emacs)
+            ("http://emacsredux.com/atom.xml" emacs)
+            ("http://arxiv.org/rss/q-fin.TR" arxiv trading)
+            ("http://r-bloggers.com/feed" R))
           )
     )
 #+END_SRC
