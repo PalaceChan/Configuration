@@ -1,0 +1,38 @@
+IMAPAccount gmail
+Host imap.gmail.com
+User username@gmail.com
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
+SSLType IMAPS
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+# Remote store
+IMAPStore gmail-remote
+Account gmail
+
+# Local store
+MaildirStore gmail-local
+Subfolders Verbatim
+# The trailing "/" is important
+Path ~/mbsync/
+Inbox ~/mbsync/inbox
+
+Channel gmail-default
+Master :gmail-remote:
+Slave :gmail-local:inbox
+Patterns INBOX
+
+Channel gmail-sent
+Master :gmail-remote:"[Gmail]/Sent Mail"
+Slave :gmail-local:sent
+
+Channel gmail-starred
+Master :gmail-remote:"[Gmail]/Starred"
+Slave :gmail-local:starred
+
+Create slave
+SyncState *
+
+Group gmail
+Channel gmail-default
+Channel gmail-sent
+Channel gmail-starred
