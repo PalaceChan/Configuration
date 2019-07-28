@@ -11,6 +11,7 @@
 
 set $mod Mod4
 default_border none
+workspace_layout tabbed
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -78,6 +79,11 @@ bindsym $mod+a focus parent
 # focus the child container
 #bindsym $mod+d focus child
 
+# Define monitors
+set $monitor_one "DP-4"
+set $monitor_two "DP-0"
+set $monitor_three "DP-2"
+
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
 set $ws1 "1"
@@ -90,6 +96,16 @@ set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
+
+# Bind workspaces to monitors
+workspace $ws1 output $monitor_one
+workspace $ws2 output $monitor_two
+workspace $ws3 output $monitor_three
+
+# assign applications to workspac
+assign [class=".*firefox.*"] $ws1
+assign [class="[eE]macs"] $ws2
+assign [class="[uU][UR]xvt"] $ws3
 
 # switch to workspace
 bindsym $mod+1 workspace $ws1
