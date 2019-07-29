@@ -4,6 +4,8 @@ User username@gmail.com
 PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
 SSLType IMAPS
 CertificateFile /etc/ssl/certs/ca-certificates.crt
+Timeout 30
+#Timeout 0 <-- use on first sync
 
 # Remote store
 IMAPStore gmail-remote
@@ -18,7 +20,7 @@ Inbox ~/mbsync/inbox
 
 Channel gmail-default
 Master :gmail-remote:
-Slave :gmail-local:inbox
+Slave :gmail-local:
 Patterns INBOX
 
 Channel gmail-sent
@@ -29,6 +31,14 @@ Channel gmail-starred
 Master :gmail-remote:"[Gmail]/Starred"
 Slave :gmail-local:starred
 
+Channel gmail-drafts
+Master :gmail-remote:"[Gmail]/Drafts"
+Slave :gmail-local:drafts
+
+Channel gmail-trash
+Master :gmail-remote:"[Gmail]/Trash"
+Slave :gmail-local:trash
+
 Create slave
 SyncState *
 
@@ -36,3 +46,5 @@ Group gmail
 Channel gmail-default
 Channel gmail-sent
 Channel gmail-starred
+Channel gmail-drafts
+Channel gmail-trash
