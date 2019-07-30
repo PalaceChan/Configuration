@@ -556,6 +556,7 @@ great for git-gutter
     )
 #+END_SRC
 * mu4e
+The smtp portion will require app specific password and will store it in ~/.authinfo after first use
 #+BEGIN_SRC emacs-lisp
   (add-to-list 'load-path "/usr/share/emacs/site-lisp/mu4e")
   (use-package mu4e
@@ -576,4 +577,13 @@ great for git-gutter
     (setq mu4e-use-fancy-chars t)
     (setq mu4e-view-show-addresses t)
     )
+  (require 'smtpmail)
+  (setq message-send-mail-function 'smtpmail-send-it
+        user-mail-address "email_username@gmail.com"
+        smtpmail-smtp-user "email_username"
+        smtpmail-local-domain "gmail.com"
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587)
+
 #+END_SRC
