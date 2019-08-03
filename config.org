@@ -214,6 +214,14 @@ comment out for now as not in use
   ;;  (exwm-enable)
   ;;  )
 #+END_SRC
+* dmenu
+to launch applications from exwm (not in use)
+#+BEGIN_SRC emacs-lisp
+;;(use-package dmenu
+;;  :ensure t
+;;  :bind
+;;  ("s-SPC" . dmenu))
+#+END_SRC
 * helm
 #+BEGIN_SRC emacs-lisp
   (use-package helm
@@ -388,6 +396,15 @@ a much nicer dired (can in-place expand subdirectory contents)
              (define-key dired-mode-map ";" 'dired-subtree-remove)
              :ensure dired-subtree)
 #+END_SRC
+* ztree
+nice directory level diffing
+#+BEGIN_SRC emacs-lisp
+  (use-package ztree
+    :ensure t
+    :commands ztree-diff
+    :bind (:map ztree-mode-map
+                ("j" . ztree-jump-side)))
+#+END_SRC
 * wrap region
 automatically encloses double quotes or parens
 #+BEGIN_SRC emacs-lisp
@@ -403,6 +420,15 @@ automatically encloses double quotes or parens
     :commands er/expand-region
     :bind ("C-=" . er/expand-region)
     )
+#+END_SRC
+* fancy narrow
+replaces default narrow
+#+BEGIN_SRC emacs-lisp
+  (use-package fancy-narrow
+    :ensure t
+    :init
+    (fancy-narrow-mode)
+    :diminish fancy-narrow-mode)
 #+END_SRC
 * which key
 show options for bindings in realtime
@@ -421,14 +447,6 @@ show options for bindings in realtime
            ("C-x \\" . rotate-frame-anticlockwise)
            )
     )
-#+END_SRC
-* dmenu
-to launch applications from exwm
-#+BEGIN_SRC emacs-lisp
-(use-package dmenu
-  :ensure t
-  :bind
-  ("s-SPC" . dmenu))
 #+END_SRC
 * hydra
 great for git-gutter
@@ -586,4 +604,29 @@ The smtp portion will require app specific password and will store it in ~/.auth
         smtpmail-smtp-server "smtp.gmail.com"
         smtpmail-smtp-service 587)
 
+#+END_SRC
+* deadgrep
+uses rg for fast grep
+#+BEGIN_SRC emacs-lisp
+  (use-package deadgrep
+    :ensure t
+    :bind ("M-s g" . deadgrep))
+#+END_SRC
+* elisp
+use =paredit= in lisp modes
+#+BEGIN_SRC emacs-lisp
+  (use-package paredit
+    :ensure t
+    :config
+    (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+    (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+    (add-hook 'ielm-mode-hook #'paredit-mode)
+    (add-hook 'lisp-mode-hook #'paredit-mode)
+    (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+#+END_SRC
+also enable eldoc
+#+BEGIN_SRC emacs-lisp
+  (use-package eldoc
+    :diminish
+    :hook ((emacs-lisp-mode) . eldoc-mode))
 #+END_SRC
