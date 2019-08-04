@@ -158,7 +158,7 @@ toggle between implementation and header
 (setq compilation-read-command nil)
 #+END_SRC
 * custom functions
-kill current buffer no prompt [[http://www.dotemacs.de/dotfiles/DaveGallucci.emacs.html][DaveGallucci]]
+kill current buffer no prompt
 #+BEGIN_SRC emacs-lisp
 (defun kill-current-buffer ()
   "Kill the current buffer, without confirmation."
@@ -168,15 +168,19 @@ kill current buffer no prompt [[http://www.dotemacs.de/dotfiles/DaveGallucci.ema
 #+END_SRC
 copies current filename to kill-ring
 #+BEGIN_SRC emacs-lisp
-(defun copy-fname-to-killring ()
-  "copy current buffer filename to kill ring"
-  (interactive)
-  (let ((filename (if (equal major-mode 'dired-mode)
-                      default-directory
-                    (buffer-file-name))))
-    (when filename
+  (defun ava/copy-fname-to-killring (&optional arg)
+    "Copy current buffer filename to kill ring. Only basename if called with prefix arg"
+    (interactive "P")
+    (let ((filename (if (equal major-mode 'dired-mode)
+                        default-directory
+                      (if arg
+                          (file-name-nondirectory (buffer-file-name))
+                        (buffer-file-name)
+                        )
+                      )))
+      (when filename)
       (kill-new filename)
-      (message "%s copied to kill ring." filename))))
+      (message "%s copied to kill ring." filename)))
 #+END_SRC
 * exwm
 comment out for now as not in use
@@ -562,7 +566,7 @@ great for git-gutter
     :config
     (setq elfeed-feeds
           '(("https://www.archlinux.org/feeds/news/" arch)
-            ("http://planet.emacsen.org/atom.xml" emacs)
+            ("http://www.reddit.com/r/emacs/.rss" emacs reddit)
             ("http://sachachua.com/blog/category/emacs-news/feed" emacs sacha)
             ("http://endlessparentheses.com/atom.xml" emacs)
             ("http://www.masteringemacs.org/feed/" emacs)
@@ -570,7 +574,7 @@ great for git-gutter
             ("http://emacsredux.com/atom.xml" emacs)
             ("http://arxiv.org/rss/q-fin.TR" arxiv trading)
             ("http://r-bloggers.com/feed" R))
-          )
+            )
     )
 #+END_SRC
 * mu4e
