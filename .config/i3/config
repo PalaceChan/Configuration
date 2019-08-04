@@ -104,7 +104,6 @@ workspace $ws3 output $monitor_three
 
 # assign applications to workspac
 assign [class=".*firefox.*"] $ws1
-assign [class="(telegram-desktop)|(TelegramDesktop)"] $ws1
 assign [class="[eE]macs"] $ws2
 assign [class="[uU][UR]xvt"] $ws3
 
