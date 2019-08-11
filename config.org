@@ -591,7 +591,7 @@ The smtp portion will require app specific password and will store it in ~/.auth
     ;;GMail/IMAP takes care of this
     (setq mu4e-sent-messages-behavior 'delete)
     (setq mu4e-get-mail-command "mbsync -q gmail")
-    (setq mu4e-update-interval 600)
+    (setq mu4e-update-interval 3600)
     (setq mu4e-maildir-shortcuts
     '(("/INBOX" . ?i)
       ("/sent" . ?s)))
@@ -642,6 +642,7 @@ Telegram support from emacs (needs visual-fill-column)
     )
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
+    (require 'notifications)
     (use-package telega
       :load-path "~/3rdParty/telega/"
       :commands (telega)
