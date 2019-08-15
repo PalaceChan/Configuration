@@ -48,7 +48,7 @@ export EDITOR
 PROMPT_COMMAND='history | tail -n1 | ~/history/dump_history.sh'
 export PROMPT_COMMAND
 
-PATH=$PATH:~/rabbit
+PATH=$PATH:~/scripts
 export PATH
 
 export PS1='\h: '

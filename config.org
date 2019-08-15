@@ -109,11 +109,9 @@ aliases and global bindings
 (setq tab-width 4)
 #+END_SRC
 ** tags
-If you make ctags uncomment below. To make tags use the following 
-command (and save the stdout - it is useful to know if it indexed as desired)
-~ctags -e --verbose -totals=yes --links=no --c++-kinds=+p --languages=c++:+.I.inl -R {folder1 folder2...}~
+generation of TAGS covered by =scripts/updateTagsAndDb.py= on [[https://github.com/PalaceChan/][GitHub]]
 #+BEGIN_SRC emacs-lisp
-;;(setq tags-file-name "path/to/TAGS")
+(setq tags-file-name "~/rabbit/tags/TAGS")
 #+END_SRC
 ** semantic mode
 use semantic without it interfering with completion and without auto-parsing in idle time
@@ -564,6 +562,7 @@ great for git-gutter
     :ensure   t
     :commands elfeed
     :config
+    (setq-default elfeed-search-filter "@1-week-ago ")
     (setq elfeed-feeds
           '(("https://www.archlinux.org/feeds/news/" arch)
             ("http://www.reddit.com/r/emacs/.rss" emacs reddit)
@@ -573,7 +572,7 @@ great for git-gutter
             ("http://emacs-fu.blogspot.com/feeds/posts/default" emacs)
             ("http://emacsredux.com/atom.xml" emacs)
             ("http://arxiv.org/rss/q-fin.TR" arxiv trading)
-            ("http://r-bloggers.com/feed" R))
+            ("http://feeds.feedburner.com/zerohedge/feed"))
             )
     )
 #+END_SRC
@@ -642,14 +641,14 @@ Telegram support from emacs (needs visual-fill-column)
     )
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
-    (require 'notifications)
-    (use-package telega
-      :load-path "~/3rdParty/telega/"
-      :commands (telega)
-      :config
-      (setq telega-use-notifications t)
-      (add-hook 'telega-chat-mode-hook (lambda ()
-                                         (setq company-backends '(telega-company-emoji))
-                                         (company-mode 1)))
-      :defer t)
+      (require 'notifications)
+      (use-package telega
+        :load-path "~/3rdParty/telega/"
+        :commands (telega)
+        :config
+        (setq telega-use-notifications t)
+        (add-hook 'telega-chat-mode-hook (lambda ()
+                                           (setq company-backends '(telega-company-emoji))
+                                           (company-mode 1)))
+        :defer t)
 #+END_SRC
