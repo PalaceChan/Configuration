@@ -186,6 +186,16 @@ copies current filename to kill-ring
       (kill-new filename)
       (message "%s copied to kill ring." filename)))
 #+END_SRC
+* undo-tree
+A better non-linear undo
+#+BEGIN_SRC emacs-lisp
+  (use-package undo-tree
+    :ensure t
+    :commands undo-tree-mode
+    :diminish undo-tree-mode
+    :config
+    (global-undo-tree-mode))
+#+END_SRC
 * exwm
 comment out for now as not in use
 #+BEGIN_SRC emacs-lisp
