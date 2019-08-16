@@ -92,7 +92,10 @@ override default timezones for the world clock view
 #+END_SRC
 winner mode enabled to pop a stack of window configurations
 #+BEGIN_SRC emacs-lisp
-  (when (fboundp 'winner-mode)
+  (use-package winner
+    :bind (("M-N" . winner-redo)
+           ("M-P" . winner-undo))
+    :config
     (winner-mode 1))
 #+END_SRC
 * shortcuts
