@@ -46,6 +46,7 @@ Disable common warnings
 (setq browse-url-browser-function 'eww-browse-url)
 (add-to-list 'same-window-buffer-names "*Buffer List*")
 (add-to-list 'same-window-buffer-names "*grep*")
+(setq gc-cons-threshold (* 20 1000 1000))
 #+END_SRC
 ** save history
 Save some history across sessions. (savehist-mode) on auto-save can be slow so we rely on desktop-save instead
@@ -88,6 +89,11 @@ override default timezones for the world clock view
 (setq display-time-world-list '(
                                 ("America/Chicago" "Chicago") ("Asia/Tokyo" "Japan")
                                 ("Europe/Berlin" "Frankfurt") ("Australia/Sydney" "Australia") ))
+#+END_SRC
+winner mode enabled to pop a stack of window configurations
+#+BEGIN_SRC emacs-lisp
+  (when (fboundp 'winner-mode)
+    (winner-mode 1))
 #+END_SRC
 * shortcuts
 ansi-term defaults to bash
@@ -554,6 +560,8 @@ great for git-gutter
     (setq erc-hide-list '("PART" "QUIT" "JOIN"))
     (setq erc-server "irc.freenode.net")
     (setq erc-nick "hooxen")
+    (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
+                                        (shell-command-to-string (format "notify-send erc '%s'" msg))))
     )
 #+END_SRC
 * elfeed
