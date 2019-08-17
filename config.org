@@ -194,7 +194,6 @@ A better non-linear undo
 #+BEGIN_SRC emacs-lisp
   (use-package undo-tree
     :ensure t
-    :commands undo-tree-mode
     :diminish undo-tree-mode
     :config
     (setq undo-tree-visualizer-diff t
