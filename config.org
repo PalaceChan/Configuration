@@ -3,7 +3,7 @@
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes :ensure t :defer t)
 (load-theme 'doom-one t)
-(set-frame-font "Inconsolata-14")
+(set-frame-font "Inconsolata-13")
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 #+END_SRC
@@ -660,7 +660,6 @@ great for git-gutter
       (elpy-enable)
       (setq elpy-modules
             '(elpy-module-sane-defaults
-              elpy-module-flymake
               elpy-module-highlight-indentation
               elpy-module-pyvenv
               elpy-module-yasnippet))
@@ -783,4 +782,13 @@ Telegram support from emacs (needs visual-fill-column)
                                            (setq company-backends '(telega-company-emoji))
                                            (company-mode 1)))
         :defer t)
+#+END_SRC
+* leetcode
+on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
+#+BEGIN_SRC emacs-lisp
+  (use-package leetcode
+    :ensure t
+    :config
+    (setq leetcode-prefer-language "cpp")
+    (setq leetcode-prefer-sql "mysql"))
 #+END_SRC
