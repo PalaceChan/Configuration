@@ -412,19 +412,20 @@ to launch applications from exwm (not in use)
     )
 #+END_SRC
 * company
+Including ~company-irony~ and ~company-c-headers~
 ** general company
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
-    :pin melpa
     :config
     (setq company-idle-delay nil)
     (setq company-dabbrev-downcase nil)
+    (setq company-show-numbers t)
+    (setq company-tooltip-limit 20)
     (setq company-backends
           '((company-files company-keywords company-capf company-dabbrev-code company-gtags company-etags)
             company-clang
-            (company-abbrev company-dabbrev))
-          )
+            (company-abbrev company-dabbrev)))
     (add-hook 'after-init-hook 'global-company-mode)
     ;; TODO fix not being able to use C-n and C-p
     (define-key company-active-map (kbd "M-n") nil)
@@ -437,7 +438,23 @@ to launch applications from exwm (not in use)
     ;; setup M-h to show documentation for items on the autocomplete menu
     (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
     (setq company-global-modes '(not term-mode compilation-mode magit-status-mode))
-    )
+    (use-package company-irony
+      :ensure t
+      :config
+      (setq company-irony-ignore-case 'smart)
+      (add-to-list 'company-backends 'company-irony)
+      (use-package company-c-headers
+        :ensure t
+        :functions irony--extract-user-search-paths company-c-headers
+        :preface
+        (defun company-c-headers-path-user-irony ()
+          "Return the user include paths for the current buffer."
+          (when irony-mode
+            (irony--extract-user-search-paths irony--compile-options
+                                              irony--working-directory)))
+        :config
+        (setq company-c-headers-path-user #'company-c-headers-path-user-irony)
+        (add-to-list 'company-backends #'company-c-headers))))
 #+END_SRC
 ** helm company (unmantained but pretty neat)
 #+BEGIN_SRC emacs-lisp
@@ -448,25 +465,32 @@ to launch applications from exwm (not in use)
       (define-key company-mode-map (kbd "C-:") 'helm-company)
       (define-key company-active-map (kbd "C-:") 'helm-company)))
 #+END_SRC
-** irony for c/c++ completion
-commented out for now
+* irony
+Also run ~M-x irony-install-server~ which just needs cmake, libclang, and llvm libs
 #+BEGIN_SRC emacs-lisp
-;(use-package company-irony
-;  :ensure t
-;  :config
-;  (require 'company)
-;  (add-to-list 'company-backends 'company-irony))
-#+END_SRC
-irony itself, I had to apt-get install libclang-3.5-dev for the irony install to work. I also had to apt-get install cmake
-[[https://github.com/Andersbakken/rtags/issues/983][Issue 983]]
-[[https://github.com/Sarcasm/irony-mode/issues/167][Issue 167]]
-#+BEGIN_SRC emacs-lisp
-;(use-package irony
-;  :ensure t
-;  :config
-;  (add-hook 'c++-mode-hook 'irony-mode)
-;  (add-hook 'c-mode-hook 'irony-mode)
-;  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options))
+    (use-package irony
+      :ensure t
+      :init
+      (add-hook 'c++-mode-hook 'irony-mode)
+      (add-hook 'c-mode-hook 'irony-mode)
+      (add-hook 'objc-mode-hook 'irony-mode)
+      (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang
+                                                      irony-cdb-json
+                                                      irony-cdb-clang-complete))
+      :bind (:map irony-mode-map
+                  ("C-c t" . irony-get-type))
+      :config
+      (defun ava/irony-mode-hook ()
+        (define-key irony-mode-map [remap completion-at-point]
+          'irony-completion-at-point-async)
+        (define-key irony-mode-map [remap complete-symbol]
+          'irony-completion-at-point-async))
+      (add-hook 'irony-mode-hook 'ava/irony-mode-hook)
+      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+      (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+      (add-hook 'irony-mode-hook #'irony-eldoc)
+      (use-package irony-eldoc
+        :ensure t))
 #+END_SRC
 * yasnippet
 #+BEGIN_SRC emacs-lisp
