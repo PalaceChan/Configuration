@@ -770,6 +770,11 @@ uses rg for fast grep
     :ensure t
     :bind ("M-s g" . deadgrep))
 #+END_SRC
+* rmsbolt
+#+BEGIN_SRC emacs-lisp
+  (use-package rmsbolt
+    :ensure t)
+#+END_SRC
 * elisp
 use =paredit= in lisp modes
 #+BEGIN_SRC emacs-lisp
