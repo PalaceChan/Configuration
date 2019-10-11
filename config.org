@@ -38,7 +38,7 @@ Disable common warnings
 (setq x-alt-keysym 'meta)
 (setq kill-ring-max 100)
 (require 'dired-x)
-(setq dired-listing-switches "-Al --si --time-style long-iso")
+(setq dired-listing-switches "-Al --si --time-style long-iso --group-directories-first")
 (setq term-buffer-maximum-size 262144)
 (setq undo-outer-limit 50000000)
 (setq make-backup-files nil)
@@ -749,4 +749,23 @@ on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
     :config
     (setq leetcode-prefer-language "cpp")
     (setq leetcode-prefer-sql "mysql"))
+#+END_SRC
+* projectile
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :diminish projectile-mode
+    :init
+    (setq projectile-search-path '((expand-file-name "~/development")))
+    ;(setq projectile-project-root-files '("WORKSPACE"))
+    (setq projectile-project-root-files-bottom-up '(".git" ".projectile"))
+    :config
+    (projectile-mode t)  
+    ;(projectile-register-project-type 'bazel '("WORKSPACE") :compile "bazel build ...")
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (use-package helm-projectile
+      :ensure t
+      :init
+      (helm-projectile-on)
+      (setq projectile-completion-system 'helm)))
 #+END_SRC
