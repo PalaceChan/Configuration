@@ -552,9 +552,21 @@ great for git-gutter
        ("<SPC>" git-gutter:popup-hunk "popup hunk")
        ("s" git-gutter:stage-hunk "stage hunk")
        ("r" git-gutter:revert-hunk "revert hunk")
-       ("q" nil "quit"))
-     )
-    )
+       ("q" nil "quit")))
+
+    (global-set-key
+     (kbd "C-c e")
+     (defhydra hydra-paredit (:hint nil)
+       ("f" paredit-forward-slurp-sexp "slurp-forward")
+       ("F" paredit-forward-barf-sexp "barf-forward")
+       ("b" paredit-backward-slurp-sexp "slurp-backward")
+       ("B" paredit-backward-barf-sexp "barf-backward")
+       ("n" paredit-foward "forward")
+       ("p" paredit-backward "backward")
+       ("r" paredit-raise-sexp "raise")
+       ("s" paredit-splice-sexp "splice")
+       ("u" undo-only "undo")
+       ("q" nil "quit"))))
 #+END_SRC
 * magit
 #+BEGIN_SRC emacs-lisp
