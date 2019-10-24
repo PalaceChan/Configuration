@@ -474,7 +474,7 @@ now configure org (default installed)
             ("l" "Link" entry (file+headline "~/todo.org" "Links")
              "* %^L %? %^g")))
 #+END_SRC
-* dired subtree
+* dired related
 a much nicer dired (can in-place expand subdirectory contents)
 #+BEGIN_SRC emacs-lisp
 (use-package dired-subtree
@@ -482,6 +482,12 @@ a much nicer dired (can in-place expand subdirectory contents)
              (define-key dired-mode-map "i" 'dired-subtree-insert)
              (define-key dired-mode-map ";" 'dired-subtree-remove)
              :ensure dired-subtree)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-git-info
+    :ensure t
+    :bind (:map dired-mode-map (")" . dired-git-info-mode)))
 #+END_SRC
 * ztree
 nice directory level diffing
@@ -557,14 +563,10 @@ great for git-gutter
     (global-set-key
      (kbd "C-c e")
      (defhydra hydra-paredit (:hint nil)
-       ("f" paredit-forward-slurp-sexp "slurp-forward")
-       ("F" paredit-forward-barf-sexp "barf-forward")
-       ("b" paredit-backward-slurp-sexp "slurp-backward")
-       ("B" paredit-backward-barf-sexp "barf-backward")
-       ("n" paredit-foward "forward")
-       ("p" paredit-backward "backward")
-       ("r" paredit-raise-sexp "raise")
-       ("s" paredit-splice-sexp "splice")
+       ("k" paredit-forward-slurp-sexp "slurp-forward")
+       ("j" paredit-forward-barf-sexp "barf-forward")
+       ("d" paredit-backward-slurp-sexp "slurp-backward")
+       ("f" paredit-backward-barf-sexp "barf-backward")
        ("u" undo-only "undo")
        ("q" nil "quit"))))
 #+END_SRC
