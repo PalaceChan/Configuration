@@ -487,7 +487,9 @@ a much nicer dired (can in-place expand subdirectory contents)
 #+BEGIN_SRC emacs-lisp
   (use-package dired-git-info
     :ensure t
-    :bind (:map dired-mode-map (")" . dired-git-info-mode)))
+    :bind (:map dired-mode-map (")" . dired-git-info-mode))
+    :config
+    (setq dgi-commit-message-format "%f\t%an\t%cr"))
 #+END_SRC
 * ztree
 nice directory level diffing
