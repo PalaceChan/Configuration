@@ -98,6 +98,11 @@ winner mode enabled to pop a stack of window configurations
     :config
     (winner-mode 1))
 #+END_SRC
+make line-mode the default for terms
+#+BEGIN_SRC emacs-lisp
+  (defun ava/default-term-line-mode (&ret ignore) (term-line-mode))
+  (advice-add 'ansi-term :after #'ava/default-term-line-mode)
+#+END_SRC
 * shortcuts
 ansi-term defaults to bash
 #+BEGIN_SRC emacs-lisp
@@ -516,6 +521,14 @@ automatically encloses double quotes or parens
     :bind ("C-=" . er/expand-region)
     )
 #+END_SRC
+* easy kill
+Use ~M-w~ and modifiers to more efficiently save things to kill ring
+#+BEGIN_SRC emacs-lisp
+  (use-package easy-kill
+  :ensure t
+  :config
+  (global-set-key [remap kill-ring-save] #'easy-kill))
+#+END_SRC
 * fancy narrow
 replaces default narrow
 #+BEGIN_SRC emacs-lisp
@@ -565,10 +578,14 @@ great for git-gutter
     (global-set-key
      (kbd "C-c e")
      (defhydra hydra-paredit (:hint nil)
-       ("k" paredit-forward-slurp-sexp "slurp-forward")
-       ("j" paredit-forward-barf-sexp "barf-forward")
-       ("d" paredit-backward-slurp-sexp "slurp-backward")
-       ("f" paredit-backward-barf-sexp "barf-backward")
+       ("f" paredit-forward-slurp-sexp "slurp-forward")
+       ("F" paredit-forward-barf-sexp "barf-forward")
+       ("b" paredit-backward-slurp-sexp "slurp-backward")
+       ("B" paredit-backward-barf-sexp "barf-backward")
+       ("n" paredit-foward "forward")
+       ("p" paredit-backward "backward")
+       ("r" paredit-raise-sexp "raise")
+       ("s" paredit-splice-sexp "splice")
        ("u" undo-only "undo")
        ("q" nil "quit"))))
 #+END_SRC
