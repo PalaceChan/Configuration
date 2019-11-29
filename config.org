@@ -181,13 +181,13 @@ kill current buffer no prompt
 copies current filename to kill-ring
 #+BEGIN_SRC emacs-lisp
   (defun ava/copy-fname-to-killring (&optional arg)
-    "Copy current buffer filename to kill ring. Only basename if called with prefix arg"
+    "Copy current filename (basename) to kill ring. Full name if called with prefix arg"
     (interactive "P")
     (let ((filename (if (equal major-mode 'dired-mode)
                         default-directory
                       (if arg
-                          (file-name-nondirectory (buffer-file-name))
-                        (buffer-file-name)
+                          (buffer-file-name)
+                        (file-name-nondirectory (buffer-file-name))
                         )
                       )))
       (when filename)
