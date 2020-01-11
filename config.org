@@ -663,6 +663,14 @@ great for git-gutter
       (setq python-shell-prompt-detect-failure-warning nil)
       ))
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  ;(use-package python-black
+  ;  :ensure t
+  ;  :after (python)
+  ;  :config
+  ;  (setq python-black-command "/usr/bin/black"))
+#+END_SRC
 * erc
 #+BEGIN_SRC emacs-lisp
   (use-package erc
