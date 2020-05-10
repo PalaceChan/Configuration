@@ -641,6 +641,7 @@ great for git-gutter
     :ensure ess)
 #+END_SRC
 * elpy
+To use a venv set a pyvenv-activate directory local or file local variable to the venv path
 #+BEGIN_SRC emacs-lisp
   (use-package elpy
     :ensure t
