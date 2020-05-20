@@ -38,12 +38,18 @@ alias ls='ls --color=auto -h'
 alias reset='echo -e \\033c'
 alias rc='source ~/.bash_profile'
 
+if [ "eterm-color" == "$TERM" ]; then
+    alias less='cat'
+    alias more='cat'
+    export PAGER=cat
+    export EDITOR=emacsclient
+else
+    export EDITOR='emacs -nw'
+fi
+
 ################################################################################
 
 export LESS='-iMFXR' #cat if fits
-
-EDITOR='emacs -nw'
-export EDITOR
 
 PROMPT_COMMAND='history | tail -n1 | ~/history/dump_history.sh'
 export PROMPT_COMMAND
