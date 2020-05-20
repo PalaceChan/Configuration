@@ -209,6 +209,18 @@ start a few common terms
         ;only main shell for now
         (funcall term-start-helper "main" ""))))
 #+END_SRC
+start a remote term =https://www.emacswiki.org/emacs/AnsiTermHints#toc4=
+#+BEGIN_SRC emacs-lisp
+  (defun ava/remote-term (new-buffer-name cmd &rest switches)
+    (setq term-ansi-buffer-name (concat "*" new-buffer-name "*"))
+    (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
+    (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name cmd nil switches))
+    (set-buffer term-ansi-buffer-name)
+    (term-mode)
+    (term-char-mode)
+    (term-set-escape-char ?\C-x)
+    (switch-to-buffer term-ansi-buffer-name))
+#+END_SRC
 * undo-tree
 A better non-linear undo
 #+BEGIN_SRC emacs-lisp
