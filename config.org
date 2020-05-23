@@ -211,15 +211,21 @@ start a few common terms
 #+END_SRC
 start a remote term =https://www.emacswiki.org/emacs/AnsiTermHints#toc4=
 #+BEGIN_SRC emacs-lisp
-  (defun ava/remote-term (new-buffer-name cmd &rest switches)
-    (setq term-ansi-buffer-name (concat "*" new-buffer-name "*"))
+  (defun ava/remote-term ()
+    (interactive)
+    (setq user (read-string "User: "))
+    (setq host (read-string "Host: "))
+    (setq term-ansi-buffer-name (concat "term " host))
     (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
-    (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name cmd nil switches))
+    (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name "ssh" nil (list (concat user "@" host))))
     (set-buffer term-ansi-buffer-name)
     (term-mode)
-    (term-char-mode)
+    (term-line-mode)
     (term-set-escape-char ?\C-x)
-    (switch-to-buffer term-ansi-buffer-name))
+    (switch-to-buffer term-ansi-buffer-name)
+    (insert "function set-eterm-dir { \n echo -e \"\\033AnSiTu\" \"$LOGNAME\" \n echo -e \"\\033AnSiTc\" \"$(pwd)\" \n echo -e \"\\033AnSiTh\" \"$(hostname -f)\" \n history -a \n }")
+    (insert "\nPROMPT_COMMAND=set-eterm-dir\n")
+    (term-send-input))
 #+END_SRC
 * undo-tree
 A better non-linear undo
