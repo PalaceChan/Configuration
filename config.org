@@ -368,7 +368,7 @@ to launch applications from exwm (not in use)
     )
 #+END_SRC
 * company
-Including ~company-irony~ and ~company-c-headers~
+For auto completion
 ** general company
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -411,6 +411,15 @@ Including ~company-irony~ and ~company-c-headers~
         :config
         (setq company-c-headers-path-user #'company-c-headers-path-user-irony)
         (add-to-list 'company-backends #'company-c-headers))))
+#+END_SRC
+** company-shell to auto complete from env vars and PATH
+#+BEGIN_SRC emacs-lisp
+  (use-package company-shell
+    :ensure t
+    :after company
+    :config
+    (add-to-list 'company-shell-modes 'term-mode)
+    (add-to-list 'company-backends '(company-shell company-shell-env)))
 #+END_SRC
 ** helm company (unmantained but pretty neat)
 #+BEGIN_SRC emacs-lisp
