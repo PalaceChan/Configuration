@@ -393,7 +393,7 @@ Including ~company-irony~ and ~company-c-headers~
     (define-key company-active-map (kbd "TAB") 'company-complete-common)
     ;; setup M-h to show documentation for items on the autocomplete menu
     (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
-    (setq company-global-modes '(not term-mode compilation-mode magit-status-mode))
+    (setq company-global-modes '(not compilation-mode magit-status-mode))
     (use-package company-irony
       :ensure t
       :config
