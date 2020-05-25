@@ -38,8 +38,6 @@ Disable common warnings
 (setq shell-file-name "bash")
 (setq x-alt-keysym 'meta)
 (setq kill-ring-max 100)
-(require 'dired-x)
-(setq dired-listing-switches "-Al --si --time-style long-iso --group-directories-first")
 (setq term-buffer-maximum-size 262144)
 (setq undo-outer-limit 50000000)
 (setq make-backup-files nil)
@@ -99,6 +97,26 @@ winner mode enabled to pop a stack of window configurations
     :config
     (winner-mode 1))
 #+END_SRC
+aliases and global bindings
+#+BEGIN_SRC emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+(global-set-key (kbd "C-x l") 'align-regexp)
+#+END_SRC
+kill current buffer no prompt
+#+BEGIN_SRC emacs-lisp
+(defun kill-current-buffer ()
+  "Kill the current buffer, without confirmation."
+  (interactive)
+  (kill-buffer (current-buffer)))
+(global-set-key "\C-xk" 'kill-current-buffer)
+#+END_SRC
+replace zap-to-char with superior zap-up-to-char
+#+BEGIN_SRC emacs-lisp
+  (global-set-key "\M-z" 'zap-up-to-char)
+  (global-set-key "\M-Z" (lambda (char)
+                           (interactive "cZap back to char: ")
+                           (zap-up-to-char -1 char)))
+#+END_SRC
 * term
 make line-mode the default for terms
 #+BEGIN_SRC emacs-lisp
@@ -143,20 +161,6 @@ start a few common terms
       (save-window-excursion
         ;only main shell for now
         (funcall term-start-helper "main" ""))))
-#+END_SRC
-* shortcuts
-aliases and global bindings
-#+BEGIN_SRC emacs-lisp
-(defalias 'yes-or-no-p 'y-or-n-p)
-(global-set-key (kbd "C-x l") 'align-regexp)
-#+END_SRC
-kill current buffer no prompt
-#+BEGIN_SRC emacs-lisp
-(defun kill-current-buffer ()
-  "Kill the current buffer, without confirmation."
-  (interactive)
-  (kill-buffer (current-buffer)))
-(global-set-key "\C-xk" 'kill-current-buffer)
 #+END_SRC
 * development
 ** general
@@ -210,6 +214,14 @@ toggle between implementation and header
 #+BEGIN_SRC emacs-lisp
 (setq compile-command "make")
 (setq compilation-read-command nil)
+#+END_SRC
+** merging
+ediff settings
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'ediff
+    (setq
+     ediff-window-setup-function #'ediff-setup-windows-plain
+     ediff-grab-mouse nil))
 #+END_SRC
 * undo-tree
 A better non-linear undo
@@ -492,6 +504,16 @@ now configure org (default installed)
              "* %^L %? %^g")))
 #+END_SRC
 * dired related
+#+BEGIN_SRC emacs-lisp
+  (require 'dired-x)
+
+  (with-eval-after-load 'dired
+    (setq 
+     dired-recursive-copies 'always
+     dired-recursive-deletes 'always
+     dired-auto-revert-buffer 'dired-directory-changed-p
+     dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"))
+#+END_SRC
 a much nicer dired (can in-place expand subdirectory contents)
 #+BEGIN_SRC emacs-lisp
 (use-package dired-subtree
