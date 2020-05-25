@@ -99,12 +99,12 @@ winner mode enabled to pop a stack of window configurations
     :config
     (winner-mode 1))
 #+END_SRC
+* term
 make line-mode the default for terms
 #+BEGIN_SRC emacs-lisp
   (defun ava/default-term-line-mode (&ret ignore) (term-line-mode))
   (advice-add 'ansi-term :after #'ava/default-term-line-mode)
 #+END_SRC
-* shortcuts
 ansi-term defaults to bash
 #+BEGIN_SRC emacs-lisp
 (defvar my-term-shell "/bin/bash")
@@ -112,10 +112,51 @@ ansi-term defaults to bash
   (interactive (list my-term-shell)))
 (ad-activate 'ansi-term)
 #+END_SRC
+start a remote term =https://www.emacswiki.org/emacs/AnsiTermHints#toc4=
+#+BEGIN_SRC emacs-lisp
+  (defun ava/remote-term ()
+    (interactive)
+    (setq user (read-string "User: "))
+    (setq host (read-string "Host: "))
+    (setq term-ansi-buffer-name (concat "term " host))
+    (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
+    (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name "ssh" nil (list (concat user "@" host))))
+    (set-buffer term-ansi-buffer-name)
+    (term-mode)
+    (term-line-mode)
+    (term-set-escape-char ?\C-x)
+    (switch-to-buffer term-ansi-buffer-name)
+    (insert "function set-eterm-dir { \n echo -e \"\\033AnSiTu\" \"$LOGNAME\" \n echo -e \"\\033AnSiTc\" \"$(pwd)\" \n echo -e \"\\033AnSiTh\" \"$(hostname -f)\" \n history -a \n }")
+    (insert "\nPROMPT_COMMAND=set-eterm-dir\n")
+    (term-send-input))
+#+END_SRC
+start a few common terms
+#+BEGIN_SRC emacs-lisp
+  (defun ava/start-ansi-terms ()
+    "Start a few common ansi terms"
+    (interactive)
+    (let ((term-start-helper (lambda (name cmd)
+                               (ansi-term "/bin/bash" (format "bash.%s" name))
+                               (with-current-buffer (format "*bash.%s*" name)
+                                 (insert (format "%s\n" cmd))
+                                 (term-send-input)))))
+      (save-window-excursion
+        ;only main shell for now
+        (funcall term-start-helper "main" ""))))
+#+END_SRC
+* shortcuts
 aliases and global bindings
 #+BEGIN_SRC emacs-lisp
 (defalias 'yes-or-no-p 'y-or-n-p)
 (global-set-key (kbd "C-x l") 'align-regexp)
+#+END_SRC
+kill current buffer no prompt
+#+BEGIN_SRC emacs-lisp
+(defun kill-current-buffer ()
+  "Kill the current buffer, without confirmation."
+  (interactive)
+  (kill-buffer (current-buffer)))
+(global-set-key "\C-xk" 'kill-current-buffer)
 #+END_SRC
 * development
 ** general
@@ -169,63 +210,6 @@ toggle between implementation and header
 #+BEGIN_SRC emacs-lisp
 (setq compile-command "make")
 (setq compilation-read-command nil)
-#+END_SRC
-* custom functions
-kill current buffer no prompt
-#+BEGIN_SRC emacs-lisp
-(defun kill-current-buffer ()
-  "Kill the current buffer, without confirmation."
-  (interactive)
-  (kill-buffer (current-buffer)))
-(global-set-key "\C-xk" 'kill-current-buffer)
-#+END_SRC
-copies current filename to kill-ring
-#+BEGIN_SRC emacs-lisp
-  (defun ava/copy-fname-to-killring (&optional arg)
-    "Copy current filename (basename) to kill ring. Full name if called with prefix arg"
-    (interactive "P")
-    (let ((filename (if (equal major-mode 'dired-mode)
-                        default-directory
-                      (if arg
-                          (buffer-file-name)
-                        (file-name-nondirectory (buffer-file-name))
-                        )
-                      )))
-      (when filename)
-      (kill-new filename)
-      (message "%s copied to kill ring." filename)))
-#+END_SRC
-start a few common terms
-#+BEGIN_SRC emacs-lisp
-  (defun ava/start-ansi-terms ()
-    "Start a few common ansi terms"
-    (interactive)
-    (let ((term-start-helper (lambda (name cmd)
-                               (ansi-term "/bin/bash" (format "bash.%s" name))
-                               (with-current-buffer (format "*bash.%s*" name)
-                                 (insert (format "%s\n" cmd))
-                                 (term-send-input)))))
-      (save-window-excursion
-        ;only main shell for now
-        (funcall term-start-helper "main" ""))))
-#+END_SRC
-start a remote term =https://www.emacswiki.org/emacs/AnsiTermHints#toc4=
-#+BEGIN_SRC emacs-lisp
-  (defun ava/remote-term ()
-    (interactive)
-    (setq user (read-string "User: "))
-    (setq host (read-string "Host: "))
-    (setq term-ansi-buffer-name (concat "term " host))
-    (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
-    (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name "ssh" nil (list (concat user "@" host))))
-    (set-buffer term-ansi-buffer-name)
-    (term-mode)
-    (term-line-mode)
-    (term-set-escape-char ?\C-x)
-    (switch-to-buffer term-ansi-buffer-name)
-    (insert "function set-eterm-dir { \n echo -e \"\\033AnSiTu\" \"$LOGNAME\" \n echo -e \"\\033AnSiTc\" \"$(pwd)\" \n echo -e \"\\033AnSiTh\" \"$(hostname -f)\" \n history -a \n }")
-    (insert "\nPROMPT_COMMAND=set-eterm-dir\n")
-    (term-send-input))
 #+END_SRC
 * undo-tree
 A better non-linear undo
@@ -368,7 +352,7 @@ to launch applications from exwm (not in use)
     )
 #+END_SRC
 * company
-For auto completion
+Including ~company-irony~ and ~company-c-headers~
 ** general company
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -558,13 +542,13 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
   (global-set-key [remap kill-ring-save] #'easy-kill))
 #+END_SRC
 * fancy narrow
-replaces default narrow
+replaces default narrow (slow so not in use)
 #+BEGIN_SRC emacs-lisp
-  (use-package fancy-narrow
-    :ensure t
-    :init
-    (fancy-narrow-mode)
-    :diminish fancy-narrow-mode)
+;  (use-package fancy-narrow
+;    :ensure t
+;    :init
+;    (fancy-narrow-mode)
+;    :diminish fancy-narrow-mode)
 #+END_SRC
 * which key
 show options for bindings in realtime
@@ -621,7 +605,8 @@ great for git-gutter
 #+BEGIN_SRC emacs-lisp
 (use-package magit :ensure t
 :bind
-("C-x g" . magit-status))
+("C-x g" . magit-status)
+("C-c m" . magit-file-dispatch))
 #+END_SRC
 * git-timemachine
 #+BEGIN_SRC emacs-lisp
