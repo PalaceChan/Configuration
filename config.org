@@ -29,23 +29,29 @@ Disable common warnings
 (put 'narrow-to-region 'disabled nil)
 (put 'erase-buffer 'disabled nil)
 (put 'downcase-region 'disabled nil)
-(setq large-file-warning-threshold nil)
+(setq large-file-warning-threshold (* 120 1024 1024))
 #+END_SRC
 ** basic settings
 #+BEGIN_SRC emacs-lisp
-(setq scroll-step 1)
-(setq grep-highlight-matches t)
-(setq shell-file-name "bash")
-(setq x-alt-keysym 'meta)
-(setq kill-ring-max 100)
-(setq term-buffer-maximum-size 262144)
-(setq undo-outer-limit 50000000)
-(setq make-backup-files nil)
-(show-paren-mode t)
-(setq browse-url-browser-function 'eww-browse-url)
-(add-to-list 'same-window-buffer-names "*Buffer List*")
-(add-to-list 'same-window-buffer-names "*grep*")
-(setq gc-cons-threshold (* 20 1000 1000))
+  (setq scroll-step 1
+        scroll-margin 3
+        scroll-conservatively 9999
+        scroll-preserve-screen-position t
+        grep-highlight-matches t
+        shell-file-name "bash"
+        x-alt-keysym 'meta
+        kill-ring-max 100
+        term-buffer-maximum-size 262144
+        undo-outer-limit 50000000
+        make-backup-files nil
+        browse-url-browser-function 'eww-browse-url
+        gc-cons-threshold (* 20 1000 1000)
+        calendar-mode-line-format nil
+        set-mark-command-repeat pop t)
+
+  (show-paren-mode t)
+  (add-to-list 'same-window-buffer-names "*Buffer List*")
+  (add-to-list 'same-window-buffer-names "*grep*")
 #+END_SRC
 ** save history
 Save some history across sessions. (savehist-mode) on auto-save can be slow so we rely on desktop-save instead
@@ -70,6 +76,7 @@ show battery, column number and nicely formatted time
 (setq display-time-format "%H:%M - %Y%m%d")
 (display-battery-mode t)
 (display-time-mode 1)
+(size-indication-mode t)
 #+END_SRC
 ** highlighting
 #+BEGIN_SRC emacs-lisp
@@ -221,6 +228,7 @@ ediff settings
   (with-eval-after-load 'ediff
     (setq
      ediff-window-setup-function #'ediff-setup-windows-plain
+     ediff-split-window-function #'split-window-horizontally
      ediff-grab-mouse nil))
 #+END_SRC
 * undo-tree
@@ -230,8 +238,10 @@ A better non-linear undo
     :ensure t
     :diminish undo-tree-mode
     :config
-    (setq undo-tree-visualizer-diff t
-          undo-tree-visualizer-timestamps t)
+    (setq   
+     undo-tree-enable-undo-in-region nil
+     undo-tree-visualizer-diff t
+     undo-tree-visualizer-timestamps t)
     (global-undo-tree-mode))
 #+END_SRC
 * exwm
@@ -333,8 +343,7 @@ to launch applications from exwm (not in use)
     :init
     (bind-key "M-i" 'helm-swoop-from-isearch isearch-mode-map)
     :config
-    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-current-mode-from-helm-swoop)
-    )
+    (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-current-mode-from-helm-swoop))
 
   (use-package helm-ag :ensure t)
   (use-package helm-rg :ensure t)
@@ -370,10 +379,13 @@ Including ~company-irony~ and ~company-c-headers~
   (use-package company
     :ensure t
     :config
-    (setq company-idle-delay nil)
-    (setq company-dabbrev-downcase nil)
-    (setq company-show-numbers t)
-    (setq company-tooltip-limit 20)
+    (setq company-idle-delay nil
+          company-show-numbers t
+          company-tooltip-limit 20
+          company-etags-ignore-case t
+          company-dabbrev-downcase nil
+          company-dabbrev-ignore-case t
+          company-dabbrev-code-ignore-case t)
     (setq company-backends
           '((company-files company-keywords company-capf company-dabbrev-code company-gtags company-etags)
             company-clang
@@ -408,16 +420,17 @@ Including ~company-irony~ and ~company-c-headers~
         (setq company-c-headers-path-user #'company-c-headers-path-user-irony)
         (add-to-list 'company-backends #'company-c-headers))))
 #+END_SRC
-** company-shell to auto complete from env vars and PATH
+** company-shell
+backend for env vars and PATH in shells
 #+BEGIN_SRC emacs-lisp
   (use-package company-shell
     :ensure t
     :after company
     :config
     (add-to-list 'company-shell-modes 'term-mode)
-    (add-to-list 'company-backends '(company-shell company-shell-env)))
+    (add-to-list 'company-backends '(company-shell company-shell-env company-files)))
 #+END_SRC
-** helm company (unmantained but pretty neat)
+** helm company
 #+BEGIN_SRC emacs-lisp
   (use-package helm-company
     :ensure t
@@ -425,6 +438,14 @@ Including ~company-irony~ and ~company-c-headers~
     (progn
       (define-key company-mode-map (kbd "C-:") 'helm-company)
       (define-key company-active-map (kbd "C-:") 'helm-company)))
+#+END_SRC
+** posframe
+A much nicer frame for completion candidates
+#+BEGIN_SRC emacs-lisp
+  (use-package company-posframe
+    :ensure t
+    :config
+    (company-posframe-mode 1))
 #+END_SRC
 * irony
 Also run ~M-x irony-install-server~ which just needs cmake, libclang, and llvm libs
@@ -504,10 +525,9 @@ now configure org (default installed)
              "* %^L %? %^g")))
 #+END_SRC
 * dired related
-#+BEGIN_SRC emacs-lisp
-  (require 'dired-x)
-
+#+BEGIN_SRC emacs-lisp  
   (with-eval-after-load 'dired
+    (require 'dired-x)
     (setq 
      dired-recursive-copies 'always
      dired-recursive-deletes 'always
@@ -625,7 +645,10 @@ great for git-gutter
 #+END_SRC
 * magit
 #+BEGIN_SRC emacs-lisp
-(use-package magit :ensure t
+(use-package magit 
+:ensure t
+:config
+(setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
 :bind
 ("C-x g" . magit-status)
 ("C-c m" . magit-file-dispatch))
@@ -711,15 +734,16 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
 #+END_SRC
 * erc
 #+BEGIN_SRC emacs-lisp
-  (use-package erc
-    :ensure t
-    :config
-    (setq erc-hide-list '("PART" "QUIT" "JOIN"))
-    (setq erc-server "irc.freenode.net")
-    (setq erc-nick "hooxen")
-    (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
-                                        (shell-command-to-string (format "notify-send erc '%s'" msg))))
-    )
+    (use-package erc
+      :ensure t
+      :config
+      (setq erc-hide-list '("PART" "QUIT" "JOIN")
+            erc-server "irc.freenode.net"
+            erc-nick "hooxen"
+            erc-server-reconnect-timeout 30
+            erc-mode-line-format "%t")
+      (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
+                                          (shell-command-to-string (format "notify-send erc '%s'" msg)))))
 #+END_SRC
 * elfeed
 #+BEGIN_SRC emacs-lisp
@@ -850,4 +874,20 @@ on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
       :init
       (helm-projectile-on)
       (setq projectile-completion-system 'helm)))
+#+END_SRC
+* discover
+discover major mode
+#+BEGIN_SRC emacs-lisp
+  (use-package discover-my-major
+    :ensure t
+    :config
+    (global-set-key (kbd "C-h C-m") 'discover-my-major))
+#+END_SRC
+* vlf
+use for opening files larger than =large-file-warning-threshold=
+#+BEGIN_SRC emacs-lisp
+  (use-package vlf
+    :ensure t
+    :config
+    (require 'vlf-setup))
 #+END_SRC
