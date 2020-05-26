@@ -37,6 +37,7 @@ Disable common warnings
         scroll-margin 3
         scroll-conservatively 9999
         scroll-preserve-screen-position t
+        echo-keystrokes 0.1
         grep-highlight-matches t
         shell-file-name "bash"
         x-alt-keysym 'meta
@@ -47,7 +48,7 @@ Disable common warnings
         browse-url-browser-function 'eww-browse-url
         gc-cons-threshold (* 20 1000 1000)
         calendar-mode-line-format nil
-        set-mark-command-repeat pop t)
+        set-mark-command-repeat-pop t)
 
   (show-paren-mode t)
   (add-to-list 'same-window-buffer-names "*Buffer List*")
@@ -123,6 +124,20 @@ replace zap-to-char with superior zap-up-to-char
   (global-set-key "\M-Z" (lambda (char)
                            (interactive "cZap back to char: ")
                            (zap-up-to-char -1 char)))
+#+END_SRC
+* auto package updating
+stay up to date
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-package-update
+    :ensure t
+    :if (not (daemonp))
+    :custom
+    (auto-package-update-interval 90)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-delete-old-versions t)
+    (auto-package-update-hide-results t)
+    :config
+    (auto-package-update-maybe))
 #+END_SRC
 * term
 make line-mode the default for terms
@@ -219,8 +234,9 @@ toggle between implementation and header
 
 ** compilation
 #+BEGIN_SRC emacs-lisp
-(setq compile-command "make")
-(setq compilation-read-command nil)
+  (setq compile-command "make"
+        compilation-scroll-output t
+        compilation-read-command nil)
 #+END_SRC
 ** merging
 ediff settings
@@ -351,6 +367,7 @@ to launch applications from exwm (not in use)
 * avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
+    :disabled
     :ensure t
     :bind (("M-g c" . avy-goto-char-timer)
            ("M-g M-g" . avy-goto-line))
@@ -451,6 +468,7 @@ A much nicer frame for completion candidates
 Also run ~M-x irony-install-server~ which just needs cmake, libclang, and llvm libs
 #+BEGIN_SRC emacs-lisp
     (use-package irony
+      :disabled
       :ensure t
       :init
       (add-hook 'c++-mode-hook 'irony-mode)
@@ -531,6 +549,7 @@ now configure org (default installed)
     (setq 
      dired-recursive-copies 'always
      dired-recursive-deletes 'always
+     dired-dwim-target t
      dired-auto-revert-buffer 'dired-directory-changed-p
      dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"))
 #+END_SRC
@@ -545,6 +564,7 @@ a much nicer dired (can in-place expand subdirectory contents)
 
 #+BEGIN_SRC emacs-lisp
   (use-package dired-git-info
+    :disabled
     :ensure t
     :bind (:map dired-mode-map (")" . dired-git-info-mode))
     :config
@@ -748,6 +768,7 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
 * elfeed
 #+BEGIN_SRC emacs-lisp
   (use-package elfeed
+    :disabled
     :ensure   t
     :commands elfeed
     :config
@@ -808,6 +829,7 @@ uses rg for fast grep
 * rmsbolt
 #+BEGIN_SRC emacs-lisp
   (use-package rmsbolt
+    :disabled
     :ensure t)
 #+END_SRC
 * elisp
@@ -831,13 +853,12 @@ also enable eldoc
 * telega
 Telegram support from emacs (needs visual-fill-column)
 #+BEGIN_SRC emacs-lisp
-  (use-package visual-fill-column
-    :ensure t
-    )
+  (use-package visual-fill-column :ensure t)
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
       (require 'notifications)
       (use-package telega
+        :disabled
         :load-path "~/3rdParty/telega/"
         :commands (telega)
         :config
@@ -851,6 +872,7 @@ Telegram support from emacs (needs visual-fill-column)
 on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
 #+BEGIN_SRC emacs-lisp
   (use-package leetcode
+    :disabled
     :ensure t
     :config
     (setq leetcode-prefer-language "cpp")
@@ -890,4 +912,10 @@ use for opening files larger than =large-file-warning-threshold=
     :ensure t
     :config
     (require 'vlf-setup))
+#+END_SRC
+* speed typing
+#+BEGIN_SRC emacs-lisp
+  (use-package speed-type
+    :ensure t
+    :commands (speed-type-text))
 #+END_SRC
