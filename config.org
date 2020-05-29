@@ -72,12 +72,10 @@ Disable common warnings
         scroll-margin 3
         scroll-conservatively 9999
         scroll-preserve-screen-position t
-        echo-keystrokes 0.1
         grep-highlight-matches t
         shell-file-name "bash"
         x-alt-keysym 'meta
         kill-ring-max 100
-        term-buffer-maximum-size 262144
         undo-outer-limit 50000000
         make-backup-files nil
         browse-url-browser-function 'eww-browse-url
@@ -174,8 +172,9 @@ stay up to date
     (auto-package-update-maybe))
 #+END_SRC
 * term
-make line-mode the default for terms
+make line-mode the default for terms and allow bigger buffer size
 #+BEGIN_SRC emacs-lisp
+  (setq term-buffer-maximum-size 262144)
   (defun ava/default-term-line-mode (&ret ignore) (term-line-mode))
   (advice-add 'ansi-term :after #'ava/default-term-line-mode)
 #+END_SRC
