@@ -400,14 +400,12 @@ to launch applications from exwm (not in use)
 * avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
-    :disabled
     :ensure t
-    :bind (("M-g c" . avy-goto-char-timer)
+    :bind (("C-;" . avy-goto-char-timer)
            ("M-g M-g" . avy-goto-line))
     :config
     (setq avy-timeout-seconds 0.3)
-    (when (display-graphic-p) (setq avy-background t))
-    )
+    (when (display-graphic-p) (setq avy-background t)))
 #+END_SRC
 * switch window
 #+BEGIN_SRC emacs-lisp
@@ -787,16 +785,20 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
 #+END_SRC
 * erc
 #+BEGIN_SRC emacs-lisp
-    (use-package erc
-      :ensure t
-      :config
-      (setq erc-hide-list '("PART" "QUIT" "JOIN")
-            erc-server "irc.freenode.net"
-            erc-nick "hooxen"
-            erc-server-reconnect-timeout 30
-            erc-mode-line-format "%t")
-      (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
-                                          (shell-command-to-string (format "notify-send erc '%s'" msg)))))
+      (use-package erc
+        :ensure t
+        :config
+        (setq erc-hide-list '("PART" "QUIT" "JOIN")
+              erc-server "irc.freenode.net"
+              erc-nick "hooxen"
+              erc-server-reconnect-timeout 30
+              erc-mode-line-format "%t")
+        (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
+                                            (shell-command-to-string (format "notify-send erc '%s'" msg))))
+        (use-package erc-colorize
+          :ensure t
+          :config
+          (erc-colorize-mode 1)))
 #+END_SRC
 * elfeed
 #+BEGIN_SRC emacs-lisp
@@ -924,6 +926,7 @@ on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
     (projectile-mode t)  
     ;(projectile-register-project-type 'bazel '("WORKSPACE") :compile "bazel build ...")
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-term)
     (use-package helm-projectile
       :ensure t
       :init
@@ -950,5 +953,6 @@ use for opening files larger than =large-file-warning-threshold=
 #+BEGIN_SRC emacs-lisp
   (use-package speed-type
     :ensure t
+    :disabled
     :commands (speed-type-text))
 #+END_SRC
