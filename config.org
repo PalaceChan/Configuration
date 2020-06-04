@@ -363,6 +363,10 @@ to launch applications from exwm (not in use)
                       ("C-c h o" . helm-occur)
                       ("C-c h r" . helm-register)
                       ("C-c h b" . helm-resume)
+                      ("C-c h i" . helm-semantic-or-imenu)
+                      ("C-c h I" . helm-imenu-in-all-buffers)
+                      ("C-c h l" . helm-locate)
+                      ("C-c h <SPC>" . helm-all-mark-rings)
                       )
                :config
                (setq helm-command-prefix-key "C-c h")
@@ -382,6 +386,10 @@ to launch applications from exwm (not in use)
                (define-key  helm-map (kbd "<tab>") 'helm-execute-persistent-action)
                (define-key  helm-map (kbd "C-i") 'helm-execute-persistent-action)
                (define-key  helm-map (kbd "C-z") 'helm-select-action)
+               (defun ava/around-helm-buffers-sort-transformer (candidates source)
+                 candidates)
+               (advice-add 'helm-buffers-sort-transformer
+                           :override #'ava/around-helm-buffers-sort-transformer)
                :ensure helm)
 #+END_SRC
 
@@ -419,6 +427,15 @@ to launch applications from exwm (not in use)
     (setq switch-window-qwerty-shortcuts '("a" "s" "d" "f" "j" "k" "l" "w" "e" "i" "o"))
     (setq switch-window-minibuffer-shortcut ?z)
     )
+#+END_SRC
+* dumb jump
+Like a cached/simplified form of TAGS without dependencies
+#+BEGIN_SRC emacs-lisp
+  (use-package dumb-jump
+    :ensure t
+    :config
+    (setq dumb-jump-selector 'helm
+          dumb-jump-confirm-jump-to-modified-file nil))
 #+END_SRC
 * company
 Including ~company-irony~ and ~company-c-headers~
@@ -692,6 +709,15 @@ great for git-gutter
        ("r" paredit-raise-sexp "raise")
        ("s" paredit-splice-sexp "splice")
        ("u" undo-only "undo")
+       ("q" nil "quit")))
+
+    (global-set-key
+     (kbd "C-c j")
+     (defhydra hydra-dump-jump (:body-pre (dumb-jump-go)
+                                          :hint nil)
+       ("j" dumb-jump-go "go")
+       ("i" dumb-jump-go-prompt "prompt")
+       ("b" dumb-jump-back "back")
        ("q" nil "quit"))))
 #+END_SRC
 * magit
