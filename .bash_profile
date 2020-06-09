@@ -51,13 +51,15 @@ fi
 
 export LESS='-iMFXR' #cat if fits
 
-PROMPT_COMMAND='history | tail -n1 | ~/history/dump_history.sh'
+export HISTSIZE=
+export HISTFILESIZE=
+export HISTTIMEFORMAT='%Y%m%d %T '
+export HISTFILE=~/.bash_eternal_history
+
+PROMPT_COMMAND='history -a; history | tail -n1 | ~/history/dump_history.sh'
 export PROMPT_COMMAND
 
 PATH=$PATH:~/scripts
 export PATH
 
 export PS1='\h: '
-
-export HISTSIZE=
-export HISTFILESIZE=
