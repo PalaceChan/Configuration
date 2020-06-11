@@ -419,6 +419,16 @@ to launch applications from exwm (not in use)
   (use-package helm-ag :ensure t)
   (use-package helm-rg :ensure t)
 #+END_SRC
+
+remap =term-previous-matching-input= to a helm frontend
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-shell-history
+    :load-path "~/.emacs.d/lisp/helm-shell-history"
+    :after term
+    :config
+    (setq helm-shell-history-file "~/.bash_eternal_history")
+    (define-key term-mode-map (kbd "M-r") 'helm-shell-history))
+#+END_SRC
 * avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
