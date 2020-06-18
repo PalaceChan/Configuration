@@ -429,6 +429,12 @@ remap =term-previous-matching-input= to a helm frontend
     (setq helm-shell-history-file "~/.bash_eternal_history")
     (define-key term-mode-map (kbd "M-r") 'helm-shell-history))
 #+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package helm-descbinds
+    :ensure t
+    :init (helm-descbinds-mode))
+#+END_SRC
 * avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -457,6 +463,8 @@ Like a cached/simplified form of TAGS without dependencies
 #+BEGIN_SRC emacs-lisp
   (use-package dumb-jump
     :ensure t
+    :bind
+    (("C-c j" . dumb-jump-go))
     :config
     (setq dumb-jump-selector 'helm
           dumb-jump-confirm-jump-to-modified-file nil))
@@ -677,6 +685,26 @@ automatically encloses double quotes or parens
     (define-key iedit-mode-occurrence-keymap (kbd "RET") 'iedit-mode)
     :diminish)
 #+END_SRC
+* multiple cursors
+the hydra here [[http://ivanmalison.github.io/dotfiles/][hydra-example]] not working well...
+pull in phi-search as well to get incremental search while in mc
+#+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :config
+    (progn
+      (use-package phi-search-mc
+        :ensure t
+        :config
+        (phi-search-mc/setup-keys)))
+    :bind (("C-c i e" . mc/mark-all-like-this)
+           ("C-c i l" . mc/edit-lines)
+           ("C-c i s" . mc/mark-all-in-region)
+           ("C-c i r" . mc/mark-all-in-region-regexp)
+           ("C-<"   . mc/mark-previous-like-this)
+           ("C->"   . mc/mark-next-like-this)
+           :map mc/keymap ("C-s" . phi-search)))
+#+END_SRC
 * easy kill
 Use ~M-w~ and modifiers to more efficiently save things to kill ring
 #+BEGIN_SRC emacs-lisp
@@ -713,7 +741,6 @@ show options for bindings in realtime
     )
 #+END_SRC
 * hydra
-great for git-gutter
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
     :ensure hydra
@@ -743,15 +770,6 @@ great for git-gutter
        ("r" paredit-raise-sexp "raise")
        ("s" paredit-splice-sexp "splice")
        ("u" undo-only "undo")
-       ("q" nil "quit")))
-
-    (global-set-key
-     (kbd "C-c j")
-     (defhydra hydra-dump-jump (:body-pre (dumb-jump-go)
-                                          :hint nil)
-       ("j" dumb-jump-go "go")
-       ("i" dumb-jump-go-prompt "prompt")
-       ("b" dumb-jump-back "back")
        ("q" nil "quit"))))
 #+END_SRC
 * magit
