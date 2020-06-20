@@ -604,6 +604,7 @@ now configure org (default installed)
     (setq org-list-description-max-indent 5)
     (setq org-export-html-postamble nil)
     (setq org-log-done 'note)
+    (setq org-cycle-separator-lines 0)
 
     (add-hook 'org-mode-hook 'org-indent-mode)
 
@@ -688,6 +689,7 @@ automatically encloses double quotes or parens
 * multiple cursors
 the hydra here [[http://ivanmalison.github.io/dotfiles/][hydra-example]] not working well...
 pull in phi-search as well to get incremental search while in mc
+(protip: easy-kill ==C-SPC== will turn selection into region)
 #+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
     :ensure t
