@@ -378,6 +378,7 @@ to launch applications from exwm (not in use)
                       ("C-c h r" . helm-register)
                       ("C-c h b" . helm-resume)
                       ("C-c h i" . helm-semantic-or-imenu)
+                      ("C-c h m" . helm-man-woman)
                       ("C-c h I" . helm-imenu-in-all-buffers)
                       ("C-c h l" . helm-locate)
                       ("C-c h <SPC>" . helm-all-mark-rings)
@@ -427,6 +428,8 @@ remap =term-previous-matching-input= to a helm frontend
     :after term
     :config
     (setq helm-shell-history-file "~/.bash_eternal_history")
+    (setq helm-shell-history-fuzzy-match t)
+    (setq helm-shell-history-fast-parser "~/development/helm-shell-history/src/parse_history")
     (define-key term-mode-map (kbd "M-r") 'helm-shell-history))
 #+END_SRC
 
@@ -574,21 +577,22 @@ Also run ~M-x irony-install-server~ which just needs cmake, libclang, and llvm l
 #+END_SRC
 * yasnippet
 #+BEGIN_SRC emacs-lisp
-  (use-package yasnippet
-    :ensure t
-    :diminish yas-minor-mode
-    :commands (yas-minor-mode)
-    :init
-    (progn 
-      (add-hook 'ess-r-mode-hook #'yas-minor-mode)
-      (add-hook 'python-mode-hook #'yas-minor-mode)
-      (add-hook 'lisp-interaction-mode-hook #'yas-minor-mode)
-      (add-hook 'emacs-lisp-mode-hook #'yas-minor-mode)
-      (add-hook 'c++-mode-hook #'yas-minor-mode))
-    :config
-    (use-package yasnippet-snippets
-      :ensure t)
-    (yas-reload-all))
+    (use-package yasnippet
+      :ensure t
+      :diminish yas-minor-mode
+      :commands (yas-minor-mode)
+      :init
+      (progn
+        (add-hook 'ess-r-mode-hook #'yas-minor-mode)
+        (add-hook 'python-mode-hook #'yas-minor-mode)
+        (add-hook 'lisp-interaction-mode-hook #'yas-minor-mode)
+        (add-hook 'emacs-lisp-mode-hook #'yas-minor-mode)
+        (add-hook 'c++-mode-hook #'yas-minor-mode)
+        (add-hook 'c-mode-hook #'yas-minor-mode))
+      :config
+      (use-package yasnippet-snippets
+        :ensure t)
+      (yas-reload-all))
 #+END_SRC
 * org
 use bullet mode
@@ -605,6 +609,7 @@ now configure org (default installed)
     (setq org-export-html-postamble nil)
     (setq org-log-done 'note)
     (setq org-cycle-separator-lines 0)
+    (setq org-deadline-warning-days 7)
 
     (add-hook 'org-mode-hook 'org-indent-mode)
 
@@ -803,9 +808,8 @@ show options for bindings in realtime
     :commands clang-format-buffer clang-format-region
     :config
     ;(setq clang-format-executable "TODO")
-    (add-hook 'c++-mode-hook (lambda ()
-                               (local-set-key (kbd "C-c b") #'clang-format-buffer)
-                               (local-set-key (kbd "C-c r") #'clang-format-region))))
+    (define-key c++-mode-map "\C-cb" 'clang-format-buffer)
+    (define-key c++-mode-map "\C-cb" 'clang-format-region))
 #+END_SRC
 * ess
 #+BEGIN_SRC emacs-lisp
@@ -860,9 +864,8 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
     :after (python)
     :config
     (setq python-black-command "/usr/bin/black")
-    (add-hook 'python-mode-hook (lambda ()
-                                  (local-set-key (kbd "C-c b") #'python-black-buffer)
-                                  (local-set-key (kbd "C-c r") #'python-black-region))))
+    (define-key python-mode-map "\C-cb" 'python-black-buffer)
+    (define-key python-mode-map "\C-cb" 'python-black-region))
 #+END_SRC
 * erc
 #+BEGIN_SRC emacs-lisp
