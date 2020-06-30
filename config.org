@@ -473,71 +473,23 @@ Like a cached/simplified form of TAGS without dependencies
           dumb-jump-confirm-jump-to-modified-file nil))
 #+END_SRC
 * company
-Including ~company-irony~ and ~company-c-headers~
-** general company
+** company
 #+BEGIN_SRC emacs-lisp
   (use-package company
     :ensure t
     :config
-    (setq company-idle-delay nil
+    (setq company-idle-delay 0.1
+          company-minimum-prefix-length 1
+          company-require-match nil
           company-show-numbers t
           company-tooltip-limit 20
-          company-etags-ignore-case t
-          company-dabbrev-downcase nil
-          company-dabbrev-ignore-case t
-          company-dabbrev-code-ignore-case t)
-    (setq company-backends
-          '((company-files company-keywords company-capf company-dabbrev-code company-gtags company-etags)
-            company-clang
-            (company-abbrev company-dabbrev)))
-    (add-hook 'after-init-hook 'global-company-mode)
-    ;; TODO fix not being able to use C-n and C-p
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "M-j") 'company-select-previous)
-    (define-key company-active-map (kbd "M-k") 'company-select-next)
-    ;; setup tab to manually trigger company completion
-    (define-key company-mode-map (kbd "TAB") 'company-indent-or-complete-common)
-    (define-key company-active-map (kbd "TAB") 'company-complete-common)
-    ;; setup M-h to show documentation for items on the autocomplete menu
-    (define-key company-active-map (kbd "M-h") 'company-show-doc-buffer)
-    (setq company-global-modes '(not compilation-mode magit-status-mode))
-    (use-package company-irony
-      :ensure t
-      :config
-      (setq company-irony-ignore-case 'smart)
-      (add-to-list 'company-backends 'company-irony)
-      (use-package company-c-headers
-        :ensure t
-        :functions irony--extract-user-search-paths company-c-headers
-        :preface
-        (defun company-c-headers-path-user-irony ()
-          "Return the user include paths for the current buffer."
-          (when irony-mode
-            (irony--extract-user-search-paths irony--compile-options
-                                              irony--working-directory)))
-        :config
-        (setq company-c-headers-path-user #'company-c-headers-path-user-irony)
-        (add-to-list 'company-backends #'company-c-headers))))
-#+END_SRC
-** company-shell
-backend for env vars and PATH in shells
-#+BEGIN_SRC emacs-lisp
-  (use-package company-shell
-    :ensure t
-    :after company
-    :config
-    (add-to-list 'company-shell-modes 'term-mode)
-    (add-to-list 'company-backends '(company-shell company-shell-env company-files)))
-#+END_SRC
-** helm company
-#+BEGIN_SRC emacs-lisp
-  (use-package helm-company
-    :ensure t
-    :config
-    (progn
-      (define-key company-mode-map (kbd "C-:") 'helm-company)
-      (define-key company-active-map (kbd "C-:") 'helm-company)))
+          company-tooltip-align-annotations t
+          company-global-modes '(not compilation-mode magit-status-mode)
+          company-backends '(company-clang company-capf company-files ;company-semantic <-- slow
+                                           (company-dabbrev-code company-gtags company-etags company-keywords)
+                                           company-dabbrev))
+    (define-key company-mode-map (kbd "C-:") 'company-complete-common)
+    (global-company-mode 1))
 #+END_SRC
 ** posframe
 A much nicer frame for completion candidates
@@ -546,6 +498,28 @@ A much nicer frame for completion candidates
     :ensure t
     :config
     (company-posframe-mode 1))
+#+END_SRC
+** helm company
+#+BEGIN_SRC emacs-lisp
+    (use-package helm-company
+      :ensure t
+      :config
+      (define-key company-mode-map (kbd "C-:") 'helm-company))
+#+END_SRC
+** company-shell
+backend for shells
+#+BEGIN_SRC emacs-lisp
+  (use-package company-shell
+    :ensure t
+    :after company
+    :config
+    (add-to-list 'company-shell-modes 'term-mode)
+    (add-hook
+     'term-mode-hook (lambda ()
+                       (set (make-local-variable 'company-idle-delay) 1.0)
+                       (set (make-local-variable 'company-minimum-prefix-length) 2)
+                       (set (make-local-variable 'company-backends)
+                            '((company-files company-shell company-shell-env) company-dabbrev)))))
 #+END_SRC
 * irony
 Also run ~M-x irony-install-server~ which just needs cmake, libclang, and llvm libs
@@ -582,7 +556,7 @@ Also run ~M-x irony-install-server~ which just needs cmake, libclang, and llvm l
       :diminish yas-minor-mode
       :commands (yas-minor-mode)
       :init
-      (progn
+      (progn 
         (add-hook 'ess-r-mode-hook #'yas-minor-mode)
         (add-hook 'python-mode-hook #'yas-minor-mode)
         (add-hook 'lisp-interaction-mode-hook #'yas-minor-mode)
@@ -814,21 +788,22 @@ show options for bindings in realtime
 * ess
 #+BEGIN_SRC emacs-lisp
   (use-package ess
+    :ensure t
     :init
-    ;my hook mysteriously stopped working so override here
-    (setq ess-indent-with-fancy-comments nil)
     (require 'ess-site)
     :config
-    (setq inferior-R-program-name "/usr/bin/R")
-    (setq inferior-R-args "--no-save")
-    (setq ess-eval-visibly-p nil)
-    (setq ess-directory "~/")
-    (defun ava-ess-settings () ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
+    (setq inferior-R-program-name "/usr/bin/R"
+          inferior-R-args "--no-save"
+          ess-eval-visibly-p nil
+          ess-directory "~/"
+          ess-use-flymake nil
+          ess-indent-with-fancy-comments nil)
+    ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
+    (defun ava-ess-settings ()
       (setq ess-indent-with-fancy-comments nil))
     (add-hook 'ess-mode-hook #'ava-ess-settings)
     (define-key ess-r-mode-map "_" #'ess-insert-assign)
-    (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign)
-    :ensure ess)
+    (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign))
 #+END_SRC
 * elpy
 To use a venv set a pyvenv-activate directory local or file local variable to the venv path
@@ -990,12 +965,12 @@ Telegram support from emacs (needs visual-fill-column)
 * leetcode
 on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
 #+BEGIN_SRC emacs-lisp
-  (use-package leetcode
-    :disabled
-    :ensure t
-    :config
-    (setq leetcode-prefer-language "cpp")
-    (setq leetcode-prefer-sql "mysql"))
+;  (use-package leetcode
+;    :disabled
+;    :ensure t
+;    :config
+;    (setq leetcode-prefer-language "cpp")
+;    (setq leetcode-prefer-sql "mysql"))
 #+END_SRC
 * projectile
 #+BEGIN_SRC emacs-lisp
