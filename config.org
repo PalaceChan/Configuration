@@ -534,10 +534,10 @@ backend for shells
     (add-to-list 'company-shell-modes 'term-mode)
     (add-hook
      'term-mode-hook (lambda ()
-                       (set (make-local-variable 'company-idle-delay) 1.0)
+                       (set (make-local-variable 'company-idle-delay) 0.5)
                        (set (make-local-variable 'company-minimum-prefix-length) 2)
                        (set (make-local-variable 'company-backends)
-                            '((company-files company-shell company-shell-env) company-dabbrev)))))
+                            '((company-capf company-files company-shell company-shell-env) company-dabbrev)))))
 #+END_SRC
 * irony
 Also run ~M-x irony-install-server~ which just needs cmake, libclang, and llvm libs
@@ -576,16 +576,17 @@ Some references here:
 [[http://ivanmalison.github.io/dotfiles/#languageserverprotocollsp][example C]]
 
 Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
+(rather than hook, manual enable via ==M-x lsp==)
 #+BEGIN_SRC emacs-lisp
-  (use-package flycheck :ensure t)
-  (use-package lsp-mode
-    :ensure t
-    :after flycheck
-    :commands lsp
-    :hook ((c-mode c++-mode) . lsp)
-    :config
-    (setq lsp-eldoc-hook nil)
-    (define-key  lsp-mode-map (kbd "C-c u") 'lsp-describe-thing-at-point))
+    (use-package flycheck :ensure t)
+    (use-package lsp-mode
+      :ensure t
+      :after flycheck
+      :commands lsp
+      ;:hook ((c-mode c++-mode) . lsp)
+      :config
+      (setq lsp-eldoc-hook nil)
+      (define-key  lsp-mode-map (kbd "C-c u") 'lsp-describe-thing-at-point))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -847,10 +848,10 @@ show options for bindings in realtime
     :commands clang-format-buffer clang-format-region
     :config
     ;(setq clang-format-executable "TODO")
-    (define-key c++-mode-map "\C-cb" 'clang-format-buffer)
-    (define-key c++-mode-map "\C-cb" 'clang-format-region))
+    (define-key c-mode-base-map "\C-cb" 'clang-format-buffer)
+    (define-key c-mode-base-map "\C-cb" 'clang-format-region))
 #+END_SRC
-* ess
+* R
 #+BEGIN_SRC emacs-lisp
   (use-package ess
     :ensure t
@@ -870,7 +871,7 @@ show options for bindings in realtime
     (define-key ess-r-mode-map "_" #'ess-insert-assign)
     (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign))
 #+END_SRC
-* elpy
+* python
 To use a venv set a pyvenv-activate directory local or file local variable to the venv path
 #+BEGIN_SRC emacs-lisp
   (use-package elpy
@@ -909,7 +910,47 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
     (define-key python-mode-map "\C-cb" 'python-black-buffer)
     (define-key python-mode-map "\C-cb" 'python-black-region))
 #+END_SRC
-* erc
+* clojure
+#+BEGIN_SRC emacs-lisp
+  (use-package clojure-mode
+    :ensure t
+    :mode
+    (("\\.clj.*$" . clojure-mode)
+     ("\\.edn.*$" . clojure-mode))
+    :init
+    (add-hook 'clojure-mode-hook #'yas-minor-mode)
+    (add-hook 'clojure-mode-hook #'paredit-mode)
+    (add-hook 'clojure-mode-hook #'eldoc-mode))
+
+  ;pulls cider
+  (use-package clj-refactor
+    :ensure t
+    :defer t
+    :diminish clj-refactor-mode
+    :config
+    (setq cljr-warn-on-eval nil)
+    (cljr-add-keybindings-with-prefix "C-c C-m"))
+
+  (use-package cider
+    :ensure t
+    :defer t
+    :init
+    (add-hook 'cider-mode-hook #'clj-refactor-mode)
+    (add-hook 'cider-repl-mode-hook #'paredit-mode)
+    :config
+    (setq cider-repl-use-clojure-font-lock t
+          cider-overlays-use-font-lock t
+          cider-repl-display-help-banner nil
+          cider-repl-pop-to-buffer-on-connect nil
+          ;nrepl-log-messages t
+          ;cider-preferred-build-tool "boot" ;(if no lein)
+          ;cider-prompt-save-file-on-load 'always-save
+          ;cider-font-lock-dynamically '(macro core function var)
+          ;nrepl-hide-special-buffers t
+          )
+    (cider-repl-toggle-pretty-printing))
+#+END_SRC
+* irc
 #+BEGIN_SRC emacs-lisp
       (use-package erc
         :ensure t
