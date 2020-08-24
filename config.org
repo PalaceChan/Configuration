@@ -612,8 +612,7 @@ Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
 
   (use-package company-lsp
     :ensure t
-    ;:custom (company-lsp-cache-candidates 'auto)
-    )
+    :custom (company-lsp-cache-candidates 'auto))
 #+END_SRC
 * yasnippet
 #+BEGIN_SRC emacs-lisp
@@ -897,8 +896,7 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
       (setq elpy-rpc-timeout 10)
       (setq python-shell-prompt-detect-failure-warning nil)
       (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter")
-      (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))
-      ))
+      (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
