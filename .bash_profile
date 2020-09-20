@@ -63,3 +63,4 @@ PATH=$PATH:~/scripts
 export PATH
 
 export PS1='\h: '
+xset r rate 200 70
