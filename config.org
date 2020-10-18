@@ -208,6 +208,20 @@ start a few common terms
       (setq vterm-max-scrollback 100000)
       (define-key vterm-mode-map (kbd "C-c C-j") 'vterm-copy-mode))
 #+END_SRC
+start a few common vterms
+#+BEGIN_SRC emacs-lisp
+  (defun ava/start-vterms ()
+    "Start a few common vterms"
+    (interactive)
+    (let ((vterm-start-helper (lambda (name cmd)
+                               (vterm (format "*vterm %s*"name))
+                               (with-current-buffer (format "*vterm %s*" name)
+                                 (let ((inhibit-read-only t))
+                                   (vterm-send-string (format "%s\n" cmd) t))))))
+      (save-window-excursion
+        ;only main shell for now
+        (funcall vterm-start-helper "main" ""))))
+#+END_SRC
 * development
 ** general
 #+BEGIN_SRC emacs-lisp
@@ -449,8 +463,10 @@ remap =term-previous-matching-input= to a helm frontend
 #+END_SRC
 * dumb jump
 Like a cached/simplified form of TAGS without dependencies
+Disable post xref change...
 #+BEGIN_SRC emacs-lisp
   (use-package dumb-jump
+    :disabled
     :ensure t
     :bind
     (("C-c j" . dumb-jump-go))
