@@ -200,6 +200,14 @@ start a few common terms
         ;only main shell for now
         (funcall term-start-helper "main" ""))))
 #+END_SRC
+* vterm
+#+BEGIN_SRC emacs-lisp
+    (use-package vterm
+      :ensure t
+      :config
+      (setq vterm-max-scrollback 100000)
+      (define-key vterm-mode-map (kbd "C-c C-j") 'vterm-copy-mode))
+#+END_SRC
 * development
 ** general
 #+BEGIN_SRC emacs-lisp
@@ -402,12 +410,13 @@ remap =term-previous-matching-input= to a helm frontend
 #+BEGIN_SRC emacs-lisp
   (use-package helm-shell-history
     :load-path "~/.emacs.d/lisp/helm-shell-history"
-    :after term
+    :after term vterm
     :config
     (setq helm-shell-history-file "~/.bash_eternal_history")
     (setq helm-shell-history-fuzzy-match t)
     (setq helm-shell-history-fast-parser "~/development/helm-shell-history/src/parse_history")
-    (define-key term-mode-map (kbd "M-r") 'helm-shell-history))
+    (define-key term-mode-map (kbd "M-r") 'helm-shell-history)
+    (define-key vterm-mode-map (kbd "M-r") 'helm-shell-history))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
