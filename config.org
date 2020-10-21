@@ -63,6 +63,9 @@ Disable common warnings
   (show-paren-mode t)
   (add-to-list 'same-window-buffer-names "*Buffer List*")
   (add-to-list 'same-window-buffer-names "*grep*")
+
+  (setq enable-recursive-minibuffers t)
+  (minibuffer-depth-indicate-mode)
 #+END_SRC
 ** save place
 #+BEGIN_SRC emacs-lisp
@@ -118,6 +121,8 @@ winner mode enabled to pop a stack of window configurations
     :bind (("M-N" . winner-redo)
            ("M-P" . winner-undo))
     :config
+    (when (boundp 'winner-boring-buffers-regexp)
+      (setq winner-boring-buffers-regexp "\\*[hH]elm.*"))
     (winner-mode 1))
 #+END_SRC
 aliases and global bindings
@@ -139,6 +144,16 @@ replace zap-to-char with superior zap-up-to-char
   (global-set-key "\M-Z" (lambda (char)
                            (interactive "cZap back to char: ")
                            (zap-up-to-char -1 char)))
+#+END_SRC
+show isearch counts
+#+BEGIN_SRC emacs-lisp
+  (use-package isearch
+    :no-require t
+    :defer t
+    :config
+    (when (version<= "27" emacs-version)
+      (setq isearch-lazy-count t
+            isearch-allow-scroll 'unlimited)))
 #+END_SRC
 * auto package updating
 stay up to date
@@ -350,6 +365,11 @@ to launch applications from exwm (not in use)
           recentf-auto-cleanup "05:00am")
     (recentf-mode t))
 #+END_SRC
+* ibuffer
+#+BEGIN_SRC emacs-lisp
+  (use-package ibuffer
+    :bind ("C-x C-b" . ibuffer))
+#+END_SRC
 * helm
 #+BEGIN_SRC emacs-lisp
   (use-package helm
@@ -368,7 +388,6 @@ to launch applications from exwm (not in use)
                  )
                :bind (
                       ("C-h a" . helm-apropos)
-                      ("C-x C-b" . helm-buffers-list)
                       ("C-x b" . helm-mini)
                       ("M-y" . helm-show-kill-ring)
                       ("M-x" . helm-M-x)
@@ -759,7 +778,8 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
   (use-package easy-kill
   :ensure t
   :config
-  (global-set-key [remap kill-ring-save] #'easy-kill))
+  (global-set-key [remap kill-ring-save] #'easy-kill)
+  (global-set-key [remap mark-sexp] #'easy-mark))
 #+END_SRC
 * fancy narrow
 replaces default narrow (slow so not in use)
