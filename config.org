@@ -288,7 +288,8 @@ toggle between implementation and header
 ** compilation
 #+BEGIN_SRC emacs-lisp
   (setq compile-command "make"
-        compilation-scroll-output t
+        compilation-always-kill t
+        compilation-scroll-output 'first-error
         compilation-read-command nil)
 #+END_SRC
 ** merging
