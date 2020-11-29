@@ -1010,7 +1010,20 @@ to launch applications from exwm (not in use)
 ;;  :bind
 ;;  ("s-SPC" . dmenu))
 #+END_SRC
-** dumb jump** elfeed
+** dumb jump
+Like a cached/simplified form of TAGS without dependencies
+Disable post xref change...
+#+BEGIN_SRC emacs-lisp
+;  (use-package dumb-jump
+;    :disabled
+;    :ensure t
+;    :bind
+;    (("C-c j" . dumb-jump-go))
+;    :config
+;    (setq dumb-jump-selector 'helm
+;          dumb-jump-confirm-jump-to-modified-file nil))
+#+END_SRC
+** elfeed
 #+BEGIN_SRC emacs-lisp
 ;  (use-package elfeed
 ;    :disabled
@@ -1147,15 +1160,3 @@ Telegram support from emacs (needs visual-fill-column)
 ;        :defer t)
 #+END_SRC
 
-Like a cached/simplified form of TAGS without dependencies
-Disable post xref change...
-#+BEGIN_SRC emacs-lisp
-;  (use-package dumb-jump
-;    :disabled
-;    :ensure t
-;    :bind
-;    (("C-c j" . dumb-jump-go))
-;    :config
-;    (setq dumb-jump-selector 'helm
-;          dumb-jump-confirm-jump-to-modified-file nil))
-#+END_SRC
