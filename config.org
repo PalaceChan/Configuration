@@ -1,5 +1,6 @@
-* startup
-** gc
+* settings
+** startup
+*** gc
 As early as possible do this
 #+BEGIN_SRC emacs-lisp
   (use-package gcmh
@@ -12,7 +13,7 @@ As early as possible do this
     (setq gcmh-verbose t)
     (setq gcmh-high-cons-threshold (* 100 1024 1024)))
 #+END_SRC
-** theme
+*** theme
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes :ensure t :defer t)
 (load-theme 'doom-one t)
@@ -20,7 +21,7 @@ As early as possible do this
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 #+END_SRC
-** start
+*** start
 Disable a bunch of visuals
 #+BEGIN_SRC emacs-lisp
 (menu-bar-mode 0)
@@ -34,7 +35,7 @@ Disable startup messages and text in scratch
   inhibit-startup-echo-area-message t
   initial-scratch-message nil)
 #+END_SRC
-** warnings
+*** warnings
 Disable common warnings
 #+BEGIN_SRC emacs-lisp
 (put 'set-goal-column 'disabled nil)
@@ -44,7 +45,7 @@ Disable common warnings
 (put 'downcase-region 'disabled nil)
 (setq large-file-warning-threshold (* 120 1024 1024))
 #+END_SRC
-** basic settings
+*** basic settings
 #+BEGIN_SRC emacs-lisp
   (setq scroll-step 1
         scroll-margin 3
@@ -67,12 +68,12 @@ Disable common warnings
   (setq enable-recursive-minibuffers t)
   (minibuffer-depth-indicate-mode)
 #+END_SRC
-** save place
+*** save place
 #+BEGIN_SRC emacs-lisp
   (use-package saveplace
     :config (save-place-mode))
 #+END_SRC
-** save history
+*** save history
 Save some history across sessions. (savehist-mode) on auto-save can be slow so we rely on desktop-save instead
 #+BEGIN_SRC emacs-lisp
   (setq history-length 800)
@@ -87,7 +88,7 @@ Save some history across sessions. (savehist-mode) on auto-save can be slow so w
            register-alist file-name-history (kill-ring . 8000)
            (minibuffer-history . 800) query-replace-history regexp-history)))
 #+END_SRC
-** mode bar
+*** mode bar
 show battery, column number and nicely formatted time
 #+BEGIN_SRC emacs-lisp
 (setq column-number-mode t)
@@ -97,18 +98,18 @@ show battery, column number and nicely formatted time
 (display-time-mode 1)
 (size-indication-mode t)
 #+END_SRC
-** highlighting
+*** highlighting
 #+BEGIN_SRC emacs-lisp
 (global-hi-lock-mode 1)
 (setq hi-lock-auto-select-face t)
 #+END_SRC
-** emacs server
+*** emacs server
 #+BEGIN_SRC emacs-lisp
   (require 'server)
   (unless (server-running-p)
     (server-start))
 #+END_SRC
-** misc
+*** misc
 override default timezones for the world clock view
 #+BEGIN_SRC emacs-lisp
 (setq display-time-world-list '(
@@ -155,100 +156,18 @@ show isearch counts
       (setq isearch-lazy-count t
             isearch-allow-scroll 'unlimited)))
 #+END_SRC
-* auto package updating
-stay up to date
-#+BEGIN_SRC emacs-lisp
-  (use-package auto-package-update
-    :ensure t
-    :if (not (daemonp))
-    :custom
-    (auto-package-update-interval 90)
-    (auto-package-update-prompt-before-update t)
-    (auto-package-update-delete-old-versions t)
-    (auto-package-update-hide-results t)
-    :config
-    (auto-package-update-maybe))
-#+END_SRC
-* term
-make line-mode the default for terms and allow bigger buffer size
-#+BEGIN_SRC emacs-lisp
-  (setq term-buffer-maximum-size 262144)
-  (defun ava/default-term-line-mode (&ret ignore) (term-line-mode))
-  (advice-add 'ansi-term :after #'ava/default-term-line-mode)
-#+END_SRC
-ansi-term defaults to bash
-#+BEGIN_SRC emacs-lisp
-(defvar my-term-shell "/bin/bash")
-(defadvice ansi-term (before force-bash)
-  (interactive (list my-term-shell)))
-(ad-activate 'ansi-term)
-#+END_SRC
-start a remote term =https://www.emacswiki.org/emacs/AnsiTermHints#toc4=
-#+BEGIN_SRC emacs-lisp
-  (defun ava/remote-term ()
-    (interactive)
-    (setq user (read-string "User: "))
-    (setq host (read-string "Host: "))
-    (setq term-ansi-buffer-name (concat "term " host))
-    (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
-    (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name "ssh" nil (list (concat user "@" host))))
-    (set-buffer term-ansi-buffer-name)
-    (term-mode)
-    (term-line-mode)
-    (term-set-escape-char ?\C-x)
-    (switch-to-buffer term-ansi-buffer-name)
-    (insert "function set-eterm-dir { \n echo -e \"\\033AnSiTu\" \"$LOGNAME\" \n echo -e \"\\033AnSiTc\" \"$(pwd)\" \n echo -e \"\\033AnSiTh\" \"$(hostname -f)\" \n history -a \n }")
-    (insert "\nPROMPT_COMMAND=set-eterm-dir\n")
-    (term-send-input))
-#+END_SRC
-start a few common terms
-#+BEGIN_SRC emacs-lisp
-  (defun ava/start-ansi-terms ()
-    "Start a few common ansi terms"
-    (interactive)
-    (let ((term-start-helper (lambda (name cmd)
-                               (ansi-term "/bin/bash" (format "bash.%s" name))
-                               (with-current-buffer (format "*bash.%s*" name)
-                                 (insert (format "%s\n" cmd))
-                                 (term-send-input)))))
-      (save-window-excursion
-        ;only main shell for now
-        (funcall term-start-helper "main" ""))))
-#+END_SRC
-* vterm
-#+BEGIN_SRC emacs-lisp
-    (use-package vterm
-      :ensure t
-      :config
-      (setq vterm-max-scrollback 100000)
-      (define-key vterm-mode-map (kbd "C-c C-j") 'vterm-copy-mode))
-#+END_SRC
-start a few common vterms
-#+BEGIN_SRC emacs-lisp
-  (defun ava/start-vterms ()
-    "Start a few common vterms"
-    (interactive)
-    (let ((vterm-start-helper (lambda (name cmd)
-                               (vterm (format "*vterm %s*"name))
-                               (with-current-buffer (format "*vterm %s*" name)
-                                 (let ((inhibit-read-only t))
-                                   (vterm-send-string (format "%s\n" cmd) t))))))
-      (save-window-excursion
-        ;only main shell for now
-        (funcall vterm-start-helper "main" ""))))
-#+END_SRC
-* development
-** general
+** development
+*** general
 #+BEGIN_SRC emacs-lisp
 (setq indent-tabs-mode nil)
 (setq tab-width 4)
 #+END_SRC
-** tags
+*** tags
 generation of TAGS covered by =scripts/updateTagsAndDb.py= on [[https://github.com/PalaceChan/][GitHub]]
 #+BEGIN_SRC emacs-lisp
 (setq tags-file-name "~/rabbit/tags/TAGS")
 #+END_SRC
-** semantic mode
+*** semantic mode
 use semantic without it interfering with completion and without auto-parsing in idle time
 (only use it for helm-semantic-or-imenu and thus parses buffer on demand)
 #+BEGIN_SRC emacs-lisp
@@ -261,7 +180,7 @@ use semantic without it interfering with completion and without auto-parsing in 
   (setq semantic-default-submodes '(global-semanticdb-minor-mode))
   (semantic-mode 1)
 #+END_SRC
-** c/c++
+*** c/c++
 indentation related
 #+BEGIN_SRC emacs-lisp
 (setq c-default-style "linux"
@@ -285,14 +204,14 @@ toggle between implementation and header
 (add-hook 'c-mode-common-hook (lambda() (global-set-key (kbd "C-c o") 'ff-find-other-file)))
 #+END_SRC
 
-** compilation
+*** compilation
 #+BEGIN_SRC emacs-lisp
   (setq compile-command "make"
         compilation-always-kill t
         compilation-scroll-output 'first-error
         compilation-read-command nil)
 #+END_SRC
-** merging
+*** merging
 ediff settings
 #+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'ediff
@@ -301,77 +220,251 @@ ediff settings
      ediff-split-window-function #'split-window-horizontally
      ediff-grab-mouse nil))
 #+END_SRC
-* undo-tree
-A better non-linear undo
+* active packages
+** auto package updating
+stay up to date
 #+BEGIN_SRC emacs-lisp
-  (use-package undo-tree
+  (use-package auto-package-update
     :ensure t
-    :diminish undo-tree-mode
+    :if (not (daemonp))
+    :custom
+    (auto-package-update-interval 90)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-delete-old-versions t)
+    (auto-package-update-hide-results t)
     :config
-    (setq   
-     undo-tree-enable-undo-in-region nil
-     undo-tree-visualizer-diff t
-     undo-tree-visualizer-timestamps t)
-    (global-undo-tree-mode))
+    (auto-package-update-maybe))
 #+END_SRC
-* exwm
-comment out for now as not in use
+** avy
 #+BEGIN_SRC emacs-lisp
-  ;;(use-package exwm :ensure t
-  ;;  :init
-  ;;  :config
-  ;;  (setq exwm-workspace-number 4)
-  ;;  (defun exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer exwm-title))
-  ;;  (add-hook 'exwm-update-title-hook 'exwm-rename-buffer-to-title)
-  ;;  (exwm-input-set-key (kbd "s-r") #'exwm-reset)
-  ;;  (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch)
-  ;;  (dotimes (i 10)
-  ;;    (exwm-input-set-key (kbd (format "s-%d" i))
-  ;;                        `(lambda ()
-  ;;                           (interactive)
-  ;;                           (exwm-workspace-switch-create ,i))))
-  ;;  (exwm-input-set-key (kbd "s-&")
-  ;;                      (lambda (command)
-  ;;                        (interactive (list (read-shell-command "$ ")))
-  ;;                        (start-process-shell-command command nil command)))
-  ;;  (setq exwm-input-simulation-keys
-  ;;        '(([?\C-b] . [left])
-  ;;          ([?\C-f] . [right])
-  ;;          ([?\C-p] . [up])
-  ;;          ([?\C-n] . [down])
-  ;;          ([?\C-a] . [home])
-  ;;          ([?\C-e] . [end])
-  ;;          ([?\M-v] . [prior])
-  ;;          ([?\C-v] . [next])
-  ;;          ([?\C-d] . [delete])
-  ;;          ([?\C-k] . [S-end delete])
-  ;;          ([?\C-s] . [?\C-f])
-  ;;          ([?\C-t] . [?\C-n])))
-  ;;  (exwm-enable)
-  ;;  )
-#+END_SRC
-* dmenu
-to launch applications from exwm (not in use)
-#+BEGIN_SRC emacs-lisp
-;;(use-package dmenu
-;;  :ensure t
-;;  :bind
-;;  ("s-SPC" . dmenu))
-#+END_SRC
-* recentf
-#+BEGIN_SRC emacs-lisp
-  (use-package recentf
+  (use-package avy
+    :ensure t
+    :bind (("M-g c" . avy-goto-char-timer)
+           ("M-g M-g" . avy-goto-line))
     :config
-    (setq recentf-max-saved-items 500
-          recentf-auto-cleanup "05:00am")
-    (recentf-mode t))
+    (setq avy-timeout-seconds 0.3)
+    (when (display-graphic-p) (setq avy-background t)))
 #+END_SRC
-* ibuffer
+** clang-format
 #+BEGIN_SRC emacs-lisp
-  (use-package ibuffer
-    :bind ("C-x C-b" . ibuffer))
+  (use-package clang-format
+    :ensure t
+    :commands clang-format-buffer clang-format-region
+    :config
+    ;(setq clang-format-executable "TODO")
+    (define-key c-mode-base-map "\C-cb" 'clang-format-buffer)
+    (define-key c-mode-base-map "\C-cb" 'clang-format-region))
 #+END_SRC
-* helm
+** clojure
+#+BEGIN_SRC emacs-lisp
+  (use-package clojure-mode
+    :ensure t
+    :mode
+    (("\\.clj.*$" . clojure-mode)
+     ("\\.edn.*$" . clojure-mode))
+    :init
+    (add-hook 'clojure-mode-hook #'yas-minor-mode)
+    (add-hook 'clojure-mode-hook #'paredit-mode)
+    (add-hook 'clojure-mode-hook #'eldoc-mode))
+
+  ;pulls cider
+  (use-package clj-refactor
+    :ensure t
+    :defer t
+    :diminish clj-refactor-mode
+    :config
+    (setq cljr-warn-on-eval nil)
+    (cljr-add-keybindings-with-prefix "C-c C-m"))
+
+  (use-package cider
+    :ensure t
+    :defer t
+    :init
+    (add-hook 'cider-mode-hook #'clj-refactor-mode)
+    (add-hook 'cider-repl-mode-hook #'paredit-mode)
+    :config
+    (setq cider-repl-use-clojure-font-lock t
+          cider-overlays-use-font-lock t
+          cider-repl-display-help-banner nil
+          cider-repl-pop-to-buffer-on-connect nil
+          ;nrepl-log-messages t
+          ;cider-preferred-build-tool "boot" ;(if no lein)
+          ;cider-prompt-save-file-on-load 'always-save
+          ;cider-font-lock-dynamically '(macro core function var)
+          ;nrepl-hide-special-buffers t
+          )
+    (cider-repl-toggle-pretty-printing))
+#+END_SRC
+** company
+*** company
+#+BEGIN_SRC emacs-lisp
+  (use-package company
+    :ensure t
+    :config
+    (setq company-idle-delay 0.1
+          company-minimum-prefix-length 1
+          company-require-match nil
+          company-show-numbers t
+          company-tooltip-limit 20
+          company-tooltip-align-annotations t
+          company-selection-wrap-around t
+          company-global-modes '(not compilation-mode magit-status-mode)
+          company-backends '(company-clang company-capf company-files ;company-semantic <-- slow
+                                           (company-dabbrev-code company-gtags company-etags company-keywords)
+                                           company-dabbrev))
+    (define-key company-mode-map (kbd "C-:") 'company-complete-common)
+    (define-key company-active-map (kbd "<tab>") 'smarter-yas-expand-next-field-complete)
+    (global-company-mode 1)
+    (defun smarter-yas-expand-next-field-complete ()
+      "Try to `yas-expand' and `yas-next-field' at current cursor position.
+
+  If failed try to complete the common part with `company-complete-common'"
+      (interactive)
+      (if yas-minor-mode
+          (let ((old-point (point))
+                (old-tick (buffer-chars-modified-tick)))
+            (yas-expand)
+            (when (and (eq old-point (point))
+                       (eq old-tick (buffer-chars-modified-tick)))
+              (ignore-errors (yas-next-field))
+              (when (and (eq old-point (point))
+                         (eq old-tick (buffer-chars-modified-tick)))
+                (company-complete-common))))
+        (company-complete-common))))
+#+END_SRC
+*** posframe
+A much nicer frame for completion candidates
+#+BEGIN_SRC emacs-lisp
+  (use-package company-posframe
+    :ensure t
+    :config
+    (company-posframe-mode 1))
+#+END_SRC
+*** helm company
+#+BEGIN_SRC emacs-lisp
+    (use-package helm-company
+      :ensure t
+      :config
+      (define-key company-mode-map (kbd "C-:") 'helm-company))
+#+END_SRC
+*** company-shell
+backend for shells
+#+BEGIN_SRC emacs-lisp
+  (use-package company-shell
+    :ensure t
+    :after company
+    :config
+    (add-to-list 'company-shell-modes 'term-mode)
+    (add-hook
+     'term-mode-hook (lambda ()
+                       (set (make-local-variable 'company-idle-delay) 0.5)
+                       (set (make-local-variable 'company-minimum-prefix-length) 2)
+                       (set (make-local-variable 'company-backends)
+                            '((company-capf company-files company-shell company-shell-env) company-dabbrev)))))
+#+END_SRC
+** deadgrep
+uses rg for fast grep
+#+BEGIN_SRC emacs-lisp
+  (use-package deadgrep
+    :ensure t
+    :bind ("M-s g" . deadgrep))
+#+END_SRC
+** dired related
+#+BEGIN_SRC emacs-lisp  
+  (with-eval-after-load 'dired
+    (require 'dired-x)
+    (setq 
+     dired-recursive-copies 'always
+     dired-recursive-deletes 'always
+     dired-dwim-target t
+     dired-auto-revert-buffer 'dired-directory-changed-p
+     dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"))
+#+END_SRC
+a much nicer dired (can in-place expand subdirectory contents)
+#+BEGIN_SRC emacs-lisp
+(use-package dired-subtree
+             :config
+             (define-key dired-mode-map "i" 'dired-subtree-insert)
+             (define-key dired-mode-map ";" 'dired-subtree-remove)
+             :ensure dired-subtree)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-git-info
+    :disabled
+    :ensure t
+    :bind (:map dired-mode-map (")" . dired-git-info-mode))
+    :config
+    (setq dgi-commit-message-format "%f\t%an\t%cr"))
+#+END_SRC
+** discover
+discover major mode
+#+BEGIN_SRC emacs-lisp
+  (use-package discover-my-major
+    :ensure t
+    :config
+    (global-set-key (kbd "C-h C-m") 'discover-my-major))
+#+END_SRC
+** eaf
+[[https://aur.archlinux.org/packages/emacs-eaf/][emacs-eaf AUR]]
+[[https://github.com/manateelazycat/emacs-application-framework][github]]
+#+BEGIN_SRC emacs-lisp
+  (use-package eaf
+    :load-path "/usr/share/emacs/site-lisp/eaf"
+    :custom
+    (eaf-find-alternate-file-in-dired t)
+    ;(browse-url-browser-function 'eaf-open-browser)
+    :config
+    (eaf-setq eaf-browser-enable-adblocker "true"))
+#+END_SRC
+** easy kill
+Use ~M-w~ and modifiers to more efficiently save things to kill ring
+#+BEGIN_SRC emacs-lisp
+  (use-package easy-kill
+  :ensure t
+  :config
+  (global-set-key [remap kill-ring-save] #'easy-kill)
+  (global-set-key [remap mark-sexp] #'easy-mark))
+#+END_SRC
+** elisp
+use =paredit= in lisp modes
+#+BEGIN_SRC emacs-lisp
+  (use-package paredit
+    :ensure t
+    :config
+    (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+    (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+    (add-hook 'ielm-mode-hook #'paredit-mode)
+    (add-hook 'lisp-mode-hook #'paredit-mode)
+    (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+#+END_SRC
+also enable eldoc
+#+BEGIN_SRC emacs-lisp
+  (use-package eldoc
+    :diminish
+    :hook ((emacs-lisp-mode) . eldoc-mode))
+#+END_SRC
+** expand region
+#+BEGIN_SRC emacs-lisp
+  (use-package expand-region
+    :ensure t
+    :commands er/expand-region
+    :bind ("C-=" . er/expand-region)
+    )
+#+END_SRC
+** git-gutter
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter
+    :ensure t
+    :init
+    (global-git-gutter-mode +1))
+#+END_SRC
+** git-timemachine
+#+BEGIN_SRC emacs-lisp
+  (use-package git-timemachine
+    :ensure t)
+#+END_SRC
+** helm
 #+BEGIN_SRC emacs-lisp
   (use-package helm
                :demand t
@@ -458,139 +551,71 @@ remap =term-previous-matching-input= to a helm frontend
     :ensure t
     :init (helm-descbinds-mode))
 #+END_SRC
-* avy
+** hydra
 #+BEGIN_SRC emacs-lisp
-  (use-package avy
-    :ensure t
-    :bind (("M-g c" . avy-goto-char-timer)
-           ("M-g M-g" . avy-goto-line))
-    :config
-    (setq avy-timeout-seconds 0.3)
-    (when (display-graphic-p) (setq avy-background t)))
-#+END_SRC
-* switch window
-#+BEGIN_SRC emacs-lisp
-  (use-package switch-window
-    :ensure t
-    :bind (
-           ("C-x o" . switch-window)
-           )
-    :config
-    (setq switch-window-shortcut-style 'qwerty)
-    (setq switch-window-qwerty-shortcuts '("a" "s" "d" "f" "j" "k" "l" "w" "e" "i" "o"))
-    (setq switch-window-minibuffer-shortcut ?z)
-    )
-#+END_SRC
-* dumb jump
-Like a cached/simplified form of TAGS without dependencies
-Disable post xref change...
-#+BEGIN_SRC emacs-lisp
-  (use-package dumb-jump
-    :disabled
-    :ensure t
-    :bind
-    (("C-c j" . dumb-jump-go))
-    :config
-    (setq dumb-jump-selector 'helm
-          dumb-jump-confirm-jump-to-modified-file nil))
-#+END_SRC
-* company
-** company
-#+BEGIN_SRC emacs-lisp
-  (use-package company
-    :ensure t
-    :config
-    (setq company-idle-delay 0.1
-          company-minimum-prefix-length 1
-          company-require-match nil
-          company-show-numbers t
-          company-tooltip-limit 20
-          company-tooltip-align-annotations t
-          company-selection-wrap-around t
-          company-global-modes '(not compilation-mode magit-status-mode)
-          company-backends '(company-clang company-capf company-files ;company-semantic <-- slow
-                                           (company-dabbrev-code company-gtags company-etags company-keywords)
-                                           company-dabbrev))
-    (define-key company-mode-map (kbd "C-:") 'company-complete-common)
-    (define-key company-active-map (kbd "<tab>") 'smarter-yas-expand-next-field-complete)
-    (global-company-mode 1)
-    (defun smarter-yas-expand-next-field-complete ()
-      "Try to `yas-expand' and `yas-next-field' at current cursor position.
+  (use-package hydra
+    :ensure hydra
+    :init
+    (global-set-key
+     (kbd "C-c g")
+     (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
+                                           :hint nil)
+       ("n" git-gutter:next-hunk "next hunk")
+       ("p" git-gutter:previous-hunk "previous hunk")
+       ("h" (progn (goto-char (point-min)) (git-gutter:next-hunk 1)) "first hunk")
+       ("l" (progn (goto-char (point-min)) (git-gutter:previous-hunk 1)) "last hunk")
+       ("<SPC>" git-gutter:popup-hunk "popup hunk")
+       ("s" git-gutter:stage-hunk "stage hunk")
+       ("r" git-gutter:revert-hunk "revert hunk")
+       ("q" nil "quit")))
 
-  If failed try to complete the common part with `company-complete-common'"
-      (interactive)
-      (if yas-minor-mode
-          (let ((old-point (point))
-                (old-tick (buffer-chars-modified-tick)))
-            (yas-expand)
-            (when (and (eq old-point (point))
-                       (eq old-tick (buffer-chars-modified-tick)))
-              (ignore-errors (yas-next-field))
-              (when (and (eq old-point (point))
-                         (eq old-tick (buffer-chars-modified-tick)))
-                (company-complete-common))))
-        (company-complete-common))))
+    (global-set-key
+     (kbd "C-c e")
+     (defhydra hydra-paredit (:hint nil)
+       ("f" paredit-forward-slurp-sexp "slurp-forward")
+       ("F" paredit-forward-barf-sexp "barf-forward")
+       ("b" paredit-backward-slurp-sexp "slurp-backward")
+       ("B" paredit-backward-barf-sexp "barf-backward")
+       ("n" paredit-foward "forward")
+       ("p" paredit-backward "backward")
+       ("r" paredit-raise-sexp "raise")
+       ("s" paredit-splice-sexp "splice")
+       ("u" undo-only "undo")
+       ("q" nil "quit"))))
 #+END_SRC
-** posframe
-A much nicer frame for completion candidates
+** ibuffer
 #+BEGIN_SRC emacs-lisp
-  (use-package company-posframe
+  (use-package ibuffer
+    :bind ("C-x C-b" . ibuffer))
+#+END_SRC
+** iedit
+#+BEGIN_SRC emacs-lisp
+  (use-package iedit
     :ensure t
+    :bind ("C-;" . iedit-mode)
     :config
-    (company-posframe-mode 1))
+    (setq iedit-toggle-key-default nil)
+    (define-key iedit-mode-occurrence-keymap (kbd "RET") 'iedit-mode)
+    :diminish)
 #+END_SRC
-** helm company
+** irc
 #+BEGIN_SRC emacs-lisp
-    (use-package helm-company
-      :ensure t
-      :config
-      (define-key company-mode-map (kbd "C-:") 'helm-company))
+      (use-package erc
+        :ensure t
+        :config
+        (setq erc-hide-list '("PART" "QUIT" "JOIN")
+              erc-server "irc.freenode.net"
+              erc-nick "hooxen"
+              erc-server-reconnect-timeout 30
+              erc-mode-line-format "%t")
+        (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
+                                            (shell-command-to-string (format "notify-send erc '%s'" msg))))
+        (use-package erc-colorize
+          :ensure t
+          :config
+          (erc-colorize-mode 1)))
 #+END_SRC
-** company-shell
-backend for shells
-#+BEGIN_SRC emacs-lisp
-  (use-package company-shell
-    :ensure t
-    :after company
-    :config
-    (add-to-list 'company-shell-modes 'term-mode)
-    (add-hook
-     'term-mode-hook (lambda ()
-                       (set (make-local-variable 'company-idle-delay) 0.5)
-                       (set (make-local-variable 'company-minimum-prefix-length) 2)
-                       (set (make-local-variable 'company-backends)
-                            '((company-capf company-files company-shell company-shell-env) company-dabbrev)))))
-#+END_SRC
-* irony
-Also run ~M-x irony-install-server~ which just needs cmake, libclang, and llvm libs
-Disabled in favor of trying LSP
-#+BEGIN_SRC emacs-lisp
-    (use-package irony
-      :disabled
-      :ensure t
-      :init
-      (add-hook 'c++-mode-hook 'irony-mode)
-      (add-hook 'c-mode-hook 'irony-mode)
-      (add-hook 'objc-mode-hook 'irony-mode)
-      (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang
-                                                      irony-cdb-json
-                                                      irony-cdb-clang-complete))
-      :bind (:map irony-mode-map
-                  ("C-c t" . irony-get-type))
-      :config
-      (defun ava/irony-mode-hook ()
-        (define-key irony-mode-map [remap completion-at-point]
-          'irony-completion-at-point-async)
-        (define-key irony-mode-map [remap complete-symbol]
-          'irony-completion-at-point-async))
-      (add-hook 'irony-mode-hook 'ava/irony-mode-hook)
-      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
-      (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
-      (add-hook 'irony-mode-hook #'irony-eldoc)
-      (use-package irony-eldoc
-        :ensure t))
-#+END_SRC
-* lsp
+** lsp
 Some references here:
 [[https://github.com/MaskRay/ccls/wiki/lsp-mode][ccls + lsp]]
 [[https://github.com/rememberYou/.emacs.d/blob/master/config.org#lsp][example A]]
@@ -636,26 +661,71 @@ Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
     :ensure t
     :custom (company-lsp-cache-candidates 'auto))
 #+END_SRC
-* yasnippet
+** magit
 #+BEGIN_SRC emacs-lisp
-    (use-package yasnippet
-      :ensure t
-      :diminish yas-minor-mode
-      :commands (yas-minor-mode)
-      :init
-      (progn 
-        (add-hook 'ess-r-mode-hook #'yas-minor-mode)
-        (add-hook 'python-mode-hook #'yas-minor-mode)
-        (add-hook 'lisp-interaction-mode-hook #'yas-minor-mode)
-        (add-hook 'emacs-lisp-mode-hook #'yas-minor-mode)
-        (add-hook 'c++-mode-hook #'yas-minor-mode)
-        (add-hook 'c-mode-hook #'yas-minor-mode))
-      :config
-      (use-package yasnippet-snippets
-        :ensure t)
-      (yas-reload-all))
+(use-package magit 
+:ensure t
+:config
+(setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+:bind
+("C-x g" . magit-status)
+("C-c m" . magit-file-dispatch))
 #+END_SRC
-* org
+** mu4e
+The smtp portion will require app specific password and will store it in ~/.authinfo after first use
+#+BEGIN_SRC emacs-lisp
+  (use-package mu4e
+    :load-path "/usr/share/emacs/site-lisp/mu4e"
+    :config
+    (setq mu4e-maildir (expand-file-name "~/mbsync"))
+    (setq mu4e-sent-folder "/sent")
+    (setq mu4e-drafts-folder "/drafts")
+    (setq mu4e-trash-folder "/trash")
+
+    ;;GMail/IMAP takes care of this
+    (setq mu4e-sent-messages-behavior 'delete)
+    (setq mu4e-get-mail-command "mbsync -q gmail")
+    (setq mu4e-update-interval 3600)
+    (setq mu4e-maildir-shortcuts
+    '(("/INBOX" . ?i)
+      ("/sent" . ?s)))
+    (setq mu4e-view-show-images t)
+    (setq mu4e-use-fancy-chars t)
+    (setq mu4e-view-show-addresses t)
+    (setq mu4e-headers-show-threads nil)
+    )
+  (require 'smtpmail)
+  (setq message-send-mail-function 'smtpmail-send-it
+        user-mail-address "email_username@gmail.com"
+        smtpmail-smtp-user "email_username"
+        smtpmail-local-domain "gmail.com"
+        smtpmail-default-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587)
+
+#+END_SRC
+** multiple cursors
+the hydra here [[http://ivanmalison.github.io/dotfiles/][hydra-example]] not working well...
+pull in phi-search as well to get incremental search while in mc
+(protip: easy-kill ==C-SPC== will turn selection into region)
+#+BEGIN_SRC emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :config
+    (progn
+      (use-package phi-search-mc
+        :ensure t
+        :config
+        (phi-search-mc/setup-keys)))
+    :bind (("C-c i e" . mc/mark-all-like-this)
+           ("C-c i l" . mc/edit-lines)
+           ("C-c i s" . mc/mark-all-in-region)
+           ("C-c i r" . mc/mark-all-in-region-regexp)
+           ("C-<"   . mc/mark-previous-like-this)
+           ("C->"   . mc/mark-next-like-this)
+           :map mc/keymap ("C-s" . phi-search)))
+#+END_SRC
+** org
 use bullet mode
 #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
@@ -689,211 +759,27 @@ now configure org (default installed)
             ("l" "Link" entry (file+headline "~/todo.org" "Links")
              "* %^L %? %^g")))
 #+END_SRC
-* dired related
-#+BEGIN_SRC emacs-lisp  
-  (with-eval-after-load 'dired
-    (require 'dired-x)
-    (setq 
-     dired-recursive-copies 'always
-     dired-recursive-deletes 'always
-     dired-dwim-target t
-     dired-auto-revert-buffer 'dired-directory-changed-p
-     dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"))
-#+END_SRC
-a much nicer dired (can in-place expand subdirectory contents)
+** projectile
 #+BEGIN_SRC emacs-lisp
-(use-package dired-subtree
-             :config
-             (define-key dired-mode-map "i" 'dired-subtree-insert)
-             (define-key dired-mode-map ";" 'dired-subtree-remove)
-             :ensure dired-subtree)
-#+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (use-package dired-git-info
-    :disabled
+  (use-package projectile
     :ensure t
-    :bind (:map dired-mode-map (")" . dired-git-info-mode))
-    :config
-    (setq dgi-commit-message-format "%f\t%an\t%cr"))
-#+END_SRC
-* ztree
-nice directory level diffing
-#+BEGIN_SRC emacs-lisp
-  (use-package ztree
-    :ensure t
-    :commands ztree-diff
-    :bind (:map ztree-mode-map
-                ("j" . ztree-jump-side)))
-#+END_SRC
-* wrap region
-automatically encloses double quotes or parens
-#+BEGIN_SRC emacs-lisp
-(use-package wrap-region
-  :ensure t
-  :config (wrap-region-global-mode t)
-  :diminish wrap-region-mode)
-#+END_SRC
-* expand region
-#+BEGIN_SRC emacs-lisp
-  (use-package expand-region
-    :ensure t
-    :commands er/expand-region
-    :bind ("C-=" . er/expand-region)
-    )
-#+END_SRC
-* iedit
-#+BEGIN_SRC emacs-lisp
-  (use-package iedit
-    :ensure t
-    :bind ("C-;" . iedit-mode)
-    :config
-    (setq iedit-toggle-key-default nil)
-    (define-key iedit-mode-occurrence-keymap (kbd "RET") 'iedit-mode)
-    :diminish)
-#+END_SRC
-* multiple cursors
-the hydra here [[http://ivanmalison.github.io/dotfiles/][hydra-example]] not working well...
-pull in phi-search as well to get incremental search while in mc
-(protip: easy-kill ==C-SPC== will turn selection into region)
-#+BEGIN_SRC emacs-lisp
-  (use-package multiple-cursors
-    :ensure t
-    :config
-    (progn
-      (use-package phi-search-mc
-        :ensure t
-        :config
-        (phi-search-mc/setup-keys)))
-    :bind (("C-c i e" . mc/mark-all-like-this)
-           ("C-c i l" . mc/edit-lines)
-           ("C-c i s" . mc/mark-all-in-region)
-           ("C-c i r" . mc/mark-all-in-region-regexp)
-           ("C-<"   . mc/mark-previous-like-this)
-           ("C->"   . mc/mark-next-like-this)
-           :map mc/keymap ("C-s" . phi-search)))
-#+END_SRC
-* easy kill
-Use ~M-w~ and modifiers to more efficiently save things to kill ring
-#+BEGIN_SRC emacs-lisp
-  (use-package easy-kill
-  :ensure t
-  :config
-  (global-set-key [remap kill-ring-save] #'easy-kill)
-  (global-set-key [remap mark-sexp] #'easy-mark))
-#+END_SRC
-* fancy narrow
-replaces default narrow (slow so not in use)
-#+BEGIN_SRC emacs-lisp
-;  (use-package fancy-narrow
-;    :ensure t
-;    :init
-;    (fancy-narrow-mode)
-;    :diminish fancy-narrow-mode)
-#+END_SRC
-* which key
-show options for bindings in realtime
-#+BEGIN_SRC emacs-lisp
-(use-package which-key
-  :ensure t
-  :init
-  (which-key-mode))
-#+END_SRC
-* transpose frame
-#+BEGIN_SRC emacs-lisp
-  (use-package transpose-frame
-    :ensure t
-    :bind (
-           ("C-x |" . rotate-frame-clockwise)
-           ("C-x \\" . rotate-frame-anticlockwise)
-           )
-    )
-#+END_SRC
-* hydra
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :ensure hydra
+    :diminish projectile-mode
     :init
-    (global-set-key
-     (kbd "C-c g")
-     (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
-                                           :hint nil)
-       ("n" git-gutter:next-hunk "next hunk")
-       ("p" git-gutter:previous-hunk "previous hunk")
-       ("h" (progn (goto-char (point-min)) (git-gutter:next-hunk 1)) "first hunk")
-       ("l" (progn (goto-char (point-min)) (git-gutter:previous-hunk 1)) "last hunk")
-       ("<SPC>" git-gutter:popup-hunk "popup hunk")
-       ("s" git-gutter:stage-hunk "stage hunk")
-       ("r" git-gutter:revert-hunk "revert hunk")
-       ("q" nil "quit")))
-
-    (global-set-key
-     (kbd "C-c e")
-     (defhydra hydra-paredit (:hint nil)
-       ("f" paredit-forward-slurp-sexp "slurp-forward")
-       ("F" paredit-forward-barf-sexp "barf-forward")
-       ("b" paredit-backward-slurp-sexp "slurp-backward")
-       ("B" paredit-backward-barf-sexp "barf-backward")
-       ("n" paredit-foward "forward")
-       ("p" paredit-backward "backward")
-       ("r" paredit-raise-sexp "raise")
-       ("s" paredit-splice-sexp "splice")
-       ("u" undo-only "undo")
-       ("q" nil "quit"))))
-#+END_SRC
-* magit
-#+BEGIN_SRC emacs-lisp
-(use-package magit 
-:ensure t
-:config
-(setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
-:bind
-("C-x g" . magit-status)
-("C-c m" . magit-file-dispatch))
-#+END_SRC
-* git-timemachine
-#+BEGIN_SRC emacs-lisp
-  (use-package git-timemachine
-    :ensure t)
-#+END_SRC
-* git-gutter
-#+BEGIN_SRC emacs-lisp
-  (use-package git-gutter
-    :ensure t
-    :init
-    (global-git-gutter-mode +1))
-#+END_SRC
-* clang-format
-#+BEGIN_SRC emacs-lisp
-  (use-package clang-format
-    :ensure t
-    :commands clang-format-buffer clang-format-region
+    (setq projectile-search-path '((expand-file-name "~/development")))
+    ;(setq projectile-project-root-files '("WORKSPACE"))
+    (setq projectile-project-root-files-bottom-up '(".git" ".projectile"))
     :config
-    ;(setq clang-format-executable "TODO")
-    (define-key c-mode-base-map "\C-cb" 'clang-format-buffer)
-    (define-key c-mode-base-map "\C-cb" 'clang-format-region))
+    (projectile-mode t)  
+    ;(projectile-register-project-type 'bazel '("WORKSPACE") :compile "bazel build ...")
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-term)
+    (use-package helm-projectile
+      :ensure t
+      :init
+      (helm-projectile-on)
+      (setq projectile-completion-system 'helm)))
 #+END_SRC
-* R
-#+BEGIN_SRC emacs-lisp
-  (use-package ess
-    :ensure t
-    :init
-    (require 'ess-site)
-    :config
-    (setq inferior-R-program-name "/usr/bin/R"
-          inferior-R-args "--no-save"
-          ess-eval-visibly-p nil
-          ess-directory "~/"
-          ess-use-flymake nil
-          ess-indent-with-fancy-comments nil)
-    ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
-    (defun ava-ess-settings ()
-      (setq ess-indent-with-fancy-comments nil))
-    (add-hook 'ess-mode-hook #'ava-ess-settings)
-    (define-key ess-r-mode-map "_" #'ess-insert-assign)
-    (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign))
-#+END_SRC
-* python
+** python
 To use a venv set a pyvenv-activate directory local or file local variable to the venv path
 #+BEGIN_SRC emacs-lisp
   (use-package elpy
@@ -931,167 +817,295 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
     (define-key python-mode-map "\C-cb" 'python-black-buffer)
     (define-key python-mode-map "\C-cb" 'python-black-region))
 #+END_SRC
-* clojure
+** R
 #+BEGIN_SRC emacs-lisp
-  (use-package clojure-mode
+  (use-package ess
     :ensure t
-    :mode
-    (("\\.clj.*$" . clojure-mode)
-     ("\\.edn.*$" . clojure-mode))
     :init
-    (add-hook 'clojure-mode-hook #'yas-minor-mode)
-    (add-hook 'clojure-mode-hook #'paredit-mode)
-    (add-hook 'clojure-mode-hook #'eldoc-mode))
-
-  ;pulls cider
-  (use-package clj-refactor
-    :ensure t
-    :defer t
-    :diminish clj-refactor-mode
+    (require 'ess-site)
     :config
-    (setq cljr-warn-on-eval nil)
-    (cljr-add-keybindings-with-prefix "C-c C-m"))
-
-  (use-package cider
-    :ensure t
-    :defer t
-    :init
-    (add-hook 'cider-mode-hook #'clj-refactor-mode)
-    (add-hook 'cider-repl-mode-hook #'paredit-mode)
-    :config
-    (setq cider-repl-use-clojure-font-lock t
-          cider-overlays-use-font-lock t
-          cider-repl-display-help-banner nil
-          cider-repl-pop-to-buffer-on-connect nil
-          ;nrepl-log-messages t
-          ;cider-preferred-build-tool "boot" ;(if no lein)
-          ;cider-prompt-save-file-on-load 'always-save
-          ;cider-font-lock-dynamically '(macro core function var)
-          ;nrepl-hide-special-buffers t
-          )
-    (cider-repl-toggle-pretty-printing))
+    (setq inferior-R-program-name "/usr/bin/R"
+          inferior-R-args "--no-save"
+          ess-eval-visibly-p nil
+          ess-directory "~/"
+          ess-use-flymake nil
+          ess-indent-with-fancy-comments nil)
+    ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
+    (defun ava-ess-settings ()
+      (setq ess-indent-with-fancy-comments nil))
+    (add-hook 'ess-mode-hook #'ava-ess-settings)
+    (define-key ess-r-mode-map "_" #'ess-insert-assign)
+    (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign))
 #+END_SRC
-* irc
+** recentf
 #+BEGIN_SRC emacs-lisp
-      (use-package erc
-        :ensure t
-        :config
-        (setq erc-hide-list '("PART" "QUIT" "JOIN")
-              erc-server "irc.freenode.net"
-              erc-nick "hooxen"
-              erc-server-reconnect-timeout 30
-              erc-mode-line-format "%t")
-        (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
-                                            (shell-command-to-string (format "notify-send erc '%s'" msg))))
-        (use-package erc-colorize
-          :ensure t
-          :config
-          (erc-colorize-mode 1)))
-#+END_SRC
-* elfeed
-#+BEGIN_SRC emacs-lisp
-  (use-package elfeed
-    :disabled
-    :ensure   t
-    :commands elfeed
+  (use-package recentf
     :config
-    (setq-default elfeed-search-filter "@1-week-ago ")
-    (setq elfeed-feeds
-          '(("https://www.archlinux.org/feeds/news/" arch)
-            ("http://www.reddit.com/r/emacs/.rss" emacs reddit)
-            ("http://sachachua.com/blog/category/emacs-news/feed" emacs sacha)
-            ("http://endlessparentheses.com/atom.xml" emacs)
-            ("http://www.masteringemacs.org/feed/" emacs)
-            ("http://emacs-fu.blogspot.com/feeds/posts/default" emacs)
-            ("http://emacsredux.com/atom.xml" emacs)
-            ("http://arxiv.org/rss/q-fin.TR" arxiv trading)
-            ("http://feeds.feedburner.com/zerohedge/feed"))
-            )
+    (setq recentf-max-saved-items 500
+          recentf-auto-cleanup "05:00am")
+    (recentf-mode t))
+#+END_SRC
+** switch window
+#+BEGIN_SRC emacs-lisp
+  (use-package switch-window
+    :ensure t
+    :bind (
+           ("C-x o" . switch-window)
+           )
+    :config
+    (setq switch-window-shortcut-style 'qwerty)
+    (setq switch-window-qwerty-shortcuts '("a" "s" "d" "f" "j" "k" "l" "w" "e" "i" "o"))
+    (setq switch-window-minibuffer-shortcut ?z)
     )
 #+END_SRC
-* mu4e
-The smtp portion will require app specific password and will store it in ~/.authinfo after first use
+** term
+make line-mode the default for terms and allow bigger buffer size
 #+BEGIN_SRC emacs-lisp
-  (use-package mu4e
-    :load-path "/usr/share/emacs/site-lisp/mu4e"
-    :config
-    (setq mu4e-maildir (expand-file-name "~/mbsync"))
-    (setq mu4e-sent-folder "/sent")
-    (setq mu4e-drafts-folder "/drafts")
-    (setq mu4e-trash-folder "/trash")
-
-    ;;GMail/IMAP takes care of this
-    (setq mu4e-sent-messages-behavior 'delete)
-    (setq mu4e-get-mail-command "mbsync -q gmail")
-    (setq mu4e-update-interval 3600)
-    (setq mu4e-maildir-shortcuts
-    '(("/INBOX" . ?i)
-      ("/sent" . ?s)))
-    (setq mu4e-view-show-images t)
-    (setq mu4e-use-fancy-chars t)
-    (setq mu4e-view-show-addresses t)
-    (setq mu4e-headers-show-threads nil)
+  (setq term-buffer-maximum-size 262144)
+  (defun ava/default-term-line-mode (&ret ignore) (term-line-mode))
+  (advice-add 'ansi-term :after #'ava/default-term-line-mode)
+#+END_SRC
+ansi-term defaults to bash
+#+BEGIN_SRC emacs-lisp
+(defvar my-term-shell "/bin/bash")
+(defadvice ansi-term (before force-bash)
+  (interactive (list my-term-shell)))
+(ad-activate 'ansi-term)
+#+END_SRC
+start a remote term =https://www.emacswiki.org/emacs/AnsiTermHints#toc4=
+#+BEGIN_SRC emacs-lisp
+  (defun ava/remote-term ()
+    (interactive)
+    (setq user (read-string "User: "))
+    (setq host (read-string "Host: "))
+    (setq term-ansi-buffer-name (concat "term " host))
+    (setq term-ansi-buffer-name (generate-new-buffer-name term-ansi-buffer-name))
+    (setq term-ansi-buffer-name (apply 'make-term term-ansi-buffer-name "ssh" nil (list (concat user "@" host))))
+    (set-buffer term-ansi-buffer-name)
+    (term-mode)
+    (term-line-mode)
+    (term-set-escape-char ?\C-x)
+    (switch-to-buffer term-ansi-buffer-name)
+    (insert "function set-eterm-dir { \n echo -e \"\\033AnSiTu\" \"$LOGNAME\" \n echo -e \"\\033AnSiTc\" \"$(pwd)\" \n echo -e \"\\033AnSiTh\" \"$(hostname -f)\" \n history -a \n }")
+    (insert "\nPROMPT_COMMAND=set-eterm-dir\n")
+    (term-send-input))
+#+END_SRC
+start a few common terms
+#+BEGIN_SRC emacs-lisp
+  (defun ava/start-ansi-terms ()
+    "Start a few common ansi terms"
+    (interactive)
+    (let ((term-start-helper (lambda (name cmd)
+                               (ansi-term "/bin/bash" (format "bash.%s" name))
+                               (with-current-buffer (format "*bash.%s*" name)
+                                 (insert (format "%s\n" cmd))
+                                 (term-send-input)))))
+      (save-window-excursion
+        ;only main shell for now
+        (funcall term-start-helper "main" ""))))
+#+END_SRC
+** transpose frame
+#+BEGIN_SRC emacs-lisp
+  (use-package transpose-frame
+    :ensure t
+    :bind (
+           ("C-x |" . rotate-frame-clockwise)
+           ("C-x \\" . rotate-frame-anticlockwise)
+           )
     )
-  (require 'smtpmail)
-  (setq message-send-mail-function 'smtpmail-send-it
-        user-mail-address "email_username@gmail.com"
-        smtpmail-smtp-user "email_username"
-        smtpmail-local-domain "gmail.com"
-        smtpmail-default-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-service 587)
-
 #+END_SRC
-* deadgrep
-uses rg for fast grep
+** undo-tree
+A better non-linear undo
 #+BEGIN_SRC emacs-lisp
-  (use-package deadgrep
+  (use-package undo-tree
     :ensure t
-    :bind ("M-s g" . deadgrep))
+    :diminish undo-tree-mode
+    :config
+    (setq   
+     undo-tree-enable-undo-in-region nil
+     undo-tree-visualizer-diff t
+     undo-tree-visualizer-timestamps t)
+    (global-undo-tree-mode))
 #+END_SRC
-* rmsbolt
+** vlf
+use for opening files larger than =large-file-warning-threshold=
 #+BEGIN_SRC emacs-lisp
-  (use-package rmsbolt
-    :disabled
-    :ensure t)
-#+END_SRC
-* elisp
-use =paredit= in lisp modes
-#+BEGIN_SRC emacs-lisp
-  (use-package paredit
+  (use-package vlf
     :ensure t
     :config
-    (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
-    (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
-    (add-hook 'ielm-mode-hook #'paredit-mode)
-    (add-hook 'lisp-mode-hook #'paredit-mode)
-    (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
+    (require 'vlf-setup))
 #+END_SRC
-also enable eldoc
+** vterm
 #+BEGIN_SRC emacs-lisp
-  (use-package eldoc
-    :diminish
-    :hook ((emacs-lisp-mode) . eldoc-mode))
+    (use-package vterm
+      :ensure t
+      :config
+      (setq vterm-max-scrollback 100000)
+      (define-key vterm-mode-map (kbd "C-c C-j") 'vterm-copy-mode))
 #+END_SRC
-* telega
-Telegram support from emacs (needs visual-fill-column)
+start a few common vterms
 #+BEGIN_SRC emacs-lisp
-  (use-package visual-fill-column :ensure t)
+  (defun ava/start-vterms ()
+    "Start a few common vterms"
+    (interactive)
+    (let ((vterm-start-helper (lambda (name cmd)
+                               (vterm (format "*vterm %s*"name))
+                               (with-current-buffer (format "*vterm %s*" name)
+                                 (let ((inhibit-read-only t))
+                                   (vterm-send-string (format "%s\n" cmd) t))))))
+      (save-window-excursion
+        ;only main shell for now
+        (funcall vterm-start-helper "main" ""))))
 #+END_SRC
+** which key
+show options for bindings in realtime
 #+BEGIN_SRC emacs-lisp
-      (require 'notifications)
-      (use-package telega
-        :disabled
-        :load-path "~/3rdParty/telega/"
-        :commands (telega)
-        :config
-        (setq telega-use-notifications t)
-        (add-hook 'telega-chat-mode-hook (lambda ()
-                                           (setq company-backends '(telega-company-emoji))
-                                           (company-mode 1)))
-        :defer t)
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode))
 #+END_SRC
-* leetcode
+** wrap region
+automatically encloses double quotes or parens
+#+BEGIN_SRC emacs-lisp
+(use-package wrap-region
+  :ensure t
+  :config (wrap-region-global-mode t)
+  :diminish wrap-region-mode)
+#+END_SRC
+** yasnippet
+#+BEGIN_SRC emacs-lisp
+    (use-package yasnippet
+      :ensure t
+      :diminish yas-minor-mode
+      :commands (yas-minor-mode)
+      :init
+      (progn 
+        (add-hook 'ess-r-mode-hook #'yas-minor-mode)
+        (add-hook 'python-mode-hook #'yas-minor-mode)
+        (add-hook 'lisp-interaction-mode-hook #'yas-minor-mode)
+        (add-hook 'emacs-lisp-mode-hook #'yas-minor-mode)
+        (add-hook 'c++-mode-hook #'yas-minor-mode)
+        (add-hook 'c-mode-hook #'yas-minor-mode))
+      :config
+      (use-package yasnippet-snippets
+        :ensure t)
+      (yas-reload-all))
+#+END_SRC
+** ztree
+nice directory level diffing
+#+BEGIN_SRC emacs-lisp
+  (use-package ztree
+    :ensure t
+    :commands ztree-diff
+    :bind (:map ztree-mode-map
+                ("j" . ztree-jump-side)))
+#+END_SRC
+* inactive packages
+** dmenu
+to launch applications from exwm (not in use)
+#+BEGIN_SRC emacs-lisp
+;;(use-package dmenu
+;;  :ensure t
+;;  :bind
+;;  ("s-SPC" . dmenu))
+#+END_SRC
+** dumb jump** elfeed
+#+BEGIN_SRC emacs-lisp
+;  (use-package elfeed
+;    :disabled
+;    :ensure   t
+;    :commands elfeed
+;    :config
+;    (setq-default elfeed-search-filter "@1-week-ago ")
+;    (setq elfeed-feeds
+;          '(("https://www.archlinux.org/feeds/news/" arch)
+;            ("http://www.reddit.com/r/emacs/.rss" emacs reddit)
+;            ("http://sachachua.com/blog/category/emacs-news/feed" emacs sacha)
+;            ("http://endlessparentheses.com/atom.xml" emacs)
+;            ("http://www.masteringemacs.org/feed/" emacs)
+;            ("http://emacs-fu.blogspot.com/feeds/posts/default" emacs)
+;            ("http://emacsredux.com/atom.xml" emacs)
+;            ("http://arxiv.org/rss/q-fin.TR" arxiv trading)
+;            ("http://feeds.feedburner.com/zerohedge/feed"))
+;            )
+;    )
+#+END_SRC
+** exwm
+comment out for now as not in use
+#+BEGIN_SRC emacs-lisp
+  ;;(use-package exwm :ensure t
+  ;;  :init
+  ;;  :config
+  ;;  (setq exwm-workspace-number 4)
+  ;;  (defun exwm-rename-buffer-to-title () (exwm-workspace-rename-buffer exwm-title))
+  ;;  (add-hook 'exwm-update-title-hook 'exwm-rename-buffer-to-title)
+  ;;  (exwm-input-set-key (kbd "s-r") #'exwm-reset)
+  ;;  (exwm-input-set-key (kbd "s-w") #'exwm-workspace-switch)
+  ;;  (dotimes (i 10)
+  ;;    (exwm-input-set-key (kbd (format "s-%d" i))
+  ;;                        `(lambda ()
+  ;;                           (interactive)
+  ;;                           (exwm-workspace-switch-create ,i))))
+  ;;  (exwm-input-set-key (kbd "s-&")
+  ;;                      (lambda (command)
+  ;;                        (interactive (list (read-shell-command "$ ")))
+  ;;                        (start-process-shell-command command nil command)))
+  ;;  (setq exwm-input-simulation-keys
+  ;;        '(([?\C-b] . [left])
+  ;;          ([?\C-f] . [right])
+  ;;          ([?\C-p] . [up])
+  ;;          ([?\C-n] . [down])
+  ;;          ([?\C-a] . [home])
+  ;;          ([?\C-e] . [end])
+  ;;          ([?\M-v] . [prior])
+  ;;          ([?\C-v] . [next])
+  ;;          ([?\C-d] . [delete])
+  ;;          ([?\C-k] . [S-end delete])
+  ;;          ([?\C-s] . [?\C-f])
+  ;;          ([?\C-t] . [?\C-n])))
+  ;;  (exwm-enable)
+  ;;  )
+#+END_SRC
+** fancy narrow
+replaces default narrow (slow so not in use)
+#+BEGIN_SRC emacs-lisp
+;  (use-package fancy-narrow
+;    :ensure t
+;    :init
+;    (fancy-narrow-mode)
+;    :diminish fancy-narrow-mode)
+#+END_SRC
+** irony
+Also run ~M-x irony-install-server~ which just needs cmake, libclang, and llvm libs
+Disabled in favor of trying LSP
+#+BEGIN_SRC emacs-lisp
+;    (use-package irony
+;      :disabled
+;      :ensure t
+;      :init
+;      (add-hook 'c++-mode-hook 'irony-mode)
+;      (add-hook 'c-mode-hook 'irony-mode)
+;      (add-hook 'objc-mode-hook 'irony-mode)
+;      (setq-default irony-cdb-compilation-databases '(irony-cdb-libclang
+;                                                      irony-cdb-json
+;                                                      irony-cdb-clang-complete))
+;      :bind (:map irony-mode-map
+;                  ("C-c t" . irony-get-type))
+;      :config
+;      (defun ava/irony-mode-hook ()
+;        (define-key irony-mode-map [remap completion-at-point]
+;          'irony-completion-at-point-async)
+;        (define-key irony-mode-map [remap complete-symbol]
+;          'irony-completion-at-point-async))
+;      (add-hook 'irony-mode-hook 'ava/irony-mode-hook)
+;      (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+;      (add-hook 'irony-mode-hook 'company-irony-setup-begin-commands)
+;      (add-hook 'irony-mode-hook #'irony-eldoc)
+;      (use-package irony-eldoc
+;        :ensure t))
+#+END_SRC
+** leetcode 
 on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
 #+BEGIN_SRC emacs-lisp
 ;  (use-package leetcode
@@ -1101,46 +1115,47 @@ on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
 ;    (setq leetcode-prefer-language "cpp")
 ;    (setq leetcode-prefer-sql "mysql"))
 #+END_SRC
-* projectile
+** rmsbolt
 #+BEGIN_SRC emacs-lisp
-  (use-package projectile
-    :ensure t
-    :diminish projectile-mode
-    :init
-    (setq projectile-search-path '((expand-file-name "~/development")))
-    ;(setq projectile-project-root-files '("WORKSPACE"))
-    (setq projectile-project-root-files-bottom-up '(".git" ".projectile"))
-    :config
-    (projectile-mode t)  
-    ;(projectile-register-project-type 'bazel '("WORKSPACE") :compile "bazel build ...")
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-term)
-    (use-package helm-projectile
-      :ensure t
-      :init
-      (helm-projectile-on)
-      (setq projectile-completion-system 'helm)))
+;  (use-package rmsbolt
+;    :disabled
+;    :ensure t)
 #+END_SRC
-* discover
-discover major mode
+** speed typing
 #+BEGIN_SRC emacs-lisp
-  (use-package discover-my-major
-    :ensure t
-    :config
-    (global-set-key (kbd "C-h C-m") 'discover-my-major))
+;  (use-package speed-type
+;    :ensure t
+;    :disabled
+;    :commands (speed-type-text))
 #+END_SRC
-* vlf
-use for opening files larger than =large-file-warning-threshold=
+** telega
+Telegram support from emacs (needs visual-fill-column)
 #+BEGIN_SRC emacs-lisp
-  (use-package vlf
-    :ensure t
-    :config
-    (require 'vlf-setup))
+  (use-package visual-fill-column :ensure t)
 #+END_SRC
-* speed typing
 #+BEGIN_SRC emacs-lisp
-  (use-package speed-type
-    :ensure t
-    :disabled
-    :commands (speed-type-text))
+;      (require 'notifications)
+;      (use-package telega
+;        :disabled
+;        :load-path "~/3rdParty/telega/"
+;        :commands (telega)
+;        :config
+;        (setq telega-use-notifications t)
+;        (add-hook 'telega-chat-mode-hook (lambda ()
+;                                           (setq company-backends '(telega-company-emoji))
+;                                           (company-mode 1)))
+;        :defer t)
+#+END_SRC
+
+Like a cached/simplified form of TAGS without dependencies
+Disable post xref change...
+#+BEGIN_SRC emacs-lisp
+;  (use-package dumb-jump
+;    :disabled
+;    :ensure t
+;    :bind
+;    (("C-c j" . dumb-jump-go))
+;    :config
+;    (setq dumb-jump-selector 'helm
+;          dumb-jump-confirm-jump-to-modified-file nil))
 #+END_SRC
