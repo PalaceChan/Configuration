@@ -413,9 +413,10 @@ discover major mode
     :load-path "/usr/share/emacs/site-lisp/eaf"
     :custom
     (eaf-find-alternate-file-in-dired t)
-    ;(browse-url-browser-function 'eaf-open-browser)
+    (browse-url-browser-function 'eaf-open-browser)
     :config
-    (eaf-setq eaf-browser-enable-adblocker "true"))
+    (eaf-setq eaf-browser-enable-adblocker "true")
+    (eaf-bind-key nil "p" eaf-browser-keybinding))
 #+END_SRC
 ** easy kill
 Use ~M-w~ and modifiers to more efficiently save things to kill ring
