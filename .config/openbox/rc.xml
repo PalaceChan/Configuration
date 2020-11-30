@@ -248,7 +248,10 @@
       </action>
     </keybind>
     <keybind key="W-d">
-      <action name="ToggleShowDesktop"/>
+      <!--<action name="ToggleShowDesktop"/>-->
+      <action name="Execute">
+        <command>dmenu_run</command>
+      </action>
     </keybind>
     <!-- Keybindings for windows -->
     <keybind key="A-F4">
