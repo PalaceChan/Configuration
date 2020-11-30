@@ -178,7 +178,7 @@
   </dock>
   <keyboard>
     <chainQuitKey>C-g</chainQuitKey>
-    <!-- Keybindings for desktop switching -->
+    <!-- Keybindings for desktop switching
     <keybind key="C-A-Left">
       <action name="GoToDesktop">
         <to>left</to>
@@ -227,6 +227,7 @@
         <wrap>no</wrap>
       </action>
     </keybind>
+    -->
     <keybind key="W-F1">
       <action name="GoToDesktop">
         <to>1</to>
@@ -247,12 +248,6 @@
         <to>4</to>
       </action>
     </keybind>
-    <keybind key="W-d">
-      <!--<action name="ToggleShowDesktop"/>-->
-      <action name="Execute">
-        <command>dmenu_run</command>
-      </action>
-    </keybind>
     <!-- Keybindings for windows -->
     <keybind key="A-F4">
       <action name="Close"/>
@@ -262,11 +257,13 @@
       <action name="FocusToBottom"/>
       <action name="Unfocus"/>
     </keybind>
+    <!--
     <keybind key="A-space">
       <action name="ShowMenu">
         <menu>client-menu</menu>
       </action>
     </keybind>
+    -->
     <!-- Keybindings for window switching -->
     <keybind key="A-Tab">
       <action name="NextWindow">
@@ -318,7 +315,7 @@
         <direction>down</direction>
       </action>
     </keybind>
-    <!-- Keybindings for running applications -->
+    <!-- Keybindings for running applications
     <keybind key="W-e">
       <action name="Execute">
         <startupnotify>
@@ -326,6 +323,18 @@
           <name>Konqueror</name>
         </startupnotify>
         <command>kfmclient openProfile filemanagement</command>
+      </action>
+    </keybind>
+    -->
+    <keybind key="W-d">
+      <!--<action name="ToggleShowDesktop"/>-->
+      <action name="Execute">
+        <command>dmenu_run</command>
+      </action>
+    </keybind>
+    <keybind key="W-Return">
+      <action name="Execute">
+        <command>urxvt</command>
       </action>
     </keybind>
   </keyboard>
