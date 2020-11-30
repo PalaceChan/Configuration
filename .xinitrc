@@ -1,22 +1,42 @@
 #!/bin/sh
 
-#Remeber to make a custom.desktop in /usr/share/xsessions/custom.desktop with contents as below to get the login optionality
-#also make a home symlink .xsession -> .xinitrc
-#[Desktop Entry]
-#Name=Xsession
-#Exec=/etc/X11/Xsession
+userresources=$HOME/.Xresources
+usermodmap=$HOME/.Xmodmap
+sysresources=/etc/X11/xinit/.Xresources
+sysmodmap=/etc/X11/xinit/.Xmodmap
 
-# Disable access control
-xhost +SI:localuser:$USER
+# merge in defaults and keymaps
 
-# Set themes, etc.
-gnome-settings-daemon &
+if [ -f $sysresources ]; then
+    xrdb -merge $sysresources
+fi
 
-# Set fallback cursor.
-xsetroot -cursor_name left_ptr
+if [ -f $sysmodmap ]; then
+    xmodmap $sysmodmap
+fi
 
-# Set keyboard repeat rate.
-xset r rate 200 60
+if [ -f "$userresources" ]; then
+    xrdb -merge "$userresources"
+fi
 
-#EXWM
-exec dbus-launch --exit-with-session /usr/bin/emacs25
+if [ -f "$usermodmap" ]; then
+    xmodmap "$usermodmap"
+fi
+
+# start some nice programs
+
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+ for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+  [ -x "$f" ] && . "$f"
+ done
+ unset f
+fi
+
+#twm &
+#xclock -geometry 50x50-1+1 &
+#xterm -geometry 80x50+494+51 &
+#xterm -geometry 80x20+494-0 &
+#exec xterm -geometry 80x66+0+0 -name login
+#exec i3 ##--shmlog-size=26214400
+exec openbox-session
+
