@@ -415,8 +415,17 @@ discover major mode
     (eaf-find-alternate-file-in-dired t)
     (browse-url-browser-function 'eaf-open-browser)
     :config
+    (eaf-setq eaf-pdf-default-zoom 1.25)
     (eaf-setq eaf-browser-enable-adblocker "true")
-    (eaf-bind-key nil "p" eaf-browser-keybinding))
+    (eaf-bind-key nil "SPC" eaf-browser-keybinding)
+    (eaf-bind-key nil "p" eaf-browser-keybinding)
+    (defun adviser-find-file (orig-fn file &rest args)
+      (let ((fn (if (commandp 'eaf-open) 'eaf-open orig-fn)))
+        (pcase (file-name-extension file)
+          ("pdf"  (apply fn file nil))
+          ("epub" (apply fn file nil))
+          (_      (apply orig-fn file args)))))
+    (advice-add #'find-file :around #'adviser-find-file))
 #+END_SRC
 ** easy kill
 Use ~M-w~ and modifiers to more efficiently save things to kill ring
