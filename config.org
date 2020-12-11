@@ -503,8 +503,8 @@ also enable eldoc
                       ("C-c h m" . helm-man-woman)
                       ("C-c h I" . helm-imenu-in-all-buffers)
                       ("C-c h l" . helm-locate)
-                      ("C-c h <SPC>" . helm-all-mark-rings)
-                      )
+                      ("C-c h g" . helm-google-suggest)
+                      ("C-c h <SPC>" . helm-all-mark-rings))
                :config
                (setq helm-command-prefix-key "C-c h")
                (setq helm-autoresize-min-height 25)
@@ -804,7 +804,8 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
               elpy-module-eldoc
               elpy-module-highlight-indentation
               elpy-module-pyvenv
-              elpy-module-yasnippet))
+              elpy-module-yasnippet
+              elpy-module-folding))
       (eval-after-load "elpy"
         '(cl-dolist (key '("C-<return>" "C-<up>" "C-<down>" "C-<left>" "C-<right>"))
            (define-key elpy-mode-map (kbd key) nil)))
