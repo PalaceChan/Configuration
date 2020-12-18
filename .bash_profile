@@ -28,6 +28,15 @@ function mgrep()
     eval ${CMD%| }
 }
 
+function ediff
+{
+    if [ -d $1 ]; then
+	emacsclient -q -eval "(ztree-diff \"$1\" \"$2\")"
+    else
+	emacsclient -q -eval "(ediff-files \"$1\" \"$2\")"
+    fi
+}
+
 ################################################################################
 
 alias e='/usr/bin/emacsclient -n'
