@@ -236,6 +236,38 @@ stay up to date
     :config
     (auto-package-update-maybe))
 #+END_SRC
+** auctex
+#+BEGIN_SRC emacs-lisp
+    (use-package tex
+      :ensure auctex
+      :defer t
+      :custom
+      (TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+      :hook
+      (LaTeX-mode . (lambda ()
+                      (turn-on-reftex)
+                      (setq reftex-plug-into-AUCTeX t)
+                      (reftex-isearch-minor-mode)
+                      (setq TeX-source-correlate-start-server t))))
+
+    (use-package company-auctex
+      :after tex
+      :ensure t
+      :commands (company-auctex
+                 company-auctext-labels
+                 company-auctest-bibs
+                 company-auctex-macros
+                 company-auctext-symbols
+                 company-auctext-environments)
+      :hook
+      (tex-mode . (lambda ()
+                    (setq-local company-backends '((company-auctex-labels
+                                                    company-auctex-bibs
+                                                    company-auctex-macros
+                                                    company-auctex-environments
+                                                    company-auctex-symbols
+                                                    company-capf))))))
+#+END_SRC
 ** avy
 #+BEGIN_SRC emacs-lisp
   (use-package avy
@@ -913,8 +945,10 @@ start a few common terms
                                  (insert (format "%s\n" cmd))
                                  (term-send-input)))))
       (save-window-excursion
-        ;only main shell for now
-        (funcall term-start-helper "main" ""))))
+        ;only shells for now
+        (funcall term-start-helper "rand0" "")
+        (funcall term-start-helper "rand1" "")
+        (funcall term-start-helper "rand2" ""))))
 #+END_SRC
 ** transpose frame
 #+BEGIN_SRC emacs-lisp
