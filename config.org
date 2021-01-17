@@ -1000,8 +1000,9 @@ start a few common vterms
                                  (let ((inhibit-read-only t))
                                    (vterm-send-string (format "%s\n" cmd) t))))))
       (save-window-excursion
-        ;only main shell for now
-        (funcall vterm-start-helper "main" ""))))
+        (funcall vterm-start-helper "rand0" "")
+        (funcall vterm-start-helper "rand1" "")
+        (funcall vterm-start-helper "rand2" ""))))
 #+END_SRC
 ** which key
 show options for bindings in realtime
