@@ -776,6 +776,7 @@ use bullet mode
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
 #+END_SRC
+
 now configure org (default installed)
 #+BEGIN_SRC emacs-lisp
     (setq org-use-speed-commands 1)
@@ -801,6 +802,16 @@ now configure org (default installed)
              "* TODO %?")
             ("l" "Link" entry (file+headline "~/todo.org" "Links")
              "* %^L %? %^g")))
+#+END_SRC
+use org-mime to compose email with org mode
+#+BEGIN_SRC emacs-lisp
+  (use-package org-mime
+    :ensure t
+    :config
+    (setq mail-host-address (getenv "HOST")
+          org-mime-export-options '(:section-numbers nil
+                                    :with-author nil
+                                    :with-toc nil)))
 #+END_SRC
 ** projectile
 #+BEGIN_SRC emacs-lisp
@@ -918,7 +929,7 @@ ansi-term defaults to bash
 #+END_SRC
 start a remote term =https://www.emacswiki.org/emacs/AnsiTermHints#toc4=
 #+BEGIN_SRC emacs-lisp
-  (defun ava/remote-term ()
+  (defun ava/raterm ()
     (interactive)
     (setq user (read-string "User: "))
     (setq host (read-string "Host: "))
@@ -989,16 +1000,37 @@ use for opening files larger than =large-file-warning-threshold=
       (setq vterm-max-scrollback 100000)
       (define-key vterm-mode-map (kbd "C-c C-j") 'vterm-copy-mode))
 #+END_SRC
+start a remote vterm
+#+BEGIN_SRC emacs-lisp
+  (defun ava/rvterm (hos)
+    "Start a dir-tracking vterm on hos (or host at point if host is nil)"
+    (interactive "P")
+    (let* ((host (or hos (thing-at-point 'sexp)))
+           (user (getenv "USER"))
+           (bname (format "*vterm %s*" host)))
+      (vterm bname)
+      (switch-to-buffer bname)
+      (let* ((inhibit-read-only t)
+             (sshcmd (format "ssh %s@%s" user host))
+             (fn1cmd "function vterm_printf() { \n printf \"\\e]%s\\e\\\\\" \"$1\" \n}")
+             (fn2cmd "function vterm_prompt_end() { \n vterm_printf \"51;A$(whoami)@$(hostname):$(pwd)\" \n }")
+             (ps1cmd "PS1=$PS1\'\\[$(vterm_promt_end)\\]\'")
+             (bigcmd (format "%s\n%s\n%s\n%s\n" sshcmd fn1cmd fn2cmd ps1cmd)))
+        (vterm-send-string bigcmd t))))
+#+END_SRC
 start a few common vterms
 #+BEGIN_SRC emacs-lisp
   (defun ava/start-vterms ()
     "Start a few common vterms"
     (interactive)
     (let ((vterm-start-helper (lambda (name cmd)
-                               (vterm (format "*vterm %s*"name))
-                               (with-current-buffer (format "*vterm %s*" name)
-                                 (let ((inhibit-read-only t))
-                                   (vterm-send-string (format "%s\n" cmd) t))))))
+                                (let ((bname (format "*vterm %s*")))
+                                  (if (eq nil (get-buffer bname))
+                                      (progn
+                                        (vterm bname)
+                                        (with-current-buffer bname
+                                          (let ((inhibit-read-only t))
+                                            (vterm-send-string (format "%s\n" cmd) t)))))))))
       (save-window-excursion
         (funcall vterm-start-helper "rand0" "")
         (funcall vterm-start-helper "rand1" "")
