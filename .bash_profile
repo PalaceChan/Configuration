@@ -95,6 +95,5 @@ function vterm_prompt_end()
     vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
 }
 
-if [ "vterm" == "$INSIDE_EMACS" ]; then
-    PS1=$PS1'\[$(vterm_prompt_end)\]'
-fi
+PS1=$PS1'\[$(vterm_prompt_end)\]'
+
