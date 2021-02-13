@@ -1024,7 +1024,7 @@ start a few common vterms
     "Start a few common vterms"
     (interactive)
     (let ((vterm-start-helper (lambda (name cmd)
-                                (let ((bname (format "*vterm %s*")))
+                                (let ((bname (format "*vterm %s*" name)))
                                   (if (eq nil (get-buffer bname))
                                       (progn
                                         (vterm bname)
