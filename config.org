@@ -57,7 +57,6 @@ Disable common warnings
         kill-ring-max 100
         undo-outer-limit 50000000
         make-backup-files nil
-        browse-url-browser-function 'eww-browse-url
         calendar-mode-line-format nil
         set-mark-command-repeat-pop t)
 
@@ -438,28 +437,6 @@ discover major mode
     :config
     (global-set-key (kbd "C-h C-m") 'discover-my-major))
 #+END_SRC
-** eaf
-[[https://aur.archlinux.org/packages/emacs-eaf/][emacs-eaf AUR]]
-[[https://github.com/manateelazycat/emacs-application-framework][github]]
-#+BEGIN_SRC emacs-lisp
-  (use-package eaf
-    :load-path "/usr/share/emacs/site-lisp/eaf"
-    :custom
-    (eaf-find-alternate-file-in-dired t)
-    (browse-url-browser-function 'eaf-open-browser)
-    :config
-    (eaf-setq eaf-pdf-default-zoom 1.25)
-    (eaf-setq eaf-browser-enable-adblocker "true")
-    (eaf-bind-key nil "SPC" eaf-browser-keybinding)
-    (eaf-bind-key nil "p" eaf-browser-keybinding)
-    (defun adviser-find-file (orig-fn file &rest args)
-      (let ((fn (if (commandp 'eaf-open) 'eaf-open orig-fn)))
-        (pcase (file-name-extension file)
-          ("pdf"  (apply fn file nil))
-          ("epub" (apply fn file nil))
-          (_      (apply orig-fn file args)))))
-    (advice-add #'find-file :around #'adviser-find-file))
-#+END_SRC
 ** easy kill
 Use ~M-w~ and modifiers to more efficiently save things to kill ring
 #+BEGIN_SRC emacs-lisp
@@ -593,6 +570,18 @@ remap =term-previous-matching-input= to a helm frontend
   (use-package helm-descbinds
     :ensure t
     :init (helm-descbinds-mode))
+#+END_SRC
+** helpful
+#+BEGIN_SRC emacs-lisp
+  (use-package helpful
+    :ensure t
+    :bind
+    (("C-h f" . helpful-callable)
+     ("C-h v" . helpful-variable)
+     ("C-h k" . helpful-key)
+     ("C-c C-d" . helpful-at-point)
+     ("C-h F" . helpful-funtion)
+     ("C-h C" . helpful-command)))
 #+END_SRC
 ** hydra
 #+BEGIN_SRC emacs-lisp
@@ -802,6 +791,12 @@ now configure org (default installed)
              "* TODO %?")
             ("l" "Link" entry (file+headline "~/todo.org" "Links")
              "* %^L %? %^g")))
+
+(require 'org-tempo)
+(add-to-list 'org-structure-template-alist '("sh" . "src bash"))
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
+(add-to-list 'org-structure-template-alist '("R" . "src R"))
 #+END_SRC
 use org-mime to compose email with org mode
 #+BEGIN_SRC emacs-lisp
@@ -1101,6 +1096,29 @@ Disable post xref change...
 ;    :config
 ;    (setq dumb-jump-selector 'helm
 ;          dumb-jump-confirm-jump-to-modified-file nil))
+#+END_SRC
+** eaf
+Disabled as not snappy enough
+[[https://aur.archlinux.org/packages/emacs-eaf/][emacs-eaf AUR]]
+[[https://github.com/manateelazycat/emacs-application-framework][github]]
+#+BEGIN_SRC emacs-lisp
+;  (use-package eaf
+;    :load-path "/usr/share/emacs/site-lisp/eaf"
+;    :custom
+;    (eaf-find-alternate-file-in-dired t)
+;    (browse-url-browser-function 'eaf-open-browser)
+;    :config
+;    (eaf-setq eaf-pdf-default-zoom 1.25)
+;    (eaf-setq eaf-browser-enable-adblocker "true")
+;    (eaf-bind-key nil "SPC" eaf-browser-keybinding)
+;    (eaf-bind-key nil "p" eaf-browser-keybinding)
+;    (defun adviser-find-file (orig-fn file &rest args)
+;      (let ((fn (if (commandp 'eaf-open) 'eaf-open orig-fn)))
+;        (pcase (file-name-extension file)
+;          ("pdf"  (apply fn file nil))
+;          ("epub" (apply fn file nil))
+;          (_      (apply orig-fn file args)))))
+;    (advice-add #'find-file :around #'adviser-find-file))
 #+END_SRC
 ** elfeed
 #+BEGIN_SRC emacs-lisp
