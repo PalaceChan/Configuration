@@ -61,8 +61,6 @@ Disable common warnings
         set-mark-command-repeat-pop t)
 
   (show-paren-mode t)
-  (add-to-list 'same-window-buffer-names "*Buffer List*")
-  (add-to-list 'same-window-buffer-names "*grep*")
 
   (setq enable-recursive-minibuffers t)
   (minibuffer-depth-indicate-mode)
@@ -108,14 +106,34 @@ show battery, column number and nicely formatted time
   (unless (server-running-p)
     (server-start))
 #+END_SRC
-*** misc
-override default timezones for the world clock view
+*** buffers
+kill current buffer no prompt
 #+BEGIN_SRC emacs-lisp
-(setq display-time-world-list '(
-                                ("America/Chicago" "Chicago") ("Asia/Tokyo" "Japan")
-                                ("Europe/Berlin" "Frankfurt") ("Australia/Sydney" "Australia") ))
+(defun kill-current-buffer ()
+  "Kill the current buffer, without confirmation."
+  (interactive)
+  (kill-buffer (current-buffer)))
+(global-set-key "\C-xk" 'kill-current-buffer)
 #+END_SRC
-winner mode enabled to pop a stack of window configurations
+
+#+begin_src emacs-lisp
+  (setq display-buffer-base-action
+        '(display-buffer-reuse-mode-window
+          display-buffer-reuse-window
+          display-buffer-same-window))
+
+  (setq even-window-sizes nil)
+
+  (add-to-list 'same-window-buffer-names "*grep*")
+  (add-to-list 'same-window-buffer-names "*Buffer List*")
+#+end_src
+*** misc
+#+BEGIN_SRC emacs-lisp
+    (setq display-time-world-time-format "%a, %d %b %I:%M %p %Z"
+          display-time-world-list '(("America/Chicago" "Chicago") ("Asia/Tokyo" "Japan")
+                                    ("Europe/Berlin" "Frankfurt") ("Australia/Sydney" "Australia")))
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp
   (use-package winner
     :bind (("M-N" . winner-redo)
@@ -125,27 +143,19 @@ winner mode enabled to pop a stack of window configurations
       (setq winner-boring-buffers-regexp "\\*[hH]elm.*"))
     (winner-mode 1))
 #+END_SRC
-aliases and global bindings
+
 #+BEGIN_SRC emacs-lisp
 (defalias 'yes-or-no-p 'y-or-n-p)
 (global-set-key (kbd "C-x l") 'align-regexp)
 #+END_SRC
-kill current buffer no prompt
-#+BEGIN_SRC emacs-lisp
-(defun kill-current-buffer ()
-  "Kill the current buffer, without confirmation."
-  (interactive)
-  (kill-buffer (current-buffer)))
-(global-set-key "\C-xk" 'kill-current-buffer)
-#+END_SRC
-replace zap-to-char with superior zap-up-to-char
+
 #+BEGIN_SRC emacs-lisp
   (global-set-key "\M-z" 'zap-up-to-char)
   (global-set-key "\M-Z" (lambda (char)
                            (interactive "cZap back to char: ")
                            (zap-up-to-char -1 char)))
 #+END_SRC
-show isearch counts
+
 #+BEGIN_SRC emacs-lisp
   (use-package isearch
     :no-require t
@@ -410,7 +420,9 @@ uses rg for fast grep
      dired-recursive-deletes 'always
      dired-dwim-target t
      dired-auto-revert-buffer 'dired-directory-changed-p
-     dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"))
+     dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"
+     dired-hide-details-hide-symlink-targets nil)
+    (add-hook 'dired-mode-hook (lambda () (interactive) (dired-hide-details-mode 1))))
 #+END_SRC
 a much nicer dired (can in-place expand subdirectory contents)
 #+BEGIN_SRC emacs-lisp
@@ -689,9 +701,9 @@ Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
 ;    ;(lsp-ui-sideline-show-code-actions nil)
 ;    )
 
-  (use-package company-lsp
-    :ensure t
-    :custom (company-lsp-cache-candidates 'auto))
+;(use-package company-lsp
+;    :ensure t
+;    :custom (company-lsp-cache-candidates 'auto))
 #+END_SRC
 ** magit
 #+BEGIN_SRC emacs-lisp
