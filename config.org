@@ -724,11 +724,9 @@ clean up staged code
       (let ((fname (expand-file-name name)))
         (pcase (file-name-extension name)
           ("py"
-           (let ((cmd (format "dos2unix -q %s" fname)))
-             (shell-command cmd)))
+           (shell-command (format "dos2unix -q %s" fname)))
           ((or "C" "H" "I" "c" "h" "cpp" "hpp")
-           (let ((cmd (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname)))
-             (shell-command cmd)))))))
+           (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname)))))))
 #+END_SRC
 ** mu4e
 The smtp portion will require app specific password and will store it in ~/.authinfo after first use
