@@ -707,13 +707,28 @@ Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
 #+END_SRC
 ** magit
 #+BEGIN_SRC emacs-lisp
-(use-package magit 
-:ensure t
-:config
-(setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
-:bind
-("C-x g" . magit-status)
-("C-c m" . magit-file-dispatch))
+  (use-package magit 
+    :ensure t
+    :config
+    (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+    :bind
+    ("C-x g" . magit-status)
+    ("C-c m" . magit-file-dispatch))
+#+END_SRC
+
+clean up staged code
+#+BEGIN_SRC emacs-lisp
+  (defun ava/format-staged ()
+    (interactive)
+    (dolist (name (magit-staged-files))
+      (let ((fname (expand-file-name name)))
+        (pcase (file-name-extension name)
+          ("py"
+           (let ((cmd (format "dos2unix -q %s" fname)))
+             (shell-command cmd)))
+          ((or "C" "H" "I" "c" "h" "cpp" "hpp")
+           (let ((cmd (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname)))
+             (shell-command cmd)))))))
 #+END_SRC
 ** mu4e
 The smtp portion will require app specific password and will store it in ~/.authinfo after first use
