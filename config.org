@@ -721,12 +721,13 @@ clean up staged code
   (defun ava/format-staged ()
     (interactive)
     (dolist (name (magit-staged-files))
-      (let ((fname (expand-file-name name)))
-        (pcase (file-name-extension name)
-          ("py"
-           (shell-command (format "dos2unix -q %s" fname)))
-          ((or "C" "H" "I" "c" "h" "cpp" "hpp")
-           (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname)))))))
+      (let ((fname (expand-file-name name (magit-toplevel))))
+        (when (file-exists-p fname)
+          (pcase (file-name-extension name)
+            ("py"
+             (shell-command (format "dos2unix -q %s" fname)))
+            ((or "C" "H" "I" "c" "h" "cpp" "hpp")
+             (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname))))))))
 #+END_SRC
 ** mu4e
 The smtp portion will require app specific password and will store it in ~/.authinfo after first use
