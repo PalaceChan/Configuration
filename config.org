@@ -625,6 +625,20 @@ remap =term-previous-matching-input= to a helm frontend
        ("r" paredit-raise-sexp "raise")
        ("s" paredit-splice-sexp "splice")
        ("u" undo-only "undo")
+       ("q" nil "quit")))
+
+    (global-set-key
+     (kbd "C-c w")
+     (defhydra hydra-windows (:hint nil)
+       ("r" rotate-frame-clockwise "clockwise")
+       ("\\" rotate-frame-clockwise "anticlockwise")
+       ("v" flip-frame "flip")
+       ("f" flop-frame "flop")
+       ("j" (shrink-window -10) "down")
+       ("k" (shrink-window 10) "up")
+       ("h" (shrink-window 10 t) "shrink")
+       ("l" (shrink-window -10 t) "widen")
+       ("0" (balance-windows) "balance")
        ("q" nil "quit"))))
 #+END_SRC
 ** ibuffer
@@ -847,7 +861,7 @@ use org-mime to compose email with org mode
     (projectile-mode t)  
     ;(projectile-register-project-type 'bazel '("WORKSPACE") :compile "bazel build ...")
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-term)
+    (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-vterm)
     (use-package helm-projectile
       :ensure t
       :init
