@@ -10,10 +10,7 @@ suppressWarnings(suppressMessages(local({
     library(lubridate)
     library(nanotime)
     library(ggplot2)
-    library(dtplyr)
-    library(dplyr)
     library(purrr)
-    library(tibble)
 })))
 
 
