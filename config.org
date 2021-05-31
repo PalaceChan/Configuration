@@ -736,7 +736,7 @@ clean up staged code
     (interactive)
     (dolist (name (magit-staged-files))
       (let ((fname (expand-file-name name (magit-toplevel))))
-        (when (file-exists-p fname)
+        (when (file-exists-p fname)	
           (pcase (file-name-extension name)
             ("py"
              (shell-command (format "dos2unix -q %s" fname)))
@@ -1071,6 +1071,17 @@ start a few common vterms
         (funcall vterm-start-helper "rand1" "")
         (funcall vterm-start-helper "rand2" ""))))
 #+END_SRC
+** webjump
+#+begin_src emacs-lisp
+  (use-package webjump
+    :bind (("C-c j" . webjump))
+    :config
+    (setq webjump-sites '(("Emacs Wiki" . [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" ""])
+                          ("DuckDuckGo" .  [simple-query "duckduckgo.com" "duckduckgo.com/?q=" ""])
+                          ("Google" .  [simple-query "www.google.com" "www.google.com/search?q=" ""])
+                          ("Wikipedia" .  [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
+                          ("AUR" . [simple-query "https://aur.archlinux.org" "https://aur.archlinux.org/packages/?O=0&K=" ""]))))
+#+end_src
 ** which key
 show options for bindings in realtime
 #+BEGIN_SRC emacs-lisp
