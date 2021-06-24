@@ -561,7 +561,7 @@ also enable eldoc
     :config
     (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-current-mode-from-helm-swoop))
 
-  (use-package helm-ag :ensure t)
+  (use-package helm-ag :ensure t :custom (helm-ag-insert-at-point 'symbol))
   (use-package helm-rg :ensure t)
 #+END_SRC
 
@@ -658,20 +658,22 @@ remap =term-previous-matching-input= to a helm frontend
 #+END_SRC
 ** irc
 #+BEGIN_SRC emacs-lisp
-      (use-package erc
-        :ensure t
-        :config
-        (setq erc-hide-list '("PART" "QUIT" "JOIN")
-              erc-server "irc.freenode.net"
-              erc-nick "hooxen"
-              erc-server-reconnect-timeout 30
-              erc-mode-line-format "%t")
-        (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
-                                            (shell-command-to-string (format "notify-send erc '%s'" msg))))
-        (use-package erc-colorize
-          :ensure t
-          :config
-          (erc-colorize-mode 1)))
+  (use-package erc
+    :ensure t
+    :config
+    (setq erc-lurker-hide-list '("PART" "QUIT" "JOIN")
+          erc-server "irc.libera.chat"
+          erc-nick "hooxen"
+          erc-join-buffer 'bury
+          erc-interpret-mirc-color t
+          erc-server-reconnect-timeout 30)
+    (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
+                                        (shell-command-to-string (format "notify-send erc '%s'" msg))))
+    (use-package erc-colorize
+      :ensure t
+      :config
+      (erc-colorize-mode 1)))
+
 #+END_SRC
 ** lsp
 Some references here:
@@ -853,12 +855,14 @@ use org-mime to compose email with org mode
   (use-package projectile
     :ensure t
     :diminish projectile-mode
+    :custom
+    (projectile-project-root-files-bottom-up '(".git" ".projectile"))
+    ;; (projectile-project-root-files '("WORKSPACE"))
     :init
-    (setq projectile-search-path '((expand-file-name "~/development")))
-    ;(setq projectile-project-root-files '("WORKSPACE"))
-    (setq projectile-project-root-files-bottom-up '(".git" ".projectile"))
+    (setq projectile-project-search-path '("~/development"))
+    (setq projectile-enable-caching t)
     :config
-    (projectile-mode t)  
+    (projectile-mode t)
     ;(projectile-register-project-type 'bazel '("WORKSPACE") :compile "bazel build ...")
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-vterm)
@@ -866,6 +870,7 @@ use org-mime to compose email with org mode
       :ensure t
       :init
       (helm-projectile-on)
+      (setq projectile-switch-project-action #'helm-projectile)
       (setq projectile-completion-system 'helm)))
 #+END_SRC
 ** python
