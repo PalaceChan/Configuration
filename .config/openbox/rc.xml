@@ -337,6 +337,12 @@
         <command>urxvt</command>
       </action>
     </keybind>
+    <keybind key="W-f">
+      <action name="ToggleMaximize"/>
+    </keybind>
+    <keybind key="W-F11">
+      <action name="Reconfigure"/>
+    </keybind>
   </keyboard>
   <mouse>
     <dragThreshold>1</dragThreshold>
