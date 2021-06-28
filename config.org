@@ -17,7 +17,7 @@ As early as possible do this
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes :ensure t :defer t)
 (load-theme 'doom-one t)
-(set-frame-font "Inconsolata-13")
+(set-frame-font "Monospace-13")
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 #+END_SRC

@@ -5,4 +5,4 @@
 *.background: #141c21
 *.cursorColor: #afbfbf
 
-URxvt.font: xft:Inconsolata:size=13
+URxvt.font: xft:monospace:size=13
