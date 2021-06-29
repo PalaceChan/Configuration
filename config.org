@@ -725,8 +725,9 @@ Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
 #+BEGIN_SRC emacs-lisp
   (use-package magit 
     :ensure t
-    :config
-    (setq magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+    :custom
+    (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+    (magit-log-section-commit-count 25)
     :bind
     ("C-x g" . magit-status)
     ("C-c m" . magit-file-dispatch))
@@ -745,39 +746,6 @@ clean up staged code
             ((or "C" "H" "I" "c" "h" "cpp" "hpp")
              (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname))))))))
 #+END_SRC
-** mu4e
-The smtp portion will require app specific password and will store it in ~/.authinfo after first use
-#+BEGIN_SRC emacs-lisp
-  (use-package mu4e
-    :load-path "/usr/share/emacs/site-lisp/mu4e"
-    :config
-    (setq mu4e-maildir (expand-file-name "~/mbsync"))
-    (setq mu4e-sent-folder "/sent")
-    (setq mu4e-drafts-folder "/drafts")
-    (setq mu4e-trash-folder "/trash")
-
-    ;;GMail/IMAP takes care of this
-    (setq mu4e-sent-messages-behavior 'delete)
-    (setq mu4e-get-mail-command "mbsync -q gmail")
-    (setq mu4e-update-interval 3600)
-    (setq mu4e-maildir-shortcuts
-    '(("/INBOX" . ?i)
-      ("/sent" . ?s)))
-    (setq mu4e-view-show-images t)
-    (setq mu4e-use-fancy-chars t)
-    (setq mu4e-view-show-addresses t)
-    (setq mu4e-headers-show-threads nil)
-    )
-  (require 'smtpmail)
-  (setq message-send-mail-function 'smtpmail-send-it
-        user-mail-address "email_username@gmail.com"
-        smtpmail-smtp-user "email_username"
-        smtpmail-local-domain "gmail.com"
-        smtpmail-default-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-service 587)
-
-#+END_SRC
 ** multiple cursors
 the hydra here [[http://ivanmalison.github.io/dotfiles/][hydra-example]] not working well...
 pull in phi-search as well to get incremental search while in mc
@@ -793,7 +761,7 @@ pull in phi-search as well to get incremental search while in mc
         (phi-search-mc/setup-keys)))
     :bind (("C-c i e" . mc/mark-all-like-this)
            ("C-c i l" . mc/edit-lines)
-           ("C-c i s" . mc/mark-all-in-region)
+           ("C-c i s" . mc/mark-all-symbols-like-this)
            ("C-c i r" . mc/mark-all-in-region-regexp)
            ("C-<"   . mc/mark-previous-like-this)
            ("C->"   . mc/mark-next-like-this)
@@ -1280,6 +1248,38 @@ on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
 ;    :config
 ;    (setq leetcode-prefer-language "cpp")
 ;    (setq leetcode-prefer-sql "mysql"))
+#+END_SRC
+** mu4e
+The smtp portion will require app specific password and will store it in ~/.authinfo after first use
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package mu4e
+  ;;   :load-path "/usr/share/emacs/site-lisp/mu4e"
+  ;;   :config
+  ;;   (setq mu4e-maildir (expand-file-name "~/mbsync"))
+  ;;   (setq mu4e-sent-folder "/sent")
+  ;;   (setq mu4e-drafts-folder "/drafts")
+  ;;   (setq mu4e-trash-folder "/trash")
+
+  ;;   ;;GMail/IMAP takes care of this
+  ;;   (setq mu4e-sent-messages-behavior 'delete)
+  ;;   (setq mu4e-get-mail-command "mbsync -q gmail")
+  ;;   (setq mu4e-update-interval 3600)
+  ;;   (setq mu4e-maildir-shortcuts
+  ;;   '(("/INBOX" . ?i)
+  ;;     ("/sent" . ?s)))
+  ;;   (setq mu4e-view-show-images t)
+  ;;   (setq mu4e-use-fancy-chars t)
+  ;;   (setq mu4e-view-show-addresses t)
+  ;;   (setq mu4e-headers-show-threads nil)
+  ;;   )
+  ;; (require 'smtpmail)
+  ;; (setq message-send-mail-function 'smtpmail-send-it
+  ;;       user-mail-address "email_username@gmail.com"
+  ;;       smtpmail-smtp-user "email_username"
+  ;;       smtpmail-local-domain "gmail.com"
+  ;;       smtpmail-default-smtp-server "smtp.gmail.com"
+  ;;       smtpmail-smtp-server "smtp.gmail.com"
+  ;;       smtpmail-smtp-service 587)
 #+END_SRC
 ** rmsbolt
 #+BEGIN_SRC emacs-lisp
