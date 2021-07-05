@@ -24,17 +24,22 @@ As early as possible do this
 *** start
 Disable a bunch of visuals
 #+BEGIN_SRC emacs-lisp
-(menu-bar-mode 0)
-(tool-bar-mode 0)
-(scroll-bar-mode 0)
-(transient-mark-mode 1)
+  (menu-bar-mode 0)
+  (tool-bar-mode 0)
+  (scroll-bar-mode 0)
+  (transient-mark-mode 1)
+  (blink-cursor-mode -1)
 #+END_SRC
 Disable startup messages and text in scratch
 #+BEGIN_SRC emacs-lisp
-(setq inhibit-startup-message t
-  inhibit-startup-echo-area-message t
-  initial-scratch-message nil)
+  (setq inhibit-startup-message t
+    inhibit-startup-echo-area-message t
+    initial-scratch-message nil)
 #+END_SRC
+Disable suspend
+#+begin_src emacs-lisp
+  (use-package frame :bind ("C-z" . nil))
+#+end_src
 *** warnings
 Disable common warnings
 #+BEGIN_SRC emacs-lisp
@@ -58,12 +63,16 @@ Disable common warnings
         undo-outer-limit 50000000
         make-backup-files nil
         calendar-mode-line-format nil
-        set-mark-command-repeat-pop t)
+        set-mark-command-repeat-pop t
+        load-prefer-newer t)
 
   (show-paren-mode t)
 
   (setq enable-recursive-minibuffers t)
   (minibuffer-depth-indicate-mode)
+
+  ;two slow on x220
+  ;(setq completion-styles '(flex))
 #+END_SRC
 *** save place
 #+BEGIN_SRC emacs-lisp
@@ -165,6 +174,10 @@ kill current buffer no prompt
       (setq isearch-lazy-count t
             isearch-allow-scroll 'unlimited)))
 #+END_SRC
+
+#+begin_src emacs-lisp
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+#+end_src
 ** development
 *** general
 #+BEGIN_SRC emacs-lisp
@@ -218,7 +231,8 @@ toggle between implementation and header
   (setq compile-command "make"
         compilation-always-kill t
         compilation-scroll-output 'first-error
-        compilation-read-command nil)
+        compilation-read-command nil
+        compilation-ask-about-save nil)
 #+END_SRC
 *** merging
 ediff settings
@@ -230,6 +244,24 @@ ediff settings
      ediff-grab-mouse nil
      ediff-keep-variants nil))
 #+END_SRC
+*** re-builder
+settings and query replace from there helper
+(from https://blog.echosa.net/blog/2012/06/26/re-builder-query-replace-this/)
+#+begin_src emacs-lisp
+  (use-package re-builder
+    :config
+    (setq reb-re-syntax 'string)
+    (defun ava/reb-query-replace-this-regxp (replace)
+      (interactive "sReplace with: ")
+      (if (eq major-mode 'reb-mode)
+          (let ((reg (reb-read-regexp)))
+            (select-window reb-target-window)
+            (save-excursion
+              (beginning-of-buffer)
+              (query-replace-regexp reg replace)))
+        (message "Not in a re-builder buffer!")))
+    (define-key reb-mode-map "\C-c\M-%" 'ava/reb-query-replace-this-regxp))
+#+end_src
 * active packages
 ** auto package updating
 stay up to date
@@ -287,6 +319,22 @@ stay up to date
     (setq avy-timeout-seconds 0.3)
     (when (display-graphic-p) (setq avy-background t)))
 #+END_SRC
+** bookmarks
+from https://github.com/howardabrams/dot-files/blob/master/emacs.org
+#+begin_src emacs-lisp
+  (use-package bookmark
+    :init (setq bookmark-save-flag 1)
+    :config
+    (defun ava/add-bookmark (name)
+      (interactive
+       (list (let* ((filename  (file-name-base (buffer-file-name)))
+                    (project   (projectile-project-name))
+                    (func-name (which-function))
+                    (initial   (format "%s::%s:%s " project filename func-name)))
+               (read-string "Bookmark: " initial))))
+      (bookmark-set name))
+    :bind (("C-x r m" . ava/add-bookmark)))
+#+end_src
 ** clang-format
 #+BEGIN_SRC emacs-lisp
   (use-package clang-format
@@ -412,10 +460,10 @@ uses rg for fast grep
     :bind ("M-s g" . deadgrep))
 #+END_SRC
 ** dired related
-#+BEGIN_SRC emacs-lisp  
+#+BEGIN_SRC emacs-lisp
   (with-eval-after-load 'dired
     (require 'dired-x)
-    (setq 
+    (setq
      dired-recursive-copies 'always
      dired-recursive-deletes 'always
      dired-dwim-target t
@@ -476,6 +524,27 @@ also enable eldoc
     :diminish
     :hook ((emacs-lisp-mode) . eldoc-mode))
 #+END_SRC
+** ess
+#+BEGIN_SRC emacs-lisp
+  (use-package ess
+    :ensure t
+    :init
+    (require 'ess-site)
+    :config
+    (setq inferior-R-program-name "/usr/bin/R"
+          inferior-R-args "--no-save"
+          ess-eval-visibly-p nil
+          ess-directory "~/"
+          ess-use-flymake nil
+          ess-indent-with-fancy-comments nil
+          ess-ask-for-ess-directory nil)
+    ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
+    (defun ava-ess-settings ()
+      (setq ess-indent-with-fancy-comments nil))
+    (add-hook 'ess-mode-hook #'ava-ess-settings)
+    (define-key ess-r-mode-map "_" #'ess-insert-assign)
+    (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign))
+#+END_SRC
 ** expand region
 #+BEGIN_SRC emacs-lisp
   (use-package expand-region
@@ -499,63 +568,64 @@ also enable eldoc
 ** helm
 #+BEGIN_SRC emacs-lisp
   (use-package helm
-               :demand t
-               :diminish helm-mode
-               :init
-               (progn
-                 (require 'helm-config)
-                 (setq helm-candidate-number-limit 100)
-                 (setq helm-idle-delay 0.0
-                       helm-input-idle-delay 0.01
-                       helm-yas-display-key-on-candidate t
-                       helm-quick-update t
-                       helm-M-x-requires-pattern nil)
-                 (helm-mode)
-                 )
-               :bind (
-                      ("C-h a" . helm-apropos)
-                      ("C-x b" . helm-mini)
-                      ("M-y" . helm-show-kill-ring)
-                      ("M-x" . helm-M-x)
-                      ("C-x C-f" . helm-find-files)
-                      ("C-c h o" . helm-occur)
-                      ("C-c h r" . helm-register)
-                      ("C-c h b" . helm-resume)
-                      ("C-c h i" . helm-semantic-or-imenu)
-                      ("C-c h m" . helm-man-woman)
-                      ("C-c h I" . helm-imenu-in-all-buffers)
-                      ("C-c h l" . helm-locate)
-                      ("C-c h g" . helm-google-suggest)
-                      ("C-c h <SPC>" . helm-all-mark-rings))
-               :config
-               (setq helm-command-prefix-key "C-c h")
-               (setq helm-autoresize-min-height 25)
-               (setq helm-autoresize-max-height 25)
-               (setq helm-split-window-in-side-p t
-                     helm-move-to-line-cycle-in-source t
-                     helm-ff-search-library-in-sexp t
-                     helm-scroll-amount 8
-                     helm-ff-file-name-history-use-recentf t)
-               (setq helm-buffer-max-length nil)
-               ;;locate %s -d FOO -e --regex %s where FOO is : delimited from cmd updatedb -l 0 -o i.db -U path_i for all paths
-               ;;(defvar my-locate-db-command (with-temp-buffer (insert-file-contents "path/to/cmd.txt") (buffer-string)))
-               ;;(setq helm-locate-command my-locae-db-command)
-               (helm-mode 1)
-               (helm-autoresize-mode 1)
-               (define-key  helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-               (define-key  helm-map (kbd "C-i") 'helm-execute-persistent-action)
-               (define-key  helm-map (kbd "C-z") 'helm-select-action)
-               (defun ava/around-helm-buffers-sort-transformer (candidates source)
-                 candidates)
-               (advice-add 'helm-buffers-sort-transformer
-                           :override #'ava/around-helm-buffers-sort-transformer)
-               :ensure helm)
+    :demand t
+    :diminish helm-mode
+    :init
+    (progn
+      (require 'helm-config)
+      (setq helm-candidate-number-limit 100)
+      (setq helm-idle-delay 0.0
+            helm-input-idle-delay 0.01
+            helm-yas-display-key-on-candidate t
+            helm-quick-update t
+            helm-M-x-requires-pattern nil)
+      (helm-mode)
+      )
+    :bind (
+           ("C-h a" . helm-apropos)
+           ("C-x b" . helm-mini)
+           ("M-y" . helm-show-kill-ring)
+           ("M-x" . helm-M-x)
+           ("C-x C-f" . helm-find-files)
+           ("C-c h o" . helm-occur)
+           ("C-c h r" . helm-register)
+           ("C-c h b" . helm-resume)
+           ("C-c h i" . helm-semantic-or-imenu)
+           ("C-c h m" . helm-man-woman)
+           ("C-c h I" . helm-imenu-in-all-buffers)
+           ("C-c h l" . helm-locate)
+           ("C-c h g" . helm-google-suggest)
+           ("C-c h <SPC>" . helm-all-mark-rings))
+    :config
+    (setq helm-command-prefix-key "C-c h")
+    (setq helm-autoresize-min-height 25)
+    (setq helm-autoresize-max-height 25)
+    (setq helm-split-window-in-side-p t
+          helm-move-to-line-cycle-in-source t
+          helm-ff-search-library-in-sexp t
+          helm-scroll-amount 8
+          helm-ff-file-name-history-use-recentf t)
+    (setq helm-buffer-max-length nil)
+    ;;locate %s -d FOO -e --regex %s where FOO is : delimited from cmd updatedb -l 0 -o i.db -U path_i for all paths
+    ;;(defvar my-locate-db-command (with-temp-buffer (insert-file-contents "path/to/cmd.txt") (buffer-string)))
+    ;;(setq helm-locate-command my-locae-db-command)
+    (helm-mode 1)
+    (helm-autoresize-mode 1)
+    (define-key  helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+    (define-key  helm-map (kbd "C-i") 'helm-execute-persistent-action)
+    (define-key  helm-map (kbd "C-z") 'helm-select-action)
+    (defun ava/around-helm-buffers-sort-transformer (candidates source)
+      candidates)
+    (advice-add 'helm-buffers-sort-transformer
+                :override #'ava/around-helm-buffers-sort-transformer)
+    :ensure helm)
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm-swoop
     :ensure t
     :bind (("C-c h s" . helm-multi-swoop))
+    :custom (helm-swoop-speed-or-color t)
     :init
     (bind-key "M-i" 'helm-swoop-from-isearch isearch-mode-map)
     :config
@@ -723,7 +793,7 @@ Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
 #+END_SRC
 ** magit
 #+BEGIN_SRC emacs-lisp
-  (use-package magit 
+  (use-package magit
     :ensure t
     :custom
     (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
@@ -739,13 +809,18 @@ clean up staged code
     (interactive)
     (dolist (name (magit-staged-files))
       (let ((fname (expand-file-name name (magit-toplevel))))
-        (when (file-exists-p fname)	
+        (when (file-exists-p fname)
           (pcase (file-name-extension name)
             ("py"
              (shell-command (format "dos2unix -q %s" fname)))
             ((or "C" "H" "I" "c" "h" "cpp" "hpp")
              (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname))))))))
 #+END_SRC
+** move-text
+meta up and down to move text or region
+#+begin_src emacs-lisp
+  (use-package move-text :ensure t :config (move-text-default-bindings))
+#+end_src
 ** multiple cursors
 the hydra here [[http://ivanmalison.github.io/dotfiles/][hydra-example]] not working well...
 pull in phi-search as well to get incremental search while in mc
@@ -753,6 +828,7 @@ pull in phi-search as well to get incremental search while in mc
 #+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
     :ensure t
+    :custom (mc/always-run-for-all t)
     :config
     (progn
       (use-package phi-search-mc
@@ -762,6 +838,7 @@ pull in phi-search as well to get incremental search while in mc
     :bind (("C-c i e" . mc/mark-all-like-this)
            ("C-c i l" . mc/edit-lines)
            ("C-c i s" . mc/mark-all-symbols-like-this)
+           ("C-c i d" . mc/mark-all-symbols-like-this-in-defun)
            ("C-c i r" . mc/mark-all-in-region-regexp)
            ("C-<"   . mc/mark-previous-like-this)
            ("C->"   . mc/mark-next-like-this)
@@ -778,35 +855,36 @@ use bullet mode
 
 now configure org (default installed)
 #+BEGIN_SRC emacs-lisp
-    (setq org-use-speed-commands 1)
-    (setq org-list-description-max-indent 5)
-    (setq org-export-html-postamble nil)
-    (setq org-log-done 'note)
-    (setq org-cycle-separator-lines 0)
-    (setq org-deadline-warning-days 7)
+  (setq org-use-speed-commands 1
+        org-list-description-max-indent 5
+        org-export-html-postamble nil
+        org-log-done 'note
+        org-cycle-separator-lines 0
+        org-deadline-warning-days 7
+        org-imenu-depth 10)
 
-    (add-hook 'org-mode-hook 'org-indent-mode)
+  (add-hook 'org-mode-hook 'org-indent-mode)
 
-    (setq org-confirm-babel-evaluate nil)
-    (org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (shell . t) (R . t) ))
+  (setq org-confirm-babel-evaluate nil)
+  (org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (shell . t) (R . t) ))
 
-    (global-set-key (kbd "C-c a") 'org-agenda)
-    (setq org-agenda-files (quote ("~/todo.org")))
-    (setq org-agenda-window-setup (quote current-window))
+  (global-set-key (kbd "C-c a") 'org-agenda)
+  (setq org-agenda-files (quote ("~/todo.org")))
+  (setq org-agenda-window-setup (quote current-window))
 
-    (define-key global-map (kbd "C-c l") 'org-store-link)
-    (define-key global-map (kbd "C-c c") 'org-capture)
-    (setq org-capture-templates 
-          '(("t" "Todo" entry (file+headline "~/todo.org" "Tasks")
-             "* TODO %?")
-            ("l" "Link" entry (file+headline "~/todo.org" "Links")
-             "* %^L %? %^g")))
+  (define-key global-map (kbd "C-c l") 'org-store-link)
+  (define-key global-map (kbd "C-c c") 'org-capture)
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/todo.org" "Tasks")
+           "* TODO %?")
+          ("l" "Link" entry (file+headline "~/todo.org" "Links")
+           "* %^L %? %^g")))
 
-(require 'org-tempo)
-(add-to-list 'org-structure-template-alist '("sh" . "src bash"))
-(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
-(add-to-list 'org-structure-template-alist '("py" . "src python"))
-(add-to-list 'org-structure-template-alist '("R" . "src R"))
+  (require 'org-tempo)
+  (add-to-list 'org-structure-template-alist '("sh" . "src bash"))
+  (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+  (add-to-list 'org-structure-template-alist '("py" . "src python"))
+  (add-to-list 'org-structure-template-alist '("R" . "src R"))
 #+END_SRC
 use org-mime to compose email with org mode
 #+BEGIN_SRC emacs-lisp
@@ -827,8 +905,10 @@ use org-mime to compose email with org mode
     (projectile-project-root-files-bottom-up '(".git" ".projectile"))
     ;; (projectile-project-root-files '("WORKSPACE"))
     :init
-    (setq projectile-project-search-path '("~/development"))
-    (setq projectile-enable-caching t)
+    (setq projectile-enable-caching t
+          projectile-project-search-path '("~/development"))
+    (when (executable-find "rg")
+      (setq projectile-generic-command "rg -0 --hidden --files --color never"))
     :config
     (projectile-mode t)
     ;(projectile-register-project-type 'bazel '("WORKSPACE") :compile "bazel build ...")
@@ -880,26 +960,6 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
     (define-key python-mode-map "\C-cb" 'python-black-buffer)
     (define-key python-mode-map "\C-cb" 'python-black-region))
 #+END_SRC
-** R
-#+BEGIN_SRC emacs-lisp
-  (use-package ess
-    :ensure t
-    :init
-    (require 'ess-site)
-    :config
-    (setq inferior-R-program-name "/usr/bin/R"
-          inferior-R-args "--no-save"
-          ess-eval-visibly-p nil
-          ess-directory "~/"
-          ess-use-flymake nil
-          ess-indent-with-fancy-comments nil)
-    ;http://stackoverflow.com/questions/780796/emacs-ess-mode-tabbing-for-comment-region
-    (defun ava-ess-settings ()
-      (setq ess-indent-with-fancy-comments nil))
-    (add-hook 'ess-mode-hook #'ava-ess-settings)
-    (define-key ess-r-mode-map "_" #'ess-insert-assign)
-    (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign))
-#+END_SRC
 ** recentf
 #+BEGIN_SRC emacs-lisp
   (use-package recentf
@@ -908,6 +968,12 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
           recentf-auto-cleanup "05:00am")
     (recentf-mode t))
 #+END_SRC
+** smart comment
+#+begin_src emacs-lisp
+  (use-package smart-comment
+    :ensure t
+    :bind ("M-;" . smart-comment))
+#+end_src
 ** switch window
 #+BEGIN_SRC emacs-lisp
   (use-package switch-window
@@ -986,7 +1052,7 @@ A better non-linear undo
     :ensure t
     :diminish undo-tree-mode
     :config
-    (setq   
+    (setq
      undo-tree-enable-undo-in-region nil
      undo-tree-visualizer-diff t
      undo-tree-visualizer-timestamps t)
@@ -1052,16 +1118,17 @@ start a few common vterms
     (setq webjump-sites '(("Emacs Wiki" . [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" ""])
                           ("DuckDuckGo" .  [simple-query "duckduckgo.com" "duckduckgo.com/?q=" ""])
                           ("Google" .  [simple-query "www.google.com" "www.google.com/search?q=" ""])
+                          ("Google Maps" . [simple-query "www.google.com/maps" "www.google.com/maps/search/" ""])
                           ("Wikipedia" .  [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
                           ("AUR" . [simple-query "https://aur.archlinux.org" "https://aur.archlinux.org/packages/?O=0&K=" ""]))))
 #+end_src
 ** which key
 show options for bindings in realtime
 #+BEGIN_SRC emacs-lisp
-(use-package which-key
-  :ensure t
-  :init
-  (which-key-mode))
+  (use-package which-key
+    :ensure t
+    :init
+    (which-key-mode))
 #+END_SRC
 ** wrap region
 automatically encloses double quotes or parens
@@ -1078,7 +1145,7 @@ automatically encloses double quotes or parens
       :diminish yas-minor-mode
       :commands (yas-minor-mode)
       :init
-      (progn 
+      (progn
         (add-hook 'ess-r-mode-hook #'yas-minor-mode)
         (add-hook 'python-mode-hook #'yas-minor-mode)
         (add-hook 'lisp-interaction-mode-hook #'yas-minor-mode)
@@ -1239,7 +1306,7 @@ Disabled in favor of trying LSP
 ;      (use-package irony-eldoc
 ;        :ensure t))
 #+END_SRC
-** leetcode 
+** leetcode
 on MELPA from here [[https://github.com/kaiwk/leetcode][leetcode]]
 #+BEGIN_SRC emacs-lisp
 ;  (use-package leetcode
@@ -1312,4 +1379,3 @@ Telegram support from emacs (needs visual-fill-column)
 ;                                           (company-mode 1)))
 ;        :defer t)
 #+END_SRC
-
