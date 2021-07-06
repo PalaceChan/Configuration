@@ -37,6 +37,7 @@ Disable startup messages and text in scratch
     initial-scratch-message nil)
 #+END_SRC
 Disable suspend
+
 #+begin_src emacs-lisp
   (use-package frame :bind ("C-z" . nil))
 #+end_src
@@ -71,28 +72,40 @@ Disable common warnings
   (setq enable-recursive-minibuffers t)
   (minibuffer-depth-indicate-mode)
 
-  ;two slow on x220
-  ;(setq completion-styles '(flex))
+  ;;; too slow on old server
+  (unless (string= (system-name) "avalenovo")
+    (setq completion-styles '(flex)))
 #+END_SRC
 *** save place
 #+BEGIN_SRC emacs-lisp
   (use-package saveplace
     :config (save-place-mode))
 #+END_SRC
-*** save history
+*** save history and desktop
 Save some history across sessions. (savehist-mode) on auto-save can be slow so we rely on desktop-save instead
 #+BEGIN_SRC emacs-lisp
   (setq history-length 800)
   (setq history-delete-duplicates t)
   (desktop-save-mode -1)
+
   (setq desktop-globals-to-save
         (append
          '(desktop-missing-file-waning
-           (shell-command-history 800)
-           tags-file-name tags-table-list
-           (search-ring . 800) (regexp-search-ring . 800)
-           register-alist file-name-history (kill-ring . 8000)
-           (minibuffer-history . 800) query-replace-history regexp-history)))
+           (shell-command-history 8000)
+           tags-file-name
+           tags-table-list
+           (search-ring . 8000)
+           (regexp-search-ring . 8000)
+           (register-alist . 800)
+           (kill-ring . 8000)
+           (minibuffer-history . 8000)
+           (file-name-history . 8000)
+           (grep-history . 8000)
+           (extended-command-history . 8000)
+           (compile-history . 8000)
+           (read-expression-history . 8000)
+           query-replace-history
+           regexp-history)))
 #+END_SRC
 *** mode bar
 show battery, column number and nicely formatted time
@@ -245,22 +258,55 @@ ediff settings
      ediff-keep-variants nil))
 #+END_SRC
 *** re-builder
-settings and query replace from there helper
-(from https://blog.echosa.net/blog/2012/06/26/re-builder-query-replace-this/)
+bridge re-builder with query regexp replace
+(from https://karthinks.com/software/bridging-islands-in-emacs-1/)
 #+begin_src emacs-lisp
   (use-package re-builder
     :config
     (setq reb-re-syntax 'string)
-    (defun ava/reb-query-replace-this-regxp (replace)
-      (interactive "sReplace with: ")
-      (if (eq major-mode 'reb-mode)
-          (let ((reg (reb-read-regexp)))
-            (select-window reb-target-window)
-            (save-excursion
-              (beginning-of-buffer)
-              (query-replace-regexp reg replace)))
-        (message "Not in a re-builder buffer!")))
-    (define-key reb-mode-map "\C-c\M-%" 'ava/reb-query-replace-this-regxp))
+    (defvar ava/re-builder-positions nil
+      "Store point and region bounds before calling re-builder")
+    (advice-add 're-builder
+                :before
+                (defun ava/re-builder-save-state (&rest _)
+                  "Save into `ava/re-builder-positions' the point and region
+                 positions before calling `re-builder'."
+                  (setq ava/re-builder-positions
+                        (cons (point)
+                              (when (region-active-p)
+                                (list (region-beginning)
+                                      (region-end)))))))
+    (defun ava/reb-replace-regexp (&optional delimited)
+      "Run `query-replace-regexp' with the contents of re-builder. With
+  non-nil optional argument DELIMITED, only replace matches
+  surrounded by word boundaries."
+      (interactive "P")
+      (reb-update-regexp)
+      (let* ((re (reb-target-binding reb-regexp))
+             (replacement (query-replace-read-to
+                           re
+                           (concat "Query replace"
+                                   (if current-prefix-arg
+                                       (if (eq current-prefix-arg '-) " backward" " word")
+                                     "")
+                                   " regexp"
+                                   (if (with-selected-window reb-target-window
+                                         (region-active-p)) " in region" ""))
+                           t))
+             (pnt (car ava/re-builder-positions))
+             (beg (cadr ava/re-builder-positions))
+             (end (caddr ava/re-builder-positions)))
+        (with-selected-window reb-target-window
+          (goto-char pnt) ; replace with (goto-char (match-beginning 0)) if you want
+                                          ; to control where in the buffer the replacement starts
+                                          ; with re-builder
+          (setq ava/re-builder-positions nil)
+          (reb-quit)
+          (query-replace-regexp re replacement delimited beg end))))
+
+    (define-key reb-mode-map (kbd "RET") #'ava/reb-replace-regexp)
+    (define-key reb-lisp-mode-map (kbd "RET") #'ava/reb-replace-regexp)
+    (global-set-key (kbd "C-M-%") #'re-builder))
 #+end_src
 * active packages
 ** auto package updating
@@ -320,18 +366,22 @@ stay up to date
     (when (display-graphic-p) (setq avy-background t)))
 #+END_SRC
 ** bookmarks
-from https://github.com/howardabrams/dot-files/blob/master/emacs.org
+modified from https://github.com/howardabrams/dot-files/blob/master/emacs.org
 #+begin_src emacs-lisp
   (use-package bookmark
     :init (setq bookmark-save-flag 1)
     :config
     (defun ava/add-bookmark (name)
       (interactive
-       (list (let* ((filename  (file-name-base (buffer-file-name)))
-                    (project   (projectile-project-name))
-                    (func-name (which-function))
-                    (initial   (format "%s::%s:%s " project filename func-name)))
-               (read-string "Bookmark: " initial))))
+       (list
+        (let* ((initial
+                (cond
+                 ((and (fboundp 'which-function) (not (string= (projectile-project-name) "-")))
+                  (format "%s::%s:%s - " (projectile-project-name) (file-name-base (buffer-file-name)) (which-function)))
+                 ((buffer-file-name)
+                  (format "%s - " (buffer-file-name)))
+                 (t "? - "))))
+          (read-string "Bookmark: " initial))))
       (bookmark-set name))
     :bind (("C-x r m" . ava/add-bookmark)))
 #+end_src
@@ -398,7 +448,7 @@ from https://github.com/howardabrams/dot-files/blob/master/emacs.org
           company-tooltip-limit 20
           company-tooltip-align-annotations t
           company-selection-wrap-around t
-          company-global-modes '(not compilation-mode magit-status-mode)
+          company-global-modes '(not compilation-mode magit-status-mode reb-mode)
           company-backends '(company-clang company-capf company-files ;company-semantic <-- slow
                                            (company-dabbrev-code company-gtags company-etags company-keywords)
                                            company-dabbrev))
@@ -595,6 +645,7 @@ also enable eldoc
            ("C-c h I" . helm-imenu-in-all-buffers)
            ("C-c h l" . helm-locate)
            ("C-c h g" . helm-google-suggest)
+           ("C-c h t" . helm-top)
            ("C-c h <SPC>" . helm-all-mark-rings))
     :config
     (setq helm-command-prefix-key "C-c h")
@@ -751,6 +802,7 @@ Some references here:
 [[https://github.com/rememberYou/.emacs.d/blob/master/config.org#lsp][example A]]
 [[https://github.com/MatthewZMD/.emacs.d#org75e3a83][example B]] and [[https://github.com/MatthewZMD/.emacs.d#orga4fa68f][B2]]
 [[http://ivanmalison.github.io/dotfiles/#languageserverprotocollsp][example C]]
+[[https://github.com/jimeh/.emacs.d/blob/master/modules/lsp/siren-lsp.el][goodies]]
 
 Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
 (rather than hook, manual enable via ==M-x lsp==)
@@ -1055,7 +1107,8 @@ A better non-linear undo
     (setq
      undo-tree-enable-undo-in-region nil
      undo-tree-visualizer-diff t
-     undo-tree-visualizer-timestamps t)
+     undo-tree-visualizer-timestamps t
+     undo-tree-incompatible-major-modes '(term-mode vterm-mode))
     (global-undo-tree-mode))
 #+END_SRC
 ** vlf
