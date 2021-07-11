@@ -682,8 +682,11 @@ also enable eldoc
     :config
     (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-current-mode-from-helm-swoop))
 
-  (use-package helm-ag :ensure t :custom (helm-ag-insert-at-point 'symbol))
   (use-package helm-rg :ensure t)
+  (use-package helm-ag :ensure t
+    :custom
+    (helm-ag-use-agignore t)
+    (helm-ag-insert-at-point 'symbol))
 #+END_SRC
 
 remap =term-previous-matching-input= to a helm frontend
