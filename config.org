@@ -65,7 +65,9 @@ Disable common warnings
         make-backup-files nil
         calendar-mode-line-format nil
         set-mark-command-repeat-pop t
-        load-prefer-newer t)
+        load-prefer-newer t
+        display-raw-bytes-as-hex t
+        show-paren-delay 0)
 
   (show-paren-mode t)
 
@@ -255,7 +257,8 @@ ediff settings
      ediff-window-setup-function #'ediff-setup-windows-plain
      ediff-split-window-function #'split-window-horizontally
      ediff-grab-mouse nil
-     ediff-keep-variants nil))
+     ediff-keep-variants nil
+     ediff-diff-options "-w"))
 #+END_SRC
 *** re-builder
 bridge re-builder with query regexp replace
@@ -531,13 +534,20 @@ a much nicer dired (can in-place expand subdirectory contents)
              :ensure dired-subtree)
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-  (use-package dired-git-info
-    :disabled
+replaces list-directory with recentf for dirs
+#+begin_src emacs-lisp
+  (use-package dired-recent
     :ensure t
-    :bind (:map dired-mode-map (")" . dired-git-info-mode))
-    :config
-    (setq dgi-commit-message-format "%f\t%an\t%cr"))
+    :config (dired-recent-mode 1))
+#+end_src
+
+#+BEGIN_SRC emacs-lisp
+  ;; (use-package dired-git-info
+  ;;   :disabled
+  ;;   :ensure t
+  ;;   :bind (:map dired-mode-map (")" . dired-git-info-mode))
+  ;;   :config
+  ;;   (setq dgi-commit-message-format "%f\t%an\t%cr"))
 #+END_SRC
 ** discover
 discover major mode
@@ -795,8 +805,7 @@ remap =term-previous-matching-input= to a helm frontend
                                         (shell-command-to-string (format "notify-send erc '%s'" msg))))
     (use-package erc-colorize
       :ensure t
-      :config
-      (erc-colorize-mode 1)))
+      :config (erc-colorize-mode 1)))
 
 #+END_SRC
 ** lsp
@@ -806,6 +815,8 @@ Some references here:
 [[https://github.com/MatthewZMD/.emacs.d#org75e3a83][example B]] and [[https://github.com/MatthewZMD/.emacs.d#orga4fa68f][B2]]
 [[http://ivanmalison.github.io/dotfiles/#languageserverprotocollsp][example C]]
 [[https://github.com/jimeh/.emacs.d/blob/master/modules/lsp/siren-lsp.el][goodies]]
+[[https://github.com/waymondo/hemacs/blob/master/init.el][lsp-ui goodies]]
+[[https://github.com/novoid/dot-emacs/blob/master/config.org][lsp-ui more goodies]]
 
 Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
 (rather than hook, manual enable via ==M-x lsp==)
@@ -853,6 +864,7 @@ Only use lsp and flycheck (flycheck is ok to have, otherwise it uses flymake)
     :custom
     (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
     (magit-log-section-commit-count 25)
+    (magit-diff-refine-hunk 'all)
     :bind
     ("C-x g" . magit-status)
     ("C-c m" . magit-file-dispatch))
