@@ -187,7 +187,8 @@ kill current buffer no prompt
     :config
     (when (version<= "27" emacs-version)
       (setq isearch-lazy-count t
-            isearch-allow-scroll 'unlimited)))
+            isearch-allow-scroll 'unlimited))
+    (define-key isearch-mode-map [remap isearch-delete-char] #'isearch-del-char))
 #+END_SRC
 
 #+begin_src emacs-lisp
@@ -204,6 +205,8 @@ generation of TAGS covered by =scripts/updateTagsAndDb.py= on [[https://github.c
 #+BEGIN_SRC emacs-lisp
 (setq tags-file-name "~/rabbit/tags/TAGS")
 #+END_SRC
+(consider the defadvice to xref-find-definitions in https://www.emacswiki.org/emacs/TagsFile
+if wanting to do different TAGS on a per projectile level or fallback to a global default)
 *** semantic mode
 use semantic without it interfering with completion and without auto-parsing in idle time
 (only use it for helm-semantic-or-imenu and thus parses buffer on demand)
@@ -1131,6 +1134,8 @@ use for opening files larger than =large-file-warning-threshold=
 #+BEGIN_SRC emacs-lisp
   (use-package vlf
     :ensure t
+    :custom
+    (vlf-save-in-place t)
     :config
     (require 'vlf-setup))
 #+END_SRC
