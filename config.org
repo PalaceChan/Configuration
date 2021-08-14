@@ -200,13 +200,47 @@ kill current buffer no prompt
 (setq indent-tabs-mode nil)
 (setq tab-width 4)
 #+END_SRC
-*** tags
-generation of TAGS covered by =scripts/updateTagsAndDb.py= on [[https://github.com/PalaceChan/][GitHub]]
+*** tags and locate
+based on https://emacs.stackexchange.com/questions/41256/using-advice-to-run-function-before-tag-symbol-lookup/41277
+check if projectile root has a TAGS file and if not generate something
+
 #+BEGIN_SRC emacs-lisp
-(setq tags-file-name "~/rabbit/tags/TAGS")
+  (defun ava/generate-tags ()
+    "Generate project TAGS"
+    (interactive)
+    (cl-assert (projectile-project-root) nil "not in a project")
+    (let* ((prjd (projectile-project-root))
+           (tagd (concat prjd ".tagsAndLocate"))
+           (tagf (concat tagd "/TAGS")))
+      (make-directory tagd t)
+      (shell-command
+       (format "ctags -f %s -e --verbose --totals=yes --links=no \
+                --kinds-c++=+p --languages=c,c++,lisp --langmap=c++:+.I \
+                -R %s &> %s/ctags.out" tagf prjd tagd))
+      (message "generated %s (%s)" tagf
+               (shell-command-to-string (format "du -sh %s | cut -f1 | tr -d '\n'" tagf)))))
+
+  ;; TODO only needed if have to locate outside project and no lsp use
+  (defun ava/generate-locates ()
+    "Generate project locate.db for helm"
+    (interactive)
+    (cl-assert (projectile-project-root) nil "not in a project"))
+
+  (defun ava/generate-tags-and-locates ()
+    "Called interactivel to generate both locate.db and tags for project"
+    (interactive)
+    (ava/generate-tags)
+    (ava/generate-locates))
+
+  (defun ava/before-xref-find-defs (&rest _)
+    (when (projectile-project-root)
+      (let ((project-tags-file (concat (projectile-project-root) ".tagsAndLocate/TAGS")))
+        (if (file-exists-p project-tags-file)
+            (visit-tags-table project-tags-file t)
+          (ava/generate-tags)))))
+
+  (advice-add 'xref-find-definitions :before #'ava/before-xref-find-defs)
 #+END_SRC
-(consider the defadvice to xref-find-definitions in https://www.emacswiki.org/emacs/TagsFile
-if wanting to do different TAGS on a per projectile level or fallback to a global default)
 *** semantic mode
 use semantic without it interfering with completion and without auto-parsing in idle time
 (only use it for helm-semantic-or-imenu and thus parses buffer on demand)
