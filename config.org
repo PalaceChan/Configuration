@@ -871,6 +871,7 @@ Some references here:
 [[https://github.com/waymondo/hemacs/blob/master/init.el][lsp-ui goodies]]
 [[https://github.com/novoid/dot-emacs/blob/master/config.org][lsp-ui more goodies]]
 [[https://emacs-lsp.github.io/lsp-mode/tutorials/how-to-turn-off/][how-to-turn-off]]
+[[http://blog.binchen.org/posts/how-to-speed-up-lsp-mode/][example D]]
 
 Only use lsp with flycheck
 (rather than hook, manual enable via ==M-x lsp==)
@@ -896,6 +897,8 @@ Only use lsp with flycheck
     (lsp-file-watch-threshold nil)
     (lsp-enable-xref t)
     (lsp-enable-imenu t)
+    (lsp-enable-folding nil)
+    (lsp-enable-links nil)
     (lsp-keymap-prefix "C-c u")
     (read-process-output-max (* 1024 1024))
     ;:config
