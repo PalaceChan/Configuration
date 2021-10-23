@@ -263,19 +263,15 @@ indentation related
 #+END_SRC
 toggle between implementation and header
 #+BEGIN_SRC emacs-lisp
-(setq cc-search-directories
-'( "/usr/include" "/usr/include/sys" "/usr/include/linux"
-   "."
-  )
-)
-(setq cc-other-file-alist
-'(("\\.cpp$" (".h" ".hpp"))
-("\\.h$" (".cpp" ".c"))
-("\\.hpp$" (".cpp" ".c"))
-("\\.C$" (".H"))
-("\\.H$" (".C"))
-))
-(add-hook 'c-mode-common-hook (lambda() (global-set-key (kbd "C-c o") 'ff-find-other-file)))
+  (setq cc-search-directories '("."))
+  (setq cc-other-file-alist
+  '(("\\.cpp$" (".h" ".hpp"))
+  ("\\.h$" (".cpp" ".c"))
+  ("\\.hpp$" (".cpp" ".c"))
+  ("\\.C$" (".H"))
+  ("\\.H$" (".C"))
+  ))
+  (add-hook 'c-mode-common-hook (lambda() (global-set-key (kbd "C-c o") 'ff-find-other-file)))
 #+END_SRC
 
 *** compilation
