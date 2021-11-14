@@ -626,7 +626,7 @@ also enable eldoc
     (require 'ess-site)
     :config
     (setq inferior-R-program-name "/usr/bin/R"
-          inferior-R-args "--no-save"
+          inferior-R-args "--no-save --no-restore-data --quiet"
           ess-eval-visibly-p nil
           ess-directory "~/"
           ess-use-flymake nil

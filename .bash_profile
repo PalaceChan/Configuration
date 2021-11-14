@@ -60,6 +60,8 @@ fi
 
 export LESS='-iMFXR' #cat if fits
 
+export R_HISTFILE="~/.Rhistory"
+
 export HISTSIZE=
 export HISTFILESIZE=
 export HISTTIMEFORMAT='%Y%m%d %T '
@@ -96,4 +98,3 @@ function vterm_prompt_end()
 }
 
 PS1=$PS1'\[$(vterm_prompt_end)\]'
-

@@ -1,17 +1,20 @@
-suppressWarnings(suppressMessages(local({
-    library(lazyeval)
-    library(abind)
-    library(data.table)
-    library(scales)
-    library(digest)
-    library(bit)
-    library(bit64)
-    library(hash)
-    library(lubridate)
-    library(nanotime)
-    library(ggplot2)
-    library(purrr)
-})))
+#suppressWarnings(suppressMessages(local({
+#    library(lazyeval)
+#    library(abind)
+#    library(data.table)
+#    library(scales)
+#    library(digest)
+#    library(bit)
+#    library(bit64)
+#    library(hash)
+#    library(lubridate)
+#    library(nanotime)
+#    library(ggplot2)
+#    library(dtplyr)
+#    library(dplyr)
+#    library(purrr)
+#    library(tibble)
+#})))
 
 
 Sys.setenv(R_HISTSIZE='999999')
@@ -29,6 +32,10 @@ options(nanotimeTz='EST')
     TRUE
 }
 .adjustWidthCallBack <- addTaskCallback(.adjustWidth)
+
+if (interactive()) {
+    .last <- function() try(savehistory("/home/avelazqu/.Rhistory"))
+}
 
 #my own functions in this env
 .startupEnv <- new.env()
