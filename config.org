@@ -266,12 +266,12 @@ toggle between implementation and header
 #+BEGIN_SRC emacs-lisp
   (setq cc-search-directories '("."))
   (setq cc-other-file-alist
-  '(("\\.cpp$" (".h" ".hpp"))
-  ("\\.h$" (".cpp" ".c"))
-  ("\\.hpp$" (".cpp" ".c"))
-  ("\\.C$" (".H"))
-  ("\\.H$" (".C"))
-  ))
+        '(("\\.cpp$" (".h" ".hpp"))
+          ("\\.h$" (".cpp" ".c"))
+          ("\\.hpp$" (".cpp" ".c"))
+          ("\\.C$" (".H"))
+          ("\\.H$" (".C"))))
+
   (add-hook 'c-mode-common-hook (lambda() (global-set-key (kbd "C-c o") 'ff-find-other-file)))
 #+END_SRC
 
@@ -346,20 +346,17 @@ bridge re-builder with query regexp replace
     (global-set-key (kbd "C-M-%") #'re-builder))
 #+end_src
 * active packages
-** auto package updating
-stay up to date
-#+BEGIN_SRC emacs-lisp
-  (use-package auto-package-update
+** ace window
+#+begin_src emacs-lisp
+  (use-package ace-window
     :ensure t
-    :if (not (daemonp))
+    :bind (("C-x o" . ace-window))
     :custom
-    (auto-package-update-interval 90)
-    (auto-package-update-prompt-before-update t)
-    (auto-package-update-delete-old-versions t)
-    (auto-package-update-hide-results t)
-    :config
-    (auto-package-update-maybe))
-#+END_SRC
+    (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+    (aw-background nil))
+    ;:config (set-face-attribute
+    ;         'aw-leading-char-face nil :height 3.0))
+#+end_src
 ** auctex
 #+BEGIN_SRC emacs-lisp
     (use-package tex
@@ -391,6 +388,20 @@ stay up to date
                                                     company-auctex-environments
                                                     company-auctex-symbols
                                                     company-capf))))))
+#+END_SRC
+** auto package updating
+stay up to date
+#+BEGIN_SRC emacs-lisp
+  (use-package auto-package-update
+    :ensure t
+    :if (not (daemonp))
+    :custom
+    (auto-package-update-interval 90)
+    (auto-package-update-prompt-before-update t)
+    (auto-package-update-delete-old-versions t)
+    (auto-package-update-hide-results t)
+    :config
+    (auto-package-update-maybe))
 #+END_SRC
 ** avy
 #+BEGIN_SRC emacs-lisp
@@ -912,7 +923,7 @@ Only use lsp with flycheck
       :bind
       (:map lsp-ui-mode-map
             ([remap xref-find-references] . lsp-ui-peek-find-references)
-            ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+            ;([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
             ;("C-c u" . lsp-ui-imenu)
             ;("C-c C-d" . lsp-ui-doc-glance)
             ("C-c d" . lsp-ui-doc-show)
@@ -1122,19 +1133,6 @@ To use a venv set a pyvenv-activate directory local or file local variable to th
     :ensure t
     :bind ("M-;" . smart-comment))
 #+end_src
-** switch window
-#+BEGIN_SRC emacs-lisp
-  (use-package switch-window
-    :ensure t
-    :bind (
-           ("C-x o" . switch-window)
-           )
-    :config
-    (setq switch-window-shortcut-style 'qwerty)
-    (setq switch-window-qwerty-shortcuts '("a" "s" "d" "f" "j" "k" "l" "w" "e" "i" "o"))
-    (setq switch-window-minibuffer-shortcut ?z)
-    )
-#+END_SRC
 ** term
 make line-mode the default for terms and allow bigger buffer size
 #+BEGIN_SRC emacs-lisp
@@ -1236,7 +1234,7 @@ start a remote vterm
       (vterm bname)
       (switch-to-buffer bname)
       (let* ((inhibit-read-only t)
-             (sshcmd (format "ssh %s@%s" user host))
+             (sshcmd (format "ssh -Y %s@%s" user host))
              (fn1cmd "function vterm_printf() { \n printf \"\\e]%s\\e\\\\\" \"$1\" \n}")
              (fn2cmd "function vterm_prompt_end() { \n vterm_printf \"51;A$(whoami)@$(hostname):$(pwd)\" \n }")
              (ps1cmd "PS1=$PS1\'\\[$(vterm_promt_end)\\]\'")
@@ -1511,6 +1509,16 @@ The smtp portion will require app specific password and will store it in ~/.auth
 ;    :ensure t
 ;    :disabled
 ;    :commands (speed-type-text))
+#+END_SRC
+** switch window
+#+BEGIN_SRC emacs-lisp
+;;  (use-package switch-window
+;;    :ensure t
+;;    :bind (("C-x o" . switch-window))
+;;    :config
+;;    (setq switch-window-shortcut-style 'qwerty)
+;;    (setq switch-window-qwerty-shortcuts '("a" "s" "d" "f" "j" "k" "l" "w" "e" "i" "o"))
+;    (setq switch-window-minibuffer-shortcut ?z))
 #+END_SRC
 ** telega
 Telegram support from emacs (needs visual-fill-column)
