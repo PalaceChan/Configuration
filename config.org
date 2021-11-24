@@ -181,6 +181,10 @@ kill current buffer no prompt
                            (zap-up-to-char -1 char)))
 #+END_SRC
 
+#+begin_src emacs-lisp
+  (global-unset-key (kbd "C-x o"))
+#+end_src
+
 #+BEGIN_SRC emacs-lisp
   (use-package isearch
     :no-require t
@@ -350,7 +354,7 @@ bridge re-builder with query regexp replace
 #+begin_src emacs-lisp
   (use-package ace-window
     :ensure t
-    :bind (("C-x o" . ace-window))
+    :bind (("M-o" . ace-window))
     :custom
     (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     (aw-background nil))
