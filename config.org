@@ -783,13 +783,17 @@ remap =term-previous-matching-input= to a helm frontend
     :init (helm-descbinds-mode))
 #+END_SRC
 
+[[https://lucasg.github.io/2017/02/05/Downloading-Dash-docsets/][dash docsets]]
 #+begin_src emacs-lisp
   (use-package helm-dash
     :ensure t
     :bind (("C-c h d" . helm-dash-at-point))
     :custom
     (dash-docs-enable-debugging nil)
-    (dash-docs-browser-func #'eww))
+    (dash-docs-browser-func #'eww)
+    :config
+    (require 'dash-docs)
+    (setq dash-docs-common-docsets '("Matplotlib" "Python 3" "NumPy" "Pandas")))
 #+end_src
 ** helpful
 #+BEGIN_SRC emacs-lisp
