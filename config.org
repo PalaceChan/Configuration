@@ -782,6 +782,15 @@ remap =term-previous-matching-input= to a helm frontend
     :ensure t
     :init (helm-descbinds-mode))
 #+END_SRC
+
+#+begin_src emacs-lisp
+  (use-package helm-dash
+    :ensure t
+    :bind (("C-c h d" . helm-dash-at-point))
+    :custom
+    (dash-docs-enable-debugging nil)
+    (dash-docs-browser-func #'eww))
+#+end_src
 ** helpful
 #+BEGIN_SRC emacs-lisp
   (use-package helpful
