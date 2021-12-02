@@ -1515,6 +1515,37 @@ The smtp portion will require app specific password and will store it in ~/.auth
   ;;       smtpmail-smtp-server "smtp.gmail.com"
   ;;       smtpmail-smtp-service 587)
 #+END_SRC
+
+a second reference setup (works with outlook)
+#+begin_src emacs-lisp
+;;  (use-package mu4e
+;;    :load-path "path/to/mu4e/lisp"
+;;    :bind (("C-c 2" . mu4e))
+;;    :custom
+;;    (mu4e-mu-home "/path/to/mu/index/if/not/homedir")
+;;    (mu4e-mu-binary "path/to/mu/binary/if/not/in/path")
+;;    (mu4e-sent-folder "/sent")
+;;    (mu4e-drafts-folder "/drafts")
+;;    (mu4e-trash-folder "/trash")
+;;    (mu4e-get-mail-command "mbsync -q work")
+;;    (mu4e-update-interval 180)
+;;    (mu4e-sent-messages-behavior 'delete)
+;;    (mu4e-maildir-shortcuts '(("/Inbox" . ?i) ("/sent" . ?s)))
+;;    :config
+;;    (setq mu4e-headers-show-threads nil)
+;;    (setq mail-user-agent 'mu4e-user-agent) ;C-x m uses mu4e
+;;    (progn ; SMTP
+;;      (require 'smtpmail)
+;;      (setq message-send-mail-function 'smtpmail-send-it
+;;            smtpmail-default-smtp-server "foo.com"
+;;            smtpmail-smtp-server "foo.com"))
+;;    (progn ; Calendar
+;;      (require 'mu4e-icalendar)
+;;      (mu4e-icalendar-setup)
+;;      (setq gnus-icalendar-org-capture-file "~/calendar.org"
+;;            gnus-icalendar-org-capture-headline '("calendar"))
+;;      (gnus-icalendar-org-setup)))
+#+end_src
 ** rmsbolt
 #+BEGIN_SRC emacs-lisp
 ;  (use-package rmsbolt
