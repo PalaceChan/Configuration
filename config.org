@@ -408,14 +408,72 @@ stay up to date
     (auto-package-update-maybe))
 #+END_SRC
 ** avy
+from [[https://gist.github.com/karthink/af013ffd77fe09e67360f040b57b4c7b][karthink]]
 #+BEGIN_SRC emacs-lisp
   (use-package avy
     :ensure t
-    :bind (("M-g c" . avy-goto-char-timer)
-           ("M-g M-g" . avy-goto-line))
+    :bind (("M-j" . avy-goto-char-timer)
+           ("M-g M-g" . avy-goto-line)
+           )
+    :custom
+    (avy-timeout-seconds 0.3)
+    (avy-keys '(?q ?e ?r ?y ?u ?o ?p ?a ?s ?d ?f ?g ?h ?j ?k ?l ?x ?c ?v ?b ?n ?,))
+    :init
+    (bind-key "M-j" 'avy-isearch isearch-mode-map)
     :config
-    (setq avy-timeout-seconds 0.3)
-    (when (display-graphic-p) (setq avy-background t)))
+    (when (display-graphic-p)
+      (setq avy-background t))
+    (progn ;kill text
+      (defun avy-action-kill-whole-line (pt)
+        (save-excursion
+          (goto-char pt)
+          (kill-whole-line))
+        (select-window (cdr (ring-ref avy-ring 0))) t)
+      (setf (alist-get ?k avy-dispatch-alist) 'avy-action-kill-stay
+            (alist-get ?K avy-dispatch-alist) 'avy-action-kill-whole-line))
+    (progn ;copy text
+      (defun avy-action-copy-whole-line (pt)
+        (save-excursion
+          (goto-char pt)
+          (cl-destructuring-bind (start . end)
+              (bounds-of-thing-at-point 'line)
+            (copy-region-as-kill start end)))
+        (select-window (cdr (ring-ref avy-ring 0))) t)
+      (setf (alist-get ?w avy-dispatch-alist) 'avy-action-copy
+            (alist-get ?W avy-dispatch-alist) 'avy-action-copy-whole-line))
+    (progn ;yank text
+      (defun avy-action-yank-whole-line (pt)
+        (avy-action-copy-whole-line pt)
+        (save-excursion (yank)) t)
+      (setf (alist-get ?y avy-dispatch-alist) 'avy-action-yank
+            (alist-get ?Y avy-dispatch-alist) 'avy-action-yank-whole-line))
+    (progn ;transpose text
+      (defun avy-action-teleport-whole-line (pt)
+        (avy-action-kill-whole-line pt)
+        (save-excursion (yank)) t)
+      (setf (alist-get ?t avy-dispatch-alist) 'avy-action-teleport
+            (alist-get ?T avy-dispatch-alist) 'avy-action-teleport-whole-line))
+    (progn ;helpful
+      (defun avy-action-helpful (pt)
+        (save-excursion
+          (goto-char pt)
+          (helpful-at-point))
+        (select-window (cdr (ring-ref avy-ring 0))) t)
+      (setf (alist-get ?H avy-dispatch-alist) 'avy-action-helpful))
+    (progn ;dash
+      (defun avy-action-dash (pt)
+        (save-excursion
+          (goto-char pt)
+          (helm-dash-at-point))
+        (select-window (cdr (ring-ref avy-ring 0))) t)
+      (setf (alist-get ?D avy-dispatch-alist) 'avy-action-dash))
+    (progn ;man
+      (defun avy-action-man (pt)
+        (save-excursion
+          (goto-char pt)
+          (helm-man-woman nil))
+        (select-window (cdr (ring-ref avy-ring 0))) t)
+      (setf (alist-get ?M avy-dispatch-alist) 'avy-action-man)))
 #+END_SRC
 ** bookmarks
 modified from https://github.com/howardabrams/dot-files/blob/master/emacs.org
