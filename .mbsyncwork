@@ -1,0 +1,54 @@
+IMAPAccount work
+Host imap.foo.com
+User username
+PassCmd "gpg2 -q --for-your-eyes-only --no-tty -d ~/.mailpass.gpg"
+SSLType IMAPS
+Timeout 180
+#Timeout 0 <-- use on first sync
+PipelineDepth 1
+
+IMAPStore work-remote
+Account work
+
+MaildirStore work-local
+Path /path/with/ending/trailingdash/
+Inbox /path/with/ending/trailingdash/Inbox
+SubFolders Verbatim
+
+Channel work-default
+Master :work-remote:
+Slave :work-local:
+Patterns INBOX
+Create Both
+Expunge Both
+SyncState *
+
+Channel work-sent
+Master :work-remote:"Sent Items"
+Slave :work-local:sent
+Patterns INBOX
+Create Both
+Expunge Both
+SyncState *
+
+Channel work-drafts
+Master :work-remote:"Drafts"
+Slave :work-local:drafts
+Patterns INBOX
+Create Both
+Expunge Both
+SyncState *
+
+Channel work-trash
+Master :work-remote:"Deleted Items"
+Slave :work-local:trash
+Patterns INBOX
+Create Both
+Expunge Both
+SyncState *
+
+Group work
+Channel work-default
+Channel work-sent
+Channel work-drafts
+Channel work-trash
