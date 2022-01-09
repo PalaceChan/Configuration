@@ -1157,6 +1157,8 @@ use org-mime to compose email with org mode
 #+END_SRC
 ** python
 To use a venv set a pyvenv-activate directory local or file local variable to the venv path
+(if one gets "exited abnormally with code 1" errors run =M-x elpy-rpc-reinstall-virtualenv=
+as per https://github.com/jorgenschaefer/elpy/issues/1729)
 #+BEGIN_SRC emacs-lisp
   (use-package elpy
     :ensure t
