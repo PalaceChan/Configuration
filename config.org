@@ -1137,7 +1137,14 @@ now configure org (default installed)
   (add-hook 'org-mode-hook 'org-indent-mode)
 
   (setq org-confirm-babel-evaluate nil)
-  (org-babel-do-load-languages 'org-babel-load-languages '( (emacs-lisp . t) (shell . t) (R . t) ))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (shell . t)
+     (R . t)
+     (python . t)
+     (dot . t)
+     (plantuml . t)))
 
   (global-set-key (kbd "C-c a") 'org-agenda)
   (setq org-agenda-files (quote ("~/todo.org")))
