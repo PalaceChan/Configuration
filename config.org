@@ -1056,26 +1056,44 @@ meta up and down to move text or region
   (use-package move-text :ensure t :config (move-text-default-bindings))
 #+end_src
 ** multiple cursors
-the hydra here [[http://ivanmalison.github.io/dotfiles/][hydra-example]] not working well...
-pull in phi-search as well to get incremental search while in mc
-(protip: easy-kill ==C-SPC== will turn selection into region)
+- power hydra [[https://github.com/abo-abo/hydra/wiki/multiple-cursors][here]]
+- ivanmalison hydra example [[here]]
+- github issue on setting run once to avoid exp behavior [[https://github.com/abo-abo/hydra/issues/327][here]]
+- pull in phi-search as well to get incremental search while in mc
+- protip: easy-kill ==C-SPC== will turn selection into region
 #+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
     :ensure t
     :custom (mc/always-run-for-all t)
-    :config
-    (progn
-      (use-package phi-search-mc
-        :ensure t
-        :config
-        (phi-search-mc/setup-keys)))
-    :bind (("C-c i e" . mc/mark-all-like-this)
-           ("C-c i l" . mc/edit-lines)
-           ("C-c i s" . mc/mark-all-symbols-like-this)
-           ("C-c i d" . mc/mark-all-symbols-like-this-in-defun)
-           ("C-c i r" . mc/mark-all-in-region-regexp)
-           ("C-<"   . mc/mark-previous-like-this)
-           ("C->"   . mc/mark-next-like-this)
+    :config (progn
+              (use-package phi-search-mc
+                :ensure t
+                :config
+                (phi-search-mc/setup-keys)))
+    (defhydra ava/multiple-cursors-hydra (:hint nil)
+      "multiple-cursors"
+      ("n" mc/mark-next-like-this)
+      ("N" mc/skip-to-next-like-this)
+      ("M-n" mc/unmark-next-like-this)
+      ("p" mc/mark-previous-like-this)
+      ("P" mc/skip-to-previous-like-this)
+      ("M-p" mc/unmark-previous-like-this)
+      ("|" mc/vertical-align)
+      ("l" mc/edit-lines :exit t)
+      ("a" mc/mark-all-like-this :exit t)
+      ("s" mc/mark-all-symbols-like-this :exit t)
+      ("d" mc/mark-all-symbols-like-this-in-defun :exit t)
+      ("r" mc/mark-all-in-region-regexp :exit t)
+      ("q" nil))
+    (setq mc/cmds-to-run-once '(ava/multiple-cursors-hydra/mc/mark-next-like-this
+                                ava/multiple-cursors-hydra/mc/skip-to-next-like-this
+                                ava/multiple-cursors-hydra/mc/unmark-next-like-this
+                                ava/multiple-cursors-hydra/mc/mark-previous-like-this
+                                ava/multiple-cursors-hydra/mc/skip-to-previous-like-this
+                                ava/multiple-cursors-hydra/mc/unmark-previous-like-this
+                                ava/multiple-cursors-hydra/mc/vertical-align
+                                ))
+    :bind (("C-c i" . ava/multiple-cursors-hydra/body)
            :map mc/keymap ("C-s" . phi-search)))
 #+END_SRC
 ** org
