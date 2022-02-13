@@ -1079,6 +1079,7 @@ meta up and down to move text or region
       ("P" mc/skip-to-previous-like-this)
       ("M-p" mc/unmark-previous-like-this)
       ("|" mc/vertical-align)
+      ("0" mc/insert-numbers)
       ("l" mc/edit-lines :exit t)
       ("a" mc/mark-all-like-this :exit t)
       ("s" mc/mark-all-symbols-like-this :exit t)
@@ -1092,6 +1093,7 @@ meta up and down to move text or region
                                 ava/multiple-cursors-hydra/mc/skip-to-previous-like-this
                                 ava/multiple-cursors-hydra/mc/unmark-previous-like-this
                                 ava/multiple-cursors-hydra/mc/vertical-align
+                                ava/multiple-cursors-hydra/mc/insert-numbers
                                 ))
     :bind (("C-c i" . ava/multiple-cursors-hydra/body)
            :map mc/keymap ("C-s" . phi-search)))
