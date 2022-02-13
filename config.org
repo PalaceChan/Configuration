@@ -1191,6 +1191,7 @@ use org-mime to compose email with org mode
     (projectile-mode t)
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
     (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-vterm)
+    (define-key projectile-mode-map (kbd "C-c p S") 'helm-multi-swoop-projectile)
     (define-key projectile-mode-map (kbd "C-c p R") 'ava/generate-tags)
     (use-package helm-projectile
       :ensure t
