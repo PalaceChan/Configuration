@@ -1097,7 +1097,7 @@ meta up and down to move text or region
       ("M-p" mc/unmark-previous-like-this)
       ("|" mc/vertical-align)
       ("0" mc/insert-numbers)
-      ("l" mc/edit-lines :exit t)
+      ("l" mc/edit-beginnings-of-lines)
       ("a" mc/mark-all-like-this :exit t)
       ("s" mc/mark-all-symbols-like-this :exit t)
       ("d" mc/mark-all-symbols-like-this-in-defun :exit t)
