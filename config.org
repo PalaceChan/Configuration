@@ -872,30 +872,42 @@ remap =term-previous-matching-input= to a helm frontend
     :init
     (global-set-key
      (kbd "C-c g")
-     (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
-                                           :hint nil)
-       ("n" git-gutter:next-hunk "next hunk")
-       ("p" git-gutter:previous-hunk "previous hunk")
-       ("h" (progn (goto-char (point-min)) (git-gutter:next-hunk 1)) "first hunk")
-       ("l" (progn (goto-char (point-min)) (git-gutter:previous-hunk 1)) "last hunk")
-       ("<SPC>" git-gutter:popup-hunk "popup hunk")
-       ("s" git-gutter:stage-hunk "stage hunk")
-       ("r" git-gutter:revert-hunk "revert hunk")
-       ("q" nil "quit")))
+     (defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1) :hint nil)
+       "
+     Up^^        Down^^               Miscellaneous
+    ------------------------------------------------------------------
+     [_p_] Prev  [_n_] Next [_<SPC>_] Show  [_r_] Revert [_q_] Quit
+     [_h_] First [_l_] Last [_s_]     Stage [_d_] Digest"
+       ("n" git-gutter:next-hunk)
+       ("p" git-gutter:previous-hunk)
+       ("h" (progn (goto-char (point-min)) (git-gutter:next-hunk 1)))
+       ("l" (progn (goto-char (point-min)) (git-gutter:previous-hunk 1)))
+       ("<SPC>" git-gutter:popup-hunk)
+       ("s" git-gutter:stage-hunk)
+       ("r" git-gutter:revert-hunk)
+       ("r" git-gutter:revert-hunk)
+       ("d" git-gutter:statistic)
+       ("q" nil)))
 
     (global-set-key
      (kbd "C-c e")
      (defhydra hydra-paredit (:hint nil)
-       ("f" paredit-forward-slurp-sexp "slurp-forward")
-       ("F" paredit-forward-barf-sexp "barf-forward")
-       ("b" paredit-backward-slurp-sexp "slurp-backward")
-       ("B" paredit-backward-barf-sexp "barf-backward")
-       ("n" paredit-foward "forward")
-       ("p" paredit-backward "backward")
-       ("r" paredit-raise-sexp "raise")
-       ("s" paredit-splice-sexp "splice")
-       ("u" undo-only "undo")
-       ("q" nil "quit")))
+       "
+     Forward^^   Backward^^  Miscellaneous
+    ------------------------------------------------------------------
+     [_n_] Next  [_p_]   Next  [_r_] Raise  [_q_] Quit
+     [_s_] Slurp [_M-s_] Slurp [_l_] Splice
+     [_b_] Barf  [_M-b_] Barf  [_u_] Undo"
+       ("n" paredit-forward)
+       ("s" paredit-forward-slurp-sexp)
+       ("b" paredit-forward-barf-sexp)
+       ("p" paredit-backward)
+       ("M-s" paredit-backward-slurp-sexp)
+       ("M-b" paredit-backward-barf-sexp)
+       ("r" paredit-raise-sexp)
+       ("l" paredit-splice-sexp)
+       ("u" undo-only)
+       ("q" nil)))
 
     (global-set-key
      (kbd "C-c w")
