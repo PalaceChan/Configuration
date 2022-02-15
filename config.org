@@ -1103,15 +1103,6 @@ meta up and down to move text or region
       ("d" mc/mark-all-symbols-like-this-in-defun :exit t)
       ("r" mc/mark-all-in-region-regexp :exit t)
       ("q" nil))
-    (setq mc/cmds-to-run-once '(ava/multiple-cursors-hydra/mc/mark-next-like-this
-                                ava/multiple-cursors-hydra/mc/skip-to-next-like-this
-                                ava/multiple-cursors-hydra/mc/unmark-next-like-this
-                                ava/multiple-cursors-hydra/mc/mark-previous-like-this
-                                ava/multiple-cursors-hydra/mc/skip-to-previous-like-this
-                                ava/multiple-cursors-hydra/mc/unmark-previous-like-this
-                                ava/multiple-cursors-hydra/mc/vertical-align
-                                ava/multiple-cursors-hydra/mc/insert-numbers
-                                ))
     :bind (("C-c i" . ava/multiple-cursors-hydra/body)
            :map mc/keymap ("C-s" . phi-search)))
 #+END_SRC
