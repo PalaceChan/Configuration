@@ -1076,7 +1076,6 @@ meta up and down to move text or region
 #+BEGIN_SRC emacs-lisp
   (use-package multiple-cursors
     :ensure t
-    :custom (mc/always-run-for-all t)
     :config (progn
               (use-package phi-search-mc
                 :ensure t

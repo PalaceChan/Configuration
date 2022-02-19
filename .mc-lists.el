@@ -6,9 +6,9 @@
 	c-electric-brace
 	c-electric-colon
 	c-electric-delete-forward
+	c-electric-lt-gt
 	c-electric-paren
 	c-electric-semi&comma
-	c-electric-lt-gt
 	delete-horizontal-space
 	easy-kill
 	electric-newline-and-maybe-indent
@@ -18,21 +18,26 @@
 	kill-region
 	org-end-of-line
 	org-self-insert-command
-        phi-search
-        ))
+	phi-search
+	))
 
 (setq mc/cmds-to-run-once
       '(
+	ace-window
+	ava/multiple-cursors-hydra/mc/edit-beginnings-of-lines
+	ava/multiple-cursors-hydra/mc/insert-numbers
+	ava/multiple-cursors-hydra/mc/mark-all-like-this-and-exit
+	ava/multiple-cursors-hydra/mc/mark-all-symbols-like-this-and-exit
+	ava/multiple-cursors-hydra/mc/mark-all-symbols-like-this-in-defun-and-exit
+	ava/multiple-cursors-hydra/mc/mark-next-like-this
+	ava/multiple-cursors-hydra/mc/mark-previous-like-this
+	ava/multiple-cursors-hydra/mc/skip-to-next-like-this
+	ava/multiple-cursors-hydra/mc/skip-to-previous-like-this
+	ava/multiple-cursors-hydra/mc/unmark-next-like-this
+	ava/multiple-cursors-hydra/mc/unmark-previous-like-this
+	ava/multiple-cursors-hydra/mc/vertical-align
 	dabbrev-expand
 	helm-M-x
 	switch-window
 	undo-tree-visualize
-	ava/multiple-cursors-hydra/mc/mark-next-like-this
-        ava/multiple-cursors-hydra/mc/skip-to-next-like-this
-        ava/multiple-cursors-hydra/mc/unmark-next-like-this
-        ava/multiple-cursors-hydra/mc/mark-previous-like-this
-        ava/multiple-cursors-hydra/mc/skip-to-previous-like-this
-        ava/multiple-cursors-hydra/mc/unmark-previous-like-this
-        ava/multiple-cursors-hydra/mc/vertical-align
-        ava/multiple-cursors-hydra/mc/insert-numbers
-        ))
+	))
