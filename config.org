@@ -1384,6 +1384,16 @@ start a few common vterms
                           ("Wikipedia" .  [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
                           ("AUR" . [simple-query "https://aur.archlinux.org" "https://aur.archlinux.org/packages/?O=0&K=" ""]))))
 #+end_src
+** wgrep
+1. Execute one of the search commands like =projectile-ag=
+2. Use =C-x C-s= to make permanent your search results to a buffer
+3. Use =C-c C-p= within that result buffer to execute =wgrep-change-to-wgrep-mode= and now you can make edits to any lines you please (including regular emacs search-and-replace commands)
+4. Use =C-c C-c= to save you changes, which will be promulgated to all files you’ve chosen to edit
+#+begin_src emacs-lisp
+  (use-package wgrep
+    :ensure t
+    :config (use-package wgrep-helm :ensure t))
+#+end_src
 ** which key
 show options for bindings in realtime
 #+BEGIN_SRC emacs-lisp
