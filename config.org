@@ -885,7 +885,8 @@ remap =term-previous-matching-input= to a helm frontend
 ** ibuffer
 #+BEGIN_SRC emacs-lisp
   (use-package ibuffer
-    :bind ("C-x C-b" . ibuffer))
+    :bind ("C-x C-b" . ibuffer)
+    :config (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+END_SRC
 ** irc
 #+BEGIN_SRC emacs-lisp
