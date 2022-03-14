@@ -1112,7 +1112,14 @@ use org-mime to compose email with org mode
     (setq mail-host-address (getenv "HOST")
           org-mime-export-options '(:section-numbers nil
                                     :with-author nil
-                                    :with-toc nil)))
+                                    :with-toc nil
+                                    :with-latex imagemagick))
+    (add-hook 'message-mode-hook
+              (lambda ()
+                (local-set-key (kbd "C-c M-o") 'org-mime-htmlize)))
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (local-set-key (kbd "C-c M-o") 'org-mime-org-subtree-htmlize))))
 #+END_SRC
 ** projectile
 #+BEGIN_SRC emacs-lisp
@@ -1163,8 +1170,8 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
         '(cl-dolist (key '("C-<return>" "C-<up>" "C-<down>" "C-<left>" "C-<right>"))
            (define-key elpy-mode-map (kbd key) nil)))
       :config
-      (setq python-shell-interpreter "jupyter")
-      (setq python-shell-interpreter-args "console --simple-prompt")
+      (setq python-shell-interpreter "python")
+      (setq python-shell-interpreter-args "-i")
       (setq elpy-rpc-python-command "python")
       (setq elpy-rpc-timeout 10)
       (setq python-shell-prompt-detect-failure-warning nil)
