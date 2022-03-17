@@ -736,6 +736,7 @@ add clang-tidy to flycheck
            ("C-c h l" . helm-locate)
            ("C-c h g" . helm-google-suggest)
            ("C-c h t" . helm-top)
+           ("C-c h x" . helm-shell-history)
            ("C-c h <SPC>" . helm-all-mark-rings))
     :config
     (setq helm-command-prefix-key "C-c h")
