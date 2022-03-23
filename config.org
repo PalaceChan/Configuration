@@ -1312,6 +1312,17 @@ show options for bindings in realtime
     :init
     (which-key-mode))
 #+END_SRC
+** with editor
+magit uses this but can also use it to make crontab editing work from a running emacs
+#+begin_src emacs-lisp
+  (use-package with-editor
+    :ensure t
+    :config
+    (defun ava/crontab ()
+      "Run `crontab -e` from an emacs buffer"
+      (interactive)
+      (with-editor-async-shell-command "crontab -e")))
+#+end_src
 ** wrap region
 automatically encloses double quotes or parens
 #+BEGIN_SRC emacs-lisp
