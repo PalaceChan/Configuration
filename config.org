@@ -1073,7 +1073,8 @@ now configure org (default installed)
         org-log-done 'note
         org-cycle-separator-lines 0
         org-deadline-warning-days 7
-        org-imenu-depth 10)
+        org-imenu-depth 10
+        org-startup-folded t)
 
   (add-hook 'org-mode-hook 'org-indent-mode)
 
