@@ -1145,6 +1145,11 @@ use org-mime to compose email with org mode
               (lambda ()
                 (local-set-key (kbd "C-c M-o") 'org-mime-org-subtree-htmlize))))
 #+END_SRC
+
+create and store magit links
+#+begin_src emacs-lisp
+  (use-package orgit :ensure t)
+#+end_src
 ** projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
