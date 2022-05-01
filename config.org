@@ -358,7 +358,7 @@ bridge re-builder with query regexp replace
     (global-set-key (kbd "C-M-%") #'re-builder))
 #+end_src
 * active packages
-** ace window
+** ace
 #+begin_src emacs-lisp
   (use-package ace-window
     :ensure t
@@ -368,6 +368,13 @@ bridge re-builder with query regexp replace
     (aw-background nil))
     ;:config (set-face-attribute
     ;         'aw-leading-char-face nil :height 3.0))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package ace-link
+    :ensure t
+    ;:bind (:map org-mode-map ("M-o" . ace-link-org))
+    :config (ace-link-setup-default))
 #+end_src
 ** auctex
 #+BEGIN_SRC emacs-lisp
@@ -1083,7 +1090,13 @@ now configure org (default installed)
         org-cycle-separator-lines 0
         org-deadline-warning-days 7
         org-imenu-depth 10
-        org-startup-folded t)
+        org-startup-folded t
+        org-goto-auto-isearch nil
+        org-refile-targets '((nil . (:maxlevel . 2))))
+
+  (add-to-list 'org-speed-commands '("i" . (progn (outline-show-subtree) (org-end-of-subtree))))
+  (add-to-list 'org-speed-commands '("b" . (unless (org-goto-sibling t) (while (org-goto-sibling)))))
+  (add-to-list 'org-speed-commands '("f" . (unless (org-goto-sibling) (while (org-goto-sibling t)))))
 
   (add-hook 'org-mode-hook 'org-indent-mode)
 
@@ -1098,16 +1111,16 @@ now configure org (default installed)
      (plantuml . t)))
 
   (global-set-key (kbd "C-c a") 'org-agenda)
-  (setq org-agenda-files (quote ("~/todo.org")))
+  (setq org-agenda-files (quote ("todo.org")))
   (setq org-agenda-window-setup (quote current-window))
 
   (define-key global-map (kbd "C-c l") 'org-store-link)
   (define-key global-map (kbd "C-c c") 'org-capture)
   (setq org-capture-templates
-        '(("t" "Todo" entry (file+headline "~/todo.org" "Tasks")
-           "* TODO %?")
-          ("l" "Link" entry (file+headline "~/todo.org" "Links")
-           "* %^L %? %^g")))
+        '(("t" "task" entry (file+headline "todo.org" "ongoing")
+           "* %? %^G\n%a\n%U\n%i")
+          ("n" "note" entry (file "notes.org")
+           "* %? %^G\n%a\n%U\n%i")))
 
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("sh" . "src bash"))
