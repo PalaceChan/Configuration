@@ -1242,6 +1242,20 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
            )
     )
 #+END_SRC
+** tree-sitter
+references:
+https://emacs-tree-sitter.github.io/installation/
+
+#+begin_src emacs-lisp
+  (use-package tree-sitter-langs :ensure t)
+
+  (use-package tree-sitter
+    :ensure t
+    :after tree-sitter-langs
+    :config
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
 ** undo-tree
 A better non-linear undo
 #+BEGIN_SRC emacs-lisp
