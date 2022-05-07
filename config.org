@@ -1011,6 +1011,7 @@ Only use lsp with flycheck
     (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
     (magit-log-section-commit-count 25)
     (magit-diff-refine-hunk 'all)
+    (magit-no-confirm '(stage-all-changes unstage-all-changes set-and-push))
     :bind
     ("C-x g" . magit-status)
     ("C-c m" . magit-file-dispatch))
@@ -1073,17 +1074,13 @@ meta up and down to move text or region
            :map mc/keymap ("C-s" . phi-search)))
 #+END_SRC
 ** org
-use bullet mode
-#+BEGIN_SRC emacs-lisp
-(use-package org-bullets
-  :ensure t
-  :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
-#+END_SRC
-
-now configure org (default installed)
 #+BEGIN_SRC emacs-lisp
   (setq org-use-speed-commands 1
+        org-return-follows-link t
+        org-blank-before-new-entry nil
+        org-catch-invisible-edits 'smart
+        org-enforce-todo-dependencies t
+        org-hide-emphasis-markers t
         org-list-description-max-indent 5
         org-export-html-postamble nil
         org-log-done 'note
@@ -1092,7 +1089,10 @@ now configure org (default installed)
         org-imenu-depth 10
         org-startup-folded t
         org-goto-auto-isearch nil
-        org-refile-targets '((nil . (:maxlevel . 2))))
+        org-refile-targets '((nil . (:maxlevel . 3)))
+        org-src-window-setup 'current-window
+        org-log-into-drawer t
+        org-todo-keywords '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d)")))
 
   (add-to-list 'org-speed-commands '("i" . (progn (outline-show-subtree) (org-end-of-subtree))))
   (add-to-list 'org-speed-commands '("b" . (unless (org-goto-sibling t) (while (org-goto-sibling)))))
@@ -1110,17 +1110,13 @@ now configure org (default installed)
      (dot . t)
      (plantuml . t)))
 
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (setq org-agenda-files (quote ("todo.org")))
-  (setq org-agenda-window-setup (quote current-window))
-
   (define-key global-map (kbd "C-c l") 'org-store-link)
   (define-key global-map (kbd "C-c c") 'org-capture)
   (setq org-capture-templates
-        '(("t" "task" entry (file+headline "todo.org" "ongoing")
-           "* %? %^G\n%a\n%U\n%i")
+        '(("t" "task" entry (file "todo.org")
+           "* TODO %? \n%a\n%U\n%i")
           ("n" "note" entry (file "notes.org")
-           "* %? %^G\n%a\n%U\n%i")))
+           "* %? \n%a\n%U\n%i")))
 
   (require 'org-tempo)
   (add-to-list 'org-structure-template-alist '("sh" . "src bash"))
@@ -1128,7 +1124,15 @@ now configure org (default installed)
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
   (add-to-list 'org-structure-template-alist '("R" . "src R"))
 #+END_SRC
-use org-mime to compose email with org mode
+
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+  :ensure t
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode))))
+#+END_SRC
+
+org-mime to compose email with org mode
 #+BEGIN_SRC emacs-lisp
   (use-package org-mime
     :ensure t
@@ -1149,6 +1153,18 @@ use org-mime to compose email with org mode
 create and store magit links
 #+begin_src emacs-lisp
   (use-package orgit :ensure t)
+#+end_src
+
+agenda
+#+begin_src emacs-lisp
+  (use-package org-agenda
+    :after org
+    :custom
+    (org-agenda-files '("todo.org"))
+    (org-agenda-window-setup 'current-window)
+    (org-agenda-span 'day)
+    :init
+    (global-set-key (kbd "C-c a") 'org-agenda))
 #+end_src
 ** projectile
 #+BEGIN_SRC emacs-lisp
