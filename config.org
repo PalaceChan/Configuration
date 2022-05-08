@@ -36,6 +36,12 @@ Disable a bunch of visuals
   (transient-mark-mode 1)
   (blink-cursor-mode -1)
 #+END_SRC
+
+Disable audible bell
+#+begin_src emacs-lisp
+  (setq ring-bell-function 'ignore)
+#+end_src
+
 Disable startup messages and text in scratch
 #+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t
@@ -43,7 +49,6 @@ Disable startup messages and text in scratch
     initial-scratch-message nil)
 #+END_SRC
 Disable suspend
-
 #+begin_src emacs-lisp
   (use-package frame :bind ("C-z" . nil))
 #+end_src
@@ -72,10 +77,14 @@ Disable common warnings
         calendar-mode-line-format nil
         set-mark-command-repeat-pop t
         load-prefer-newer t
-        display-raw-bytes-as-hex t
-        show-paren-delay 0)
+        display-raw-bytes-as-hex t)
 
-  (show-paren-mode t)
+  (use-package paren
+    :custom
+    (show-paren-delay 0)
+    (show-paren-when-point-inside-paren t)
+    :config
+    (show-paren-mode 1))
 
   (setq enable-recursive-minibuffers t)
   (minibuffer-depth-indicate-mode)
@@ -118,12 +127,14 @@ Save some history across sessions. (savehist-mode) on auto-save can be slow so w
 *** mode bar
 show battery, column number and nicely formatted time
 #+BEGIN_SRC emacs-lisp
-(setq column-number-mode t)
-(setq display-time-24hr-format t)
-(setq display-time-format "%H:%M - %Y%m%d")
-(display-battery-mode t)
-(display-time-mode 1)
-(size-indication-mode t)
+  (setq column-number-mode t
+        display-time-format "%H:%M - %Y%m%d"
+        display-time-24hr-format t
+        display-time-default-load-average nil)
+
+  (display-battery-mode t)
+  (display-time-mode 1)
+  (size-indication-mode t)
 #+END_SRC
 *** highlighting
 #+BEGIN_SRC emacs-lisp
@@ -208,9 +219,11 @@ kill current buffer no prompt
 ** development
 *** general
 #+BEGIN_SRC emacs-lisp
-  (setq indent-tabs-mode nil
-        tab-width 4
+  (setq text-scale-mode-step 1.1
         help-enable-symbol-autoload t)
+  (setq-default tab-width 4
+                fill-column 80
+                indent-tabs-mode nil)
 #+END_SRC
 *** tags and locate
 based on https://emacs.stackexchange.com/questions/41256/using-advice-to-run-function-before-tag-symbol-lookup/41277
@@ -1106,6 +1119,7 @@ meta up and down to move text or region
     (org-src-window-setup 'current-window)
     (org-log-into-drawer t)
     (org-todo-keywords '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d)")))
+    (org-highlight-latex-and-related '(native script entities))
     (org-confirm-babel-evaluate nil)
     (org-clock-history-length 20)
     (org-clock-out-remove-zero-time-clocks t)
