@@ -1140,7 +1140,7 @@ meta up and down to move text or region
        (dot . t)
        (plantuml . t)))
     (setq org-capture-templates
-          '(("n" "note" entry (file "notes.org") "* %? \n%a\n%U\n%i")
+          '(("n" "note" entry (file "notes.org") "* %? \n%U\n%i")
             ("t" "tasks")
             ("tt" "whenever" entry (file "todo.org") "* TODO %^{title}\n%?")
             ("ts" "schedule" entry (file "todo.org") "* TODO %^{title}\nSCHEDULED: %^t\n%?")
@@ -1166,7 +1166,7 @@ hide emphasis markers the nice way
     :custom
     (org-appear-autoemphasis t)
     (org-appear-autokeywords t)
-    (org-appear-autolinks nil))
+    (org-appear-autolinks t))
 #+end_src
 *** org-bullets
 #+BEGIN_SRC emacs-lisp
