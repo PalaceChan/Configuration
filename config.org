@@ -214,7 +214,8 @@ kill current buffer no prompt
 #+END_SRC
 
 #+begin_src emacs-lisp
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (add-hook 'before-save-hook #'delete-trailing-whitespace)
+  (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 #+end_src
 ** development
 *** general
