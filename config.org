@@ -217,6 +217,33 @@ kill current buffer no prompt
   (add-hook 'before-save-hook #'delete-trailing-whitespace)
   (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 #+end_src
+*** windows
+if need to work in a windows environment talk to it via named pipe
+#+begin_src emacs-lisp
+;;  (defun ava/on-windows (cmd &rest args)
+;;    (apply 'start-process "ON-WINDOWS" nil "~/scripts/linux_to_windows.sh"))
+;;
+;;  (defun ava/on-windows-open-url (url &rest args)
+;;    (interactive "P")
+;;    (ava/on-windows "start" (or url (url-get-url-at-point))))
+;;  (setq browse-url-browser-function 'ava/on-windows-open-url)
+;;
+;;  (defun ava/on-windows-serve-dir ()
+;;    (interactive)
+;;    (let ((dir-to-serve nil))
+;;      (if (equal major-mode 'dired-mode)
+;;          (progn
+;;            (setq dir-to-serve (dired-get-filename))
+;;            (when (not (file-directory-p dir-to-serve))
+;;              (setq dir-to-serve (file-name-directory dir-to-serve))))
+;;        (setq dir-to-serve (buffer-file-name))
+;;        (when dir-to-serve
+;;          (setq dir-to-serve (file-name-directory dir-to-serve))))
+;;      (cl-assert dir-to-serve t "could not determine directory to serve")
+;;      (save-excursion
+;;        (set-buffer (generate-new-buffer (format "httpserve %s" dir-to-serve)))
+;;        (async-shell-command (format "~/scripts/serve_dir_open_on_windows.sh %s" dir-to-serve) (current-buffer)))))
+#+end_src
 ** development
 *** general
 #+BEGIN_SRC emacs-lisp
