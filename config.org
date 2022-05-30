@@ -1048,6 +1048,17 @@ Only use lsp with flycheck
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :ensure t
+    :preface
+    (defun ava/format-staged ()
+      (interactive)
+      (dolist (name (magit-staged-files))
+        (let ((fname (expand-file-name name (magit-toplevel))))
+          (when (file-exists-p fname)
+            (pcase (file-name-extension name)
+              ("py"
+               (shell-command (format "dos2unix -q %s" fname)))
+              ((or "C" "H" "I" "c" "h" "cpp" "hpp")
+               (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname))))))))
     :custom
     (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
     (magit-log-section-commit-count 25)
@@ -1058,19 +1069,13 @@ Only use lsp with flycheck
     ("C-c m" . magit-file-dispatch))
 #+END_SRC
 
-clean up staged code
-#+BEGIN_SRC emacs-lisp
-  (defun ava/format-staged ()
-    (interactive)
-    (dolist (name (magit-staged-files))
-      (let ((fname (expand-file-name name (magit-toplevel))))
-        (when (file-exists-p fname)
-          (pcase (file-name-extension name)
-            ("py"
-             (shell-command (format "dos2unix -q %s" fname)))
-            ((or "C" "H" "I" "c" "h" "cpp" "hpp")
-             (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname))))))))
-#+END_SRC
+#+begin_src emacs-lisp
+  (use-package forge
+    :ensure t
+    :after magit
+    :config
+    (remove-hook 'magit-status-sections-hook 'forge-insert-issues))
+#+end_src
 ** mixed-pitch
 addresses the issues with =variable-pitch-mode= in modes like org (tables/code-blocks)
 #+begin_src emacs-lisp
