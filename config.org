@@ -170,9 +170,17 @@ kill current buffer no prompt
 #+end_src
 *** misc
 #+BEGIN_SRC emacs-lisp
-    (setq display-time-world-time-format "%a, %d %b %I:%M %p %Z"
-          display-time-world-list '(("America/Chicago" "Chicago") ("Asia/Tokyo" "Japan")
-                                    ("Europe/Berlin" "Frankfurt") ("Australia/Sydney" "Australia")))
+  (setq world-clock-time-format "%a, %d %b %I:%M %p %Z"
+        world-clock-list '(("Europe/Berlin" "Berlin")
+                           ("America/Chicago" "Chicago")
+                           ("Asia/Hong_Kong" "Hong Kong")
+                           ("Europe/London" "London")
+                           ("America/Mexico_City" "Mexico City")
+                           ("Asia/Shanghai" "Shanghai")
+                           ("Asia/Singapore" "Singapore")
+                           ("Asia/Tokyo" "Tokyo")
+                           ("Etc/UTC" "UTC")
+                           ("Europe/Zurich" "Zurich")))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
@@ -339,13 +347,25 @@ toggle between implementation and header
 *** merging
 ediff settings
 #+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'ediff
-    (setq
-     ediff-window-setup-function #'ediff-setup-windows-plain
-     ediff-split-window-function #'split-window-horizontally
-     ediff-grab-mouse nil
-     ediff-keep-variants nil
-     ediff-diff-options "-w"))
+  (use-package ediff
+    :custom
+    (ediff-window-setup-function #'ediff-setup-windows-plain)
+    (ediff-split-window-function #'split-window-horizontally)
+    (ediff-grab-mouse nil)
+    (ediff-keep-variants nil)
+    (ediff-diff-options "-w")
+    :bind (("C-c = b" . ediff-buffers)
+           ("C-c = B" . ediff-buffers3)
+           ("C-c = c" . compare-windows)
+           ("C-c = f" . ediff-files)
+           ("C-c = F" . ediff-files3)
+           ("C-c = m" . count-matches)
+           ("C-c = r" . ediff-revision)
+           ("C-c = p" . ediff-patch-file)
+           ("C-c = P" . ediff-patch-buffer)
+           ("C-c = l" . ediff-regions-linewise)
+           ("C-c = w" . ediff-regions-wordwise)))
+
 #+END_SRC
 *** re-builder
 bridge re-builder with query regexp replace
@@ -559,7 +579,7 @@ modified from https://github.com/howardabrams/dot-files/blob/master/emacs.org
     :config
     ;(setq clang-format-executable "TODO")
     (define-key c-mode-base-map "\C-cb" 'clang-format-buffer)
-    (define-key c-mode-base-map "\C-cb" 'clang-format-region))
+    (define-key c-mode-base-map "\C-cr" 'clang-format-region))
 #+END_SRC
 ** company
 *** company
@@ -678,8 +698,8 @@ discover major mode
 #+BEGIN_SRC emacs-lisp
   (use-package discover-my-major
     :ensure t
-    :config
-    (global-set-key (kbd "C-h C-m") 'discover-my-major))
+    :bind (("C-h C-m" . discover-my-major)
+           ("C-h C-d" . discover-my-mode)))
 #+END_SRC
 ** easy kill
 Use ~M-w~ and modifiers to more efficiently save things to kill ring
@@ -730,12 +750,29 @@ also enable eldoc
     (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign))
 #+END_SRC
 ** expand region
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package expand-region
     :ensure t
-    :commands er/expand-region
-    :bind ("C-=" . er/expand-region))
-#+END_SRC
+    :bind
+    (("C-=" . er/expand-region)
+     :map mode-specific-map
+     :prefix-map region-prefix-map
+     :prefix "r"
+     ("(" . er/mark-inside-pairs)
+     (")" . er/mark-outside-pairs)
+     ("'" . er/mark-inside-quotes)
+     ([34] . er/mark-outside-quotes) ; "
+     ("o" . er/mark-org-parent)
+     ("u" . er/mark-url)
+     ("b" . er/mark-org-code-block)
+     ("." . er/mark-method-call)
+     ("w" . er/mark-word)
+     ("d" . er/mark-defun)
+     ("s" . er/mark-symbol)
+     (";" . er/mark-comment)
+     ("S" . er/mark-sentence)
+     ("P" . er/mark-paragraph)))
+#+end_src
 ** flycheck
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck :ensure t)
@@ -760,7 +797,8 @@ add clang-tidy to flycheck
 ** git-timemachine
 #+BEGIN_SRC emacs-lisp
   (use-package git-timemachine
-    :ensure t)
+    :ensure t
+    :bind ("C-x v t" . git-timemachine-toggle))
 #+END_SRC
 ** helm
 #+BEGIN_SRC emacs-lisp
@@ -1332,11 +1370,8 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
 #+BEGIN_SRC emacs-lisp
   (use-package transpose-frame
     :ensure t
-    :bind (
-           ("C-x |" . rotate-frame-clockwise)
-           ("C-x \\" . rotate-frame-anticlockwise)
-           )
-    )
+    :bind (("C-x |" . rotate-frame-clockwise)
+           ("C-x \\" . rotate-frame-anticlockwise)))
 #+END_SRC
 ** tree-sitter
 references:
