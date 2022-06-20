@@ -30,11 +30,12 @@ As early as possible do this
 *** start
 Disable a bunch of visuals
 #+BEGIN_SRC emacs-lisp
-  (menu-bar-mode 0)
-  (tool-bar-mode 0)
-  (scroll-bar-mode 0)
-  (transient-mark-mode 1)
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
   (blink-cursor-mode -1)
+  (tooltip-mode -1)
+  (transient-mark-mode 1)
 #+END_SRC
 
 Disable audible bell
@@ -66,7 +67,7 @@ Disable common warnings
 #+BEGIN_SRC emacs-lisp
   (setq scroll-step 1
         scroll-margin 3
-        scroll-conservatively 9999
+        scroll-conservatively most-positive-fixnum
         scroll-preserve-screen-position t
         grep-highlight-matches t
         shell-file-name "bash"
@@ -77,6 +78,7 @@ Disable common warnings
         calendar-mode-line-format nil
         set-mark-command-repeat-pop t
         load-prefer-newer t
+        view-read-only t
         display-raw-bytes-as-hex t)
 
   (use-package paren
@@ -775,7 +777,9 @@ also enable eldoc
 #+end_src
 ** flycheck
 #+BEGIN_SRC emacs-lisp
-  (use-package flycheck :ensure t)
+  (use-package flycheck
+    :ensure t
+    :hook (lsp-mode . flycheck-mode))
 #+END_SRC
 
 add clang-tidy to flycheck
@@ -1283,6 +1287,17 @@ hide emphasis markers the nice way
     (org-agenda-skip-deadline-prewarning-if-scheduled t)
     :init
     (global-set-key (kbd "C-c a") 'org-agenda))
+#+end_src
+** pdf-tools
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :ensure t
+    :custom
+    (pdf-view-display-size 'fit-page)
+    (pdf-view-continuous nil)
+    :config
+    (pdf-loader-install)
+    (setq pdf-view-resize-factor 1.1))
 #+end_src
 ** projectile
 #+BEGIN_SRC emacs-lisp
@@ -1887,7 +1902,7 @@ start a few common terms
 ;        (funcall term-start-helper "rand2" ""))))
 #+END_SRC
 ** visual-fill-column
-reference: [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]]
+reference: [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] (to center code in wide monitors)
 
 #+begin_src emacs-lisp
 ;  (defun ava/visual-fill-column-and-center ()
