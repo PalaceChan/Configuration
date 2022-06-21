@@ -395,6 +395,7 @@ toggle between implementation and header
 #+BEGIN_SRC emacs-lisp
   (use-package ediff
     :custom
+    (ediff-highlight-all-diffs nil)
     (ediff-window-setup-function #'ediff-setup-windows-plain)
     (ediff-split-window-function #'split-window-horizontally)
     (ediff-grab-mouse nil)
@@ -411,16 +412,8 @@ toggle between implementation and header
            ("C-c = P" . ediff-patch-buffer)
            ("C-c = l" . ediff-regions-linewise)
            ("C-c = w" . ediff-regions-wordwise))
-    :preface
-    (defun ava/org-reveal-around-diff (&rest _)
-      (dolist (buf (list ediff-buffer-A ediff-buffer-B ediff-buffer-C))
-        (when (and buf (buffer-live-p buf))
-          (with-current-buffer buf
-            (when (derived-mode-p 'org-mode)
-              (org-reveal t))))))
     :config
-    (advice-add 'ediff-next-difference :after #'ava/org-reveal-around-diff)
-    (advice-add 'ediff-previous-difference :after #'ava/org-reveal-around-diff))
+    (add-hook 'ediff-prepare-buffer-hook #'outline-show-all))
 #+END_SRC
 *** re-builder
 bridge re-builder with query regexp replace
