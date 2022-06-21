@@ -391,8 +391,7 @@ toggle between implementation and header
         (let ((inhibit-read-only t))
           (ansi-color-apply-on-region compilation-filter-start (point))))))
 #+END_SRC
-*** merging
-ediff settings
+*** ediff
 #+BEGIN_SRC emacs-lisp
   (use-package ediff
     :custom
@@ -856,7 +855,6 @@ add clang-tidy to flycheck
 ;    :after flycheck
 ;    :hook (flycheck-mode . flycheck-clang-tidy-setup))
 #+end_src
-
 ** git-gutter
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter
