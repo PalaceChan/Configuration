@@ -20,7 +20,7 @@
     graph = log --oneline --graph --pretty='format:|%C(yellow) %h | %C(red) %ad | %C(green) %an | %C(reset) %s %d'
 
 [user]
-    name = YYY
+    name = PalaceChan
     email = XXX
 
 [merge]
@@ -31,4 +31,4 @@
 
 [github]
     user = PalaceChan
-    oauth-token = ZZZ
+    oauth-token = YYY
