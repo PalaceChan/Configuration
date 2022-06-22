@@ -40,12 +40,12 @@ function ediff
 ################################################################################
 
 alias e='/usr/bin/emacsclient -n'
-alias ew='/usr/bin/emacs -nw'
-alias em='/usr/bin/emacs'
+alias ew='/usr/bin/emacs -Q -nw'
 alias hist='cat ~/history/history.txt'
 alias ls='ls --color=auto -h'
 alias reset='echo -e \\033c'
 alias rc='source ~/.bash_profile'
+alias R='R --no-save --no-restore-data --quiet'
 
 if [ "eterm-color" == "$TERM" ]; then
     alias less='cat'
@@ -71,6 +71,7 @@ PROMPT_COMMAND='history -a; history | tail -n1 | ~/history/dump_history.sh'
 export PROMPT_COMMAND
 
 PATH=$PATH:~/scripts
+PATH=$PATH:~/.local/bin
 export PATH
 
 export PS1='\h: '
