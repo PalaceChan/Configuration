@@ -482,7 +482,7 @@ bridge re-builder with query regexp replace
 #+begin_src emacs-lisp
   (use-package ace-link
     :ensure t
-    ;:bind (:map org-mode-map ("M-o" . ace-link-org))
+    :bind (:map ess-r-help-mode-map ("o" . ace-link-help))
     :config (ace-link-setup-default))
 #+end_src
 ** auctex
