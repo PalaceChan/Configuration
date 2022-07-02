@@ -16,8 +16,8 @@
 #    library(tibble)
 #})))
 
-
 Sys.setenv(R_HISTSIZE='999999')
+.libPaths(c('/usr/lib/R/library', sprintf('/home/%s/rlibs', Sys.getenv('USER'))))
 
 options(max.print=5000)
 options(tibble.width=Inf)
