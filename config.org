@@ -1056,7 +1056,7 @@ remap =term-previous-matching-input= to a helm frontend
           erc-join-buffer 'bury
           erc-interpret-mirc-color t
           erc-server-reconnect-timeout 30)
-    (add-hook 'erc-text-matched-hook '(lambda (match-type nickuserhost msg)
+    (add-hook 'erc-text-matched-hook #'(lambda (match-type nickuserhost msg)
                                         (shell-command-to-string (format "notify-send erc '%s'" msg))))
     (use-package erc-colorize
       :ensure t
@@ -1273,7 +1273,8 @@ meta up and down to move text or region
        (python . t)
        (dot . t)
        (plantuml . t)))
-    (setq org-capture-templates
+    (setq org-capture-bookmark nil
+          org-capture-templates
           '(("n" "note" entry (file "notes.org") "* %? \n%U\n%i")
             ("t" "tasks")
             ("tt" "whenever" entry (file "todo.org") "* TODO %^{title}\n%?")
