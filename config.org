@@ -230,7 +230,6 @@ kill current buffer no prompt
 #+END_SRC
 
 #+begin_src emacs-lisp
-  (add-hook 'before-save-hook #'delete-trailing-whitespace)
   (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 #+end_src
 
@@ -381,6 +380,7 @@ toggle between implementation and header
     (compilation-scroll-output 'first-error)
     (compilation-read-command nil)
     (compilation-ask-about-save nil)
+    (compilation-skip-threshold 2)
     (next-error-message-highlight t)
     :hook (compilation-filter . ava/colorize-compilation-buffer)
     :config
@@ -790,6 +790,28 @@ also enable eldoc
     :diminish
     :hook ((emacs-lisp-mode) . eldoc-mode))
 #+END_SRC
+** erc
+use =M-x erc-tls= to start
+#+begin_src emacs-lisp
+  (use-package erc
+    :ensure t
+    :init
+    (require 'erc-autoaway)
+    :custom
+    (erc-lurker-hide-list '("PART" "QUIT" "JOIN"))
+    (erc-server "irc.libera.chat")
+    (erc-nick "hooxen")
+    (erc-join-buffer 'buffer)
+    (erc-interpret-mirc-color t)
+    (erc-server-reconnect-timeout 10)
+    (erc-autoaway-idle-seconds 600)
+    :config
+    (add-hook 'erc-text-matched-hook #'(lambda (match-type nickuserhost msg)
+                                         (shell-command-to-string (format "notify-send erc '%s'" msg))))
+    (use-package erc-colorize
+      :ensure t
+      :config (erc-colorize-mode 1)))
+#+end_src
 ** ess
 #+BEGIN_SRC emacs-lisp
   (use-package ess
@@ -1044,24 +1066,6 @@ remap =term-previous-matching-input= to a helm frontend
   (use-package ibuffer
     :bind ("C-x C-b" . ibuffer)
     :config (define-key ibuffer-mode-map (kbd "M-o") nil))
-#+END_SRC
-** irc
-#+BEGIN_SRC emacs-lisp
-  (use-package erc
-    :ensure t
-    :config
-    (setq erc-lurker-hide-list '("PART" "QUIT" "JOIN")
-          erc-server "irc.libera.chat"
-          erc-nick "hooxen"
-          erc-join-buffer 'bury
-          erc-interpret-mirc-color t
-          erc-server-reconnect-timeout 30)
-    (add-hook 'erc-text-matched-hook #'(lambda (match-type nickuserhost msg)
-                                        (shell-command-to-string (format "notify-send erc '%s'" msg))))
-    (use-package erc-colorize
-      :ensure t
-      :config (erc-colorize-mode 1)))
-
 #+END_SRC
 ** lsp
 Some references here:
@@ -1582,6 +1586,15 @@ automatically encloses double quotes or parens
   :config (wrap-region-global-mode t)
   :diminish wrap-region-mode)
 #+END_SRC
+** ws-butler
+advantage over =(add-hook 'before-save-hook #'delete-trailing-whitespace)= is that it does mess with others whitespace
+#+begin_src emacs-lisp
+  (use-package ws-butler
+    :ensure t
+    :hook
+    (prog-mode . ws-butler-mode)
+    (text-mode . ws-butler-mode))
+#+end_src
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
     (use-package yasnippet
