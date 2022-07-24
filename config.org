@@ -483,6 +483,7 @@ bridge re-builder with query regexp replace
   (use-package ace-link
     :ensure t
     :bind (:map ess-r-help-mode-map ("o" . ace-link-help))
+    :bind (:map helpful-mode-map ("o" . ace-link-help))
     :config (ace-link-setup-default))
 #+end_src
 ** auctex
@@ -915,6 +916,7 @@ add clang-tidy to flycheck
            ("C-c h g" . helm-google-suggest)
            ("C-c h t" . helm-top)
            ("C-c h x" . helm-shell-history)
+           ("C-c h p" . org-projectile-helm-template-or-project)
            ("C-c h <SPC>" . helm-all-mark-rings))
     :config
     (setq helm-command-prefix-key "C-c h")
@@ -990,6 +992,15 @@ remap =term-previous-matching-input= to a helm frontend
     :config
     (require 'dash-docs)
     (setq dash-docs-common-docsets '("Matplotlib" "Python 3" "NumPy" "Pandas")))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package helm-org-rifle
+    :ensure t
+    :bind
+    ("M-g r r" . helm-org-rifle)
+    ("M-g r a" . helm-org-rifle-org-agenda-files)
+    ("M-g r o" . helm-org-rifle-org-directory))
 #+end_src
 ** helpful
 #+BEGIN_SRC emacs-lisp
@@ -1262,6 +1273,7 @@ meta up and down to move text or region
     (org-confirm-babel-evaluate nil)
     (org-clock-history-length 20)
     (org-clock-out-remove-zero-time-clocks t)
+    (org-link-elisp-confirm-function nil)
     :hook
     (org-mode . org-indent-mode)
     (org-mode . mixed-pitch-mode)
@@ -1341,7 +1353,7 @@ hide emphasis markers the nice way
   (use-package org-agenda
     :after org
     :custom
-    (org-agenda-files '("todo.org"))
+    (org-agenda-files '("todo.org" "projects.org"))
     (org-agenda-span 'day)
     (org-agenda-window-setup 'current-window)
     (org-agenda-restore-windows-after-quit t)
@@ -1351,6 +1363,23 @@ hide emphasis markers the nice way
     (org-agenda-skip-deadline-prewarning-if-scheduled t)
     :init
     (global-set-key (kbd "C-c a") 'org-agenda))
+#+end_src
+*** org-projectile
+#+begin_src emacs-lisp
+  (use-package org-projectile
+    :ensure t
+    :after org
+    :custom
+    (org-projectile-capture-template "* TODO %^{title}\n%?")
+    :config
+    (add-to-list 'org-capture-templates (org-projectile-project-todo-entry :capture-heading "project todo")))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package helm-org :ensure t)
+  (use-package org-projectile-helm
+    :ensure t
+    :after (org-projectile helm-org))
 #+end_src
 ** pdf-tools
 #+begin_src emacs-lisp
