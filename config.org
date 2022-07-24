@@ -898,8 +898,7 @@ add clang-tidy to flycheck
             helm-yas-display-key-on-candidate t
             helm-quick-update t
             helm-M-x-requires-pattern nil)
-      (helm-mode)
-      )
+      (helm-mode))
     :bind (
            ("C-h a" . helm-apropos)
            ("C-x b" . helm-mini)
@@ -907,7 +906,6 @@ add clang-tidy to flycheck
            ("M-x" . helm-M-x)
            ("C-x C-f" . helm-find-files)
            ("C-c h o" . helm-occur)
-           ("C-c h r" . helm-register)
            ("C-c h b" . helm-resume)
            ("C-c h i" . helm-semantic-or-imenu)
            ("C-c h m" . helm-man-woman)
@@ -998,9 +996,9 @@ remap =term-previous-matching-input= to a helm frontend
   (use-package helm-org-rifle
     :ensure t
     :bind
-    ("M-g r r" . helm-org-rifle)
-    ("M-g r a" . helm-org-rifle-org-agenda-files)
-    ("M-g r o" . helm-org-rifle-org-directory))
+    ("C-c h r r" . helm-org-rifle)
+    ("C-c h r a" . helm-org-rifle-org-agenda-files)
+    ("C-c h r o" . helm-org-rifle-org-directory))
 #+end_src
 ** helpful
 #+BEGIN_SRC emacs-lisp
