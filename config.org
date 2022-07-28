@@ -1417,6 +1417,14 @@ hide emphasis markers the nice way
       (setq projectile-completion-system 'helm)))
 #+END_SRC
 ** python
+make sure imenu does not override dumb-jump in python mode
+#+begin_src emacs-lisp
+  (use-package python
+    :defer t
+    :config
+    (bind-key* "C-c C-j" #'dumb-jump-go))
+#+end_src
+
 To use a venv set a pyvenv-activate directory local or file local variable to the venv path
 (if one gets "exited abnormally with code 1" errors run =M-x elpy-rpc-reinstall-virtualenv=
 as per https://github.com/jorgenschaefer/elpy/issues/1729)
