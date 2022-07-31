@@ -482,9 +482,8 @@ bridge re-builder with query regexp replace
 #+begin_src emacs-lisp
   (use-package ace-link
     :ensure t
-    :bind (:map ess-r-help-mode-map ("o" . ace-link-help))
-    :bind (:map helpful-mode-map ("o" . ace-link-help))
-    :config (ace-link-setup-default))
+    :config (ace-link-setup-default)
+    (add-hook 'ess-r-help-mode-hook #'(lambda () (bind-key "o" #'ace-link-help ess-r-help-mode-map))))
 #+end_src
 ** auctex
 #+BEGIN_SRC emacs-lisp
@@ -1422,7 +1421,7 @@ make sure imenu does not override dumb-jump in python mode
   (use-package python
     :defer t
     :config
-    (bind-key* "C-c C-j" #'dumb-jump-go))
+    (bind-key "C-c C-j" #'dumb-jump-go python-mode-map))
 #+end_src
 
 To use a venv set a pyvenv-activate directory local or file local variable to the venv path
