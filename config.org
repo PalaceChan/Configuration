@@ -623,11 +623,12 @@ modified from https://github.com/howardabrams/dot-files/blob/master/emacs.org
 #+BEGIN_SRC emacs-lisp
   (use-package clang-format
     :ensure t
-    :commands clang-format-buffer clang-format-region
+    :commands clang-format-buffer clang-format-region)
+
+  (use-package cc-mode
+    :defer t
     :config
-    ;(setq clang-format-executable "TODO")
-    (define-key c-mode-base-map "\C-cb" 'clang-format-buffer)
-    (define-key c-mode-base-map "\C-cr" 'clang-format-region))
+    (bind-key "C-c b" #'clang-format-buffer c-mode-base-map))
 #+END_SRC
 ** company
 *** company
