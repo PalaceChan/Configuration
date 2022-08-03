@@ -778,7 +778,9 @@ use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
     :ensure t
+    ;:bind (:map paredit-mode-map ("M-I" . paredit-splice-sexp)) ;fixme (breaks paredit hooks below)
     :config
+    (add-hook 'paredit-mode-hook #'(lambda () (unbind-key "M-s" paredit-mode-map)))
     (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
     (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
     (add-hook 'ielm-mode-hook #'paredit-mode)
