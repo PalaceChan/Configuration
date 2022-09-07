@@ -723,11 +723,13 @@ uses rg for fast grep
 #+END_SRC
 a much nicer dired (can in-place expand subdirectory contents)
 #+BEGIN_SRC emacs-lisp
-(use-package dired-subtree
-             :config
-             (define-key dired-mode-map "i" 'dired-subtree-insert)
-             (define-key dired-mode-map ";" 'dired-subtree-remove)
-             :ensure dired-subtree)
+  (use-package dired-subtree
+    :ensure t
+    :after dired
+    :bind (:map dired-mode-map
+                ("i" . dired-subtree-insert)
+                (";" . dired-subtree-remove)
+                ("<tab>" . dired-subtree-cycle)))
 #+END_SRC
 
 replaces list-directory with recentf for dirs
@@ -736,15 +738,6 @@ replaces list-directory with recentf for dirs
     :ensure t
     :config (dired-recent-mode 1))
 #+end_src
-
-#+BEGIN_SRC emacs-lisp
-  ;; (use-package dired-git-info
-  ;;   :disabled
-  ;;   :ensure t
-  ;;   :bind (:map dired-mode-map (")" . dired-git-info-mode))
-  ;;   :config
-  ;;   (setq dgi-commit-message-format "%f\t%an\t%cr"))
-#+END_SRC
 ** discover
 discover major mode
 #+BEGIN_SRC emacs-lisp
@@ -1618,10 +1611,16 @@ magit uses this but can also use it to make crontab editing work from a running 
 ** wrap region
 automatically encloses double quotes or parens
 #+BEGIN_SRC emacs-lisp
-(use-package wrap-region
-  :ensure t
-  :config (wrap-region-global-mode t)
-  :diminish wrap-region-mode)
+  (use-package wrap-region
+    :ensure t
+    :config
+    (wrap-region-global-mode t)
+    (wrap-region-add-wrappers
+     '(("*" "*" "*" org-mode)
+       ("/" "/" "/" org-mode)
+       ("~" "~" "~" org-mode)
+       ("=" "=" "=" org-mode)))
+    :diminish wrap-region-mode)
 #+END_SRC
 ** ws-butler
 advantage over =(add-hook 'before-save-hook #'delete-trailing-whitespace)= is that it does mess with others whitespace
