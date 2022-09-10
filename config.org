@@ -1312,13 +1312,17 @@ hide emphasis markers the nice way
     (org-appear-autokeywords t)
     (org-appear-autolinks t))
 #+end_src
-*** org-bullets
+*** org-modern
 #+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
+  (use-package org-modern
     :ensure t
-    :hook (org-mode . org-bullets-mode)
+    :hook ((org-mode . org-modern-mode)
+           (org-agenda-finalize . org-modern-agenda))
     :custom
-    (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+    (org-modern-star '("◉" "○" "●" "○" "●" "○" "●"))
+    (org-modern-table-vertical 1)
+    (org-modern-progress nil)
+    (org-modern-block-fringe nil))
 #+END_SRC
 *** org-mime
 #+BEGIN_SRC emacs-lisp
