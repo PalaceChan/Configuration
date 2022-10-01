@@ -45,9 +45,10 @@ Disable audible bell
 
 Disable startup messages and text in scratch
 #+BEGIN_SRC emacs-lisp
-  (setq inhibit-startup-message t
-    inhibit-startup-echo-area-message t
-    initial-scratch-message nil)
+  (setq initial-major-mode 'fundamental-mode
+        inhibit-startup-message t
+        inhibit-startup-echo-area-message t
+        initial-scratch-message nil)
 #+END_SRC
 
 Disable suspend
