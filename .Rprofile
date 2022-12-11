@@ -36,10 +36,15 @@ if (interactive()) {
     .last <- function() try(savehistory("/home/avelazqu/.Rhistory"))
 }
 
-#my own functions in this env
+# my own functions in this env
 .startupEnv <- new.env()
 
-#ls as a data frame with more info
+# fix for this iESS issue: https://github.com/emacs-ess/ESS/issues/1193#issuecomment-1144182009
+.startupEnv$rstCol <- function() {
+    try(cat(crayon::reset("")), silent = TRUE)
+}
+
+# ls as a data frame with more info
 .startupEnv$lsa <- function() {
     objL <- ls(envir = .GlobalEnv)
     objClassV <- vapply(objL, function(x) paste(class(get(x, envir = .GlobalEnv)), collapse=':'), character(1))
@@ -49,7 +54,7 @@ if (interactive()) {
     objDF
 }
 
-#ls for functions in a package
+# ls for functions in a package
 .startupEnv$lsp <-function(package, pattern, all.names = FALSE) {
     package <- deparse(substitute(package))
     ls(
@@ -59,17 +64,17 @@ if (interactive()) {
     )
 }
 
-#head shortcut & head tail
+# head shortcut & head tail
 .startupEnv$h <- utils::head
 .startupEnv$ht <- function(d, n=6) rbind(head(d,n), tail(d,n))
 
-#read multiple files
+# read multiple files
 .startupEnv$glob <- function(dir, fkey, hdr, classes=NA) {
     cmd <- sprintf("cat %s/%s | sed '1!{/%s/d}'", dir, fkey, hdr)
     data.table(read.csv(pipe(cmd), header=TRUE, colClasses=classes))
 }
 
-#parse ini config
+# parse ini config
 .startupEnv$parse.INI <- function(INI.filename) {
     l <- readLines(INI.filename)
     l <- sub('\\#.*$', '', l)
