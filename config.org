@@ -739,6 +739,15 @@ replaces list-directory with recentf for dirs
     :ensure t
     :config (dired-recent-mode 1))
 #+end_src
+
+add rsync option to dired
+#+begin_src emacs-lisp
+  (use-package dired-rsync
+    :ensure t
+    :bind (:map dired-mode-map ("r" . dired-rsync))
+    :custom (dired-rsync-unmark-on-completion nil)
+    :hook (dired-rsync-failed . dired-rsync--pop-to-rsync-failed-buf))
+#+end_src
 ** discover
 discover major mode
 #+BEGIN_SRC emacs-lisp
