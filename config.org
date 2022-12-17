@@ -786,10 +786,10 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
     :bind (:map eglot-mode-map ("C-h ." . eldoc))
     :custom
     (eglot-events-buffer-size 0)
-    (eglot-extend-to-xref t))
-    ;; :config
-    ;; (add-to-list 'eglot-server-programs
-    ;;              '((c++-mode c-mode) "/custom/path/to/bin/clangd"))
+    (eglot-extend-to-xref t)
+    :config
+    (add-hook 'eglot-managed-mode-hook (lambda () (flymake-mode -1))))
+  ;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "/custom/path/to/bin/clangd")
 #+end_src
 ** elisp
 use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated-paredit.html][animated paredit guide]])
@@ -1418,6 +1418,18 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   (use-package elpy
     :ensure t
     :commands elpy-enable
+    :custom
+    ;; (elpy-rpc-virtualenv-path 'system)
+    (elpy-get-info-from-shell t)
+    :preface
+    ;; https://elpy.readthedocs.io/en/latest/customization_tips.html
+    (defun ava/elpy-goto-definition-or-rgrep ()
+      "Go to the definition of the symbol at point, if found. Otherwise, run `elpy-rgrep-symbol'."
+      (interactive)
+      (xref-push-marker-stack)
+      (condition-case nil (elpy-goto-definition)
+        (error (elpy-rgrep-symbol
+                (concat "\\(def\\|class\\)\s" (thing-at-point 'symbol) "(")))))
     :init
     (progn
       (elpy-enable)
@@ -1431,16 +1443,17 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
               elpy-module-folding))
       (eval-after-load "elpy"
         '(cl-dolist (key '("C-<return>" "C-<up>" "C-<down>" "C-<left>" "C-<right>"))
-           (define-key elpy-mode-map (kbd key) nil)))
-      :config
-      (setq python-shell-interpreter "python")
-      (setq python-shell-interpreter-args "-i")
-      (setq elpy-rpc-python-command "python")
-      (setq elpy-rpc-timeout 10)
-      (setq python-shell-prompt-detect-failure-warning nil)
-      (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter")
-      (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-      (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))))
+           (define-key elpy-mode-map (kbd key) nil))))
+    :config
+    (setq python-shell-interpreter "python")
+    (setq python-shell-interpreter-args "-i")
+    (setq elpy-rpc-python-command "python")
+    (setq elpy-rpc-timeout 10)
+    (setq python-shell-prompt-detect-failure-warning nil)
+    (define-key elpy-mode-map (kbd "M-.") 'ava/elpy-goto-definition-or-rgrep)
+    (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter")
+    (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
+    (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1))))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
