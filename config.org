@@ -816,6 +816,14 @@ use =M-x erc-tls= to start
 #+begin_src emacs-lisp
   (use-package erc
     :ensure t
+    :preface
+    (defun ava/erc-quit ()
+      "Kill ERC buffers and terminate its child process."
+      (interactive)
+      (let ((kill-buffer-query-functions nil)
+            (erc-buffers (erc-buffer-list)))
+        (dolist (buffer erc-buffers) (kill-buffer buffer)))
+      (erc-buffer-list))
     :init
     (require 'erc-autoaway)
     :custom
