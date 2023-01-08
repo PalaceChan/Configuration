@@ -795,7 +795,10 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
   (use-package eglot
     :ensure t
     :commands eglot
-    :bind (:map eglot-mode-map ("C-h ." . eldoc))
+    :bind (:map eglot-mode-map
+                ("C-h ." . eldoc)
+                ("C-c e a" . eglot-code-actions)
+                ("C-c e r" . eglot-rename))
     :custom
     (eglot-events-buffer-size 0)
     (eglot-extend-to-xref t)
@@ -1078,8 +1081,7 @@ remap =term-previous-matching-input= to a helm frontend
        ("d" git-gutter:statistic)
        ("q" nil)))
 
-    (global-set-key
-     (kbd "C-c e")
+    (with-eval-after-load 'paredit
      (defhydra hydra-paredit (:hint nil)
        "
      Forward^^   Backward^^  Miscellaneous
@@ -1096,7 +1098,8 @@ remap =term-previous-matching-input= to a helm frontend
        ("r" paredit-raise-sexp)
        ("l" paredit-splice-sexp)
        ("u" undo-only)
-       ("q" nil)))
+        ("q" nil))
+      (add-hook 'paredit-mode-hook #'(lambda () (bind-key "C-c e" #'hydra-paredit/body paredit-mode-map))))
 
     (global-set-key
      (kbd "C-c w")
