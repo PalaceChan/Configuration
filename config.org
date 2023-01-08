@@ -266,13 +266,15 @@ instead of dabbrev, use hippie-expand with dabbrev as first method
 #+begin_src emacs-lisp
   (use-package tramp
     :defer t
+    :custom
+    (remote-file-name-inhibit-cache nil)
     :config
+    (put 'temporary-file-directory 'standard-value `(,temporary-file-directory))
     ;; https://www.gnu.org/software/emacs/manual/html_node/tramp/Frequently-Asked-Questions.html
     (setq vc-ignore-dir-regexp
           (format "\\(%s\\)\\|\\(%s\\)"
                   vc-ignore-dir-regexp
-                  tramp-file-name-regexp)
-          remote-file-name-inhibit-cache 300))
+                  tramp-file-name-regexp)))
 #+end_src
 *** windows
 if need to work in a windows environment talk to it via named pipe
@@ -1267,6 +1269,8 @@ meta up and down to move text or region
     (org-log-into-drawer t)
     (org-todo-keywords '((sequence "TODO(t)" "WAIT(w@/!)" "|" "DONE(d)")))
     (org-highlight-latex-and-related '(native script entities))
+    (org-format-latex-options (plist-put org-format-latex-options :scale 1.5))
+    (org-latex-create-formula-image-program 'dvisvgm)
     (org-confirm-babel-evaluate nil)
     (org-clock-history-length 20)
     (org-clock-out-remove-zero-time-clocks t)
@@ -1396,6 +1400,7 @@ hide emphasis markers the nice way
     :custom
     (pdf-view-display-size 'fit-page)
     (pdf-view-continuous nil)
+    (pdf-view-use-scaling t)
     :config
     (pdf-loader-install)
     (setq pdf-view-resize-factor 1.1)
