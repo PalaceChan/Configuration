@@ -804,6 +804,8 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
     :custom
     (eglot-events-buffer-size 0)
     (eglot-extend-to-xref t)
+    (eldoc-echo-area-use-multiline-p nil)
+    (eglot-ignored-server-capabilities '(:documentHighlightProvider))
     :config
     (add-hook 'eglot-managed-mode-hook (lambda () (flymake-mode -1))))
   ;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "/custom/path/to/bin/clangd")
