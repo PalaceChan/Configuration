@@ -1515,6 +1515,19 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
     :ensure t
     :bind ("M-;" . smart-comment))
 #+end_src
+** stan
+#+begin_src emacs-lisp
+  (use-package stan-mode
+    :ensure t)
+
+  (use-package company-stan
+    :ensure t
+    :hook (stan-mode . company-stan-setup))
+
+  (use-package eldoc-stan
+    :ensure t
+    :hook (stan-mode . eldoc-stan-setup))
+#+end_src
 ** transpose frame
 #+BEGIN_SRC emacs-lisp
   (use-package transpose-frame
