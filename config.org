@@ -1182,6 +1182,13 @@ remap =term-previous-matching-input= to a helm frontend
     :bind ("C-x C-b" . ibuffer)
     :config (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+END_SRC
+
+#+begin_src emacs-lisp
+(use-package ibuffer-vc
+  :ensure t
+  :bind (:map ibuffer-mode-map
+        ("/ V" . ibuffer-vc-set-filter-groups-by-vc-root)))
+#+end_src
 ** json
 #+begin_src emacs-lisp
   (use-package json-mode
@@ -1698,11 +1705,6 @@ automatically encloses double quotes or parens
     :ensure t
     :config
     (wrap-region-global-mode t)
-    (wrap-region-add-wrappers
-     '(("*" "*" "*" org-mode)
-       ("/" "/" "/" org-mode)
-       ("~" "~" "~" org-mode)
-       ("=" "=" "=" org-mode)))
     :diminish wrap-region-mode)
 #+END_SRC
 ** ws-butler
