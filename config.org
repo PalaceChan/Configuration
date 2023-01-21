@@ -86,7 +86,8 @@ Disable common warnings
         set-mark-command-repeat-pop t
         load-prefer-newer t
         view-read-only t
-        display-raw-bytes-as-hex t)
+        display-raw-bytes-as-hex t
+        frame-resize-pixelwise t)
 
   (use-package paren
     :custom
@@ -101,6 +102,18 @@ Disable common warnings
   ;;; too slow on old server
   (unless (string= (system-name) "avalenovo")
     (setq completion-styles '(flex)))
+
+  (use-package apropos
+    :custom
+    (apropos-do-all t))
+
+  (use-package delsel
+    :config (delete-selection-mode t))
+
+  (use-package info
+    :defer t
+    :config
+    (add-hook 'Info-mode-hook 'variable-pitch-mode))
 #+END_SRC
 *** save place
 #+BEGIN_SRC emacs-lisp
@@ -238,10 +251,17 @@ auto-update proced every second
 #+begin_src emacs-lisp
   (use-package proced
     :defer t
+    :custom
+    (proced-sort 'pmem)
+    (proced-goal-attribute nil)
+    (proced-auto-update-flag t)
+    (proced-auto-update-interval 1)
+    (proced-enable-color-flag t)
     :config
-    (progn
-      (setq proced-auto-update-interval 1)
-      (add-hook 'proced-mode-hook (lambda () (proced-toggle-auto-update +1)))))
+    (add-to-list
+     'proced-format-alist
+     '(custom user pid pcpu pmem rss thcount start etime time state (args comm)))
+    (setq-default proced-format 'custom))
 #+end_src
 
 instead of dabbrev, use hippie-expand with dabbrev as first method
@@ -1046,6 +1066,7 @@ remap =term-previous-matching-input= to a helm frontend
     :ensure t
     :bind
     ("C-c h r r" . helm-org-rifle)
+    ("C-c h r b" . helm-org-rifle-current-buffer)
     ("C-c h r a" . helm-org-rifle-org-agenda-files)
     ("C-c h r o" . helm-org-rifle-org-directory))
 #+end_src
@@ -1161,6 +1182,16 @@ remap =term-previous-matching-input= to a helm frontend
     :bind ("C-x C-b" . ibuffer)
     :config (define-key ibuffer-mode-map (kbd "M-o") nil))
 #+END_SRC
+** json
+#+begin_src emacs-lisp
+  (use-package json-mode
+    :ensure t
+    :mode "\\.json\\'"
+    :init
+    (add-hook 'json-mode-hook #'flycheck-mode)
+    :custom
+    (js-indent-level 2))
+#+end_src
 ** magit
 #+BEGIN_SRC emacs-lisp
   (use-package magit
@@ -1277,6 +1308,7 @@ meta up and down to move text or region
     (org-clock-history-length 20)
     (org-clock-out-remove-zero-time-clocks t)
     (org-link-elisp-confirm-function nil)
+    (org-edit-src-content-indentation 0)
     :hook
     (org-mode . org-indent-mode)
     (org-mode . mixed-pitch-mode)
