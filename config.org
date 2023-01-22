@@ -1177,27 +1177,29 @@ remap =term-previous-matching-input= to a helm frontend
       (add-hook 'smerge-mode-hook (lambda () (bind-key "C-c ^ h" #'hydra-smerge/body smerge-mode-map)))))
 #+END_SRC
 ** ibuffer
-#+BEGIN_SRC emacs-lisp
-  (use-package ibuffer
-    :bind ("C-x C-b" . ibuffer)
-    :config (define-key ibuffer-mode-map (kbd "M-o") nil))
-#+END_SRC
-
 #+begin_src emacs-lisp
+(use-package ibuffer
+  :bind ("C-x C-b" . ibuffer)
+  :config (define-key ibuffer-mode-map (kbd "M-o") nil))
+
 (use-package ibuffer-vc
   :ensure t
   :bind (:map ibuffer-mode-map
-        ("/ V" . ibuffer-vc-set-filter-groups-by-vc-root)))
+              ("/ V" . ibuffer-vc-set-filter-groups-by-vc-root)))
 #+end_src
 ** json
 #+begin_src emacs-lisp
-  (use-package json-mode
-    :ensure t
-    :mode "\\.json\\'"
-    :init
-    (add-hook 'json-mode-hook #'flycheck-mode)
-    :custom
-    (js-indent-level 2))
+(use-package jq-mode
+  :ensure t)
+
+(use-package json-mode
+  :ensure t
+  :mode "\\.json\\'"
+  :bind (:map json-mode-map ("C-c C-i" . #'jq-interactively))
+  :init
+  (add-hook 'json-mode-hook #'flycheck-mode)
+  :custom
+  (js-indent-level 2))
 #+end_src
 ** magit
 #+BEGIN_SRC emacs-lisp
