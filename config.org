@@ -1190,7 +1190,8 @@ remap =term-previous-matching-input= to a helm frontend
 ** json
 #+begin_src emacs-lisp
 (use-package jq-mode
-  :ensure t)
+  :ensure t
+  :mode "\\.jq\\'")
 
 (use-package json-mode
   :ensure t
