@@ -953,63 +953,59 @@ add clang-tidy to flycheck
 #+END_SRC
 ** helm
 #+BEGIN_SRC emacs-lisp
-  (use-package helm
-    :demand t
-    :diminish helm-mode
-    :init
-    (progn
-      (require 'helm-config)
-      (setq helm-candidate-number-limit 100)
-      (setq helm-idle-delay 0.0
-            helm-input-idle-delay 0.01
-            helm-yas-display-key-on-candidate t
-            helm-quick-update t
-            helm-M-x-requires-pattern nil)
-      (helm-mode))
-    :bind (
-           ("C-h a" . helm-apropos)
-           ("C-x b" . helm-mini)
-           ("M-y" . helm-show-kill-ring)
-           ("M-x" . helm-M-x)
-           ("C-x C-f" . helm-find-files)
-           ("C-c h o" . helm-occur)
-           ("C-c h b" . helm-resume)
-           ("C-c h i" . helm-semantic-or-imenu)
-           ("C-c h m" . helm-man-woman)
-           ("C-c h I" . helm-imenu-in-all-buffers)
-           ("C-c h l" . helm-locate)
-           ("C-c h g" . helm-google-suggest)
-           ("C-c h t" . helm-top)
-           ("C-c h x" . helm-shell-history)
-           ("C-c h p" . org-projectile-helm-template-or-project)
-           ("C-c h <SPC>" . helm-all-mark-rings))
-    :config
-    (setq helm-command-prefix-key "C-c h")
-    (setq helm-autoresize-min-height 25)
-    (setq helm-autoresize-max-height 25)
-    (setq helm-split-window-in-side-p t
-          helm-move-to-line-cycle-in-source t
-          helm-ff-search-library-in-sexp t
-          helm-scroll-amount 8
-          helm-ff-file-name-history-use-recentf t
-          helm-buffer-max-length nil
-          helm-buffer-skip-remote-checking t
-          helm-window-prefer-horizontal-split 'decide)
-    ;;locate %s -d FOO -e --regex %s where FOO is : delimited from cmd updatedb -l 0 -o i.db -U path_i for all paths
-    ;;(defvar my-locate-db-command (with-temp-buffer (insert-file-contents "path/to/cmd.txt") (buffer-string)))
-    ;;(setq helm-locate-command my-locae-db-command)
-    (helm-mode 1)
-    (helm-autoresize-mode 1)
-    (define-key  helm-map (kbd "<tab>") 'helm-execute-persistent-action)
-    (define-key  helm-map (kbd "C-i") 'helm-execute-persistent-action)
-    (define-key  helm-map (kbd "C-z") 'helm-select-action)
-    (defun ava/around-helm-buffers-sort-transformer (candidates source)
-      candidates)
-    (advice-add 'helm-buffers-sort-transformer
-                :override #'ava/around-helm-buffers-sort-transformer)
-    (defun ava/reset-helm-buffer-max-length (&rest ignore) (setq helm-buffer-max-length nil))
-    (advice-add 'helm-mini :before #'ava/reset-helm-buffer-max-length)
-    :ensure helm)
+(use-package helm
+  :ensure t
+  :diminish helm-mode
+  :init (helm-mode 1)
+  :bind (
+         ("C-h a" . helm-apropos)
+         ("C-x b" . helm-mini)
+         ("M-y" . helm-show-kill-ring)
+         ("M-x" . helm-M-x)
+         ("C-x C-f" . helm-find-files)
+         ("C-c h o" . helm-occur)
+         ("C-c h b" . helm-resume)
+         ("C-c h i" . helm-semantic-or-imenu)
+         ("C-c h m" . helm-man-woman)
+         ("C-c h I" . helm-imenu-in-all-buffers)
+         ("C-c h l" . helm-locate)
+         ("C-c h g" . helm-google-suggest)
+         ("C-c h t" . helm-top)
+         ("C-c h x" . helm-shell-history)
+         ("C-c h p" . org-projectile-helm-template-or-project)
+         ("C-c h <SPC>" . helm-all-mark-rings))
+  :config
+  (require 'ffap)
+  (setq helm-candidate-number-limit 100
+        helm-idle-delay 0.0
+        helm-input-idle-delay 0.01
+        helm-yas-display-key-on-candidate t
+        helm-quick-update t
+        helm-M-x-requires-pattern nil
+        helm-command-prefix-key "C-c h"
+        helm-autoresize-min-height 25
+        helm-autoresize-max-height 25
+        helm-split-window-inside-p t
+        helm-move-to-line-cycle-in-source t
+        helm-ff-search-library-in-sexp t
+        helm-scroll-amount 8
+        helm-ff-file-name-history-use-recentf t
+        helm-buffer-max-length nil
+        helm-buffer-skip-remote-checking t
+        helm-window-prefer-horizontal-split 'decide)
+  ;;locate %s -d FOO -e --regex %s where FOO is : delimited from cmd updatedb -l 0 -o i.db -U path_i for all paths
+  ;;(defvar my-locate-db-command (with-temp-buffer (insert-file-contents "path/to/cmd.txt") (buffer-string)))
+  ;;(setq helm-locate-command my-locae-db-command)
+  (helm-autoresize-mode 1)
+  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action)
+  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action)
+  (define-key helm-map (kbd "C-z") 'helm-select-action)
+  (defun ava/around-helm-buffers-sort-transformer (candidates source)
+    candidates)
+  (advice-add 'helm-buffers-sort-transformer
+              :override #'ava/around-helm-buffers-sort-transformer)
+  (defun ava/reset-helm-buffer-max-length (&rest ignore) (setq helm-buffer-max-length nil))
+  (advice-add 'helm-mini :before #'ava/reset-helm-buffer-max-length))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
