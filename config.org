@@ -975,7 +975,6 @@ add clang-tidy to flycheck
          ("C-c h p" . org-projectile-helm-template-or-project)
          ("C-c h <SPC>" . helm-all-mark-rings))
   :config
-  (require 'ffap)
   (setq helm-candidate-number-limit 100
         helm-idle-delay 0.0
         helm-input-idle-delay 0.01
