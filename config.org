@@ -190,7 +190,8 @@ kill current buffer no prompt
   (add-to-list 'same-window-buffer-names "*grep*")
   (add-to-list 'same-window-buffer-names "*Buffer List*")
 #+end_src
-*** misc
+*** misc builtin settings
+**** world clock
 #+BEGIN_SRC emacs-lisp
   (setq world-clock-time-format "%a, %d %b %I:%M %p %Z"
         world-clock-list '(("Europe/Berlin" "Berlin")
@@ -205,6 +206,7 @@ kill current buffer no prompt
                            ("Europe/Zurich" "Zurich")))
 #+END_SRC
 
+**** winner
 #+BEGIN_SRC emacs-lisp
   (use-package winner
     :bind (("M-N" . winner-redo)
@@ -215,6 +217,7 @@ kill current buffer no prompt
     (winner-mode 1))
 #+END_SRC
 
+**** yes/no zap and unset C-x o
 #+BEGIN_SRC emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
   (global-set-key (kbd "C-x l") 'align-regexp)
@@ -232,6 +235,7 @@ kill current buffer no prompt
   (global-unset-key (kbd "C-x o"))
 #+end_src
 
+**** isearch
 #+BEGIN_SRC emacs-lisp
   (use-package isearch
     :no-require t
@@ -247,7 +251,7 @@ kill current buffer no prompt
   (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 #+end_src
 
-auto-update proced every second
+**** proced
 #+begin_src emacs-lisp
   (use-package proced
     :defer t
@@ -264,7 +268,7 @@ auto-update proced every second
     (setq-default proced-format 'custom))
 #+end_src
 
-instead of dabbrev, use hippie-expand with dabbrev as first method
+**** hippie expand
 #+begin_src emacs-lisp
   (use-package hippie-exp
     :custom
@@ -282,7 +286,17 @@ instead of dabbrev, use hippie-expand with dabbrev as first method
     :bind
     ([remap dabbrev-expand] . hippie-expand))
 #+end_src
-*** tramp
+
+**** eldoc
+also enable eldoc
+#+begin_src emacs-lisp
+(use-package eldoc
+  :diminish
+  :custom
+  (eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly)
+  :hook ((emacs-lisp-mode) . eldoc-mode))
+#+end_src
+**** tramp
 #+begin_src emacs-lisp
   (use-package tramp
     :defer t
@@ -296,7 +310,7 @@ instead of dabbrev, use hippie-expand with dabbrev as first method
                   vc-ignore-dir-regexp
                   tramp-file-name-regexp)))
 #+end_src
-*** windows
+*** if on a windows OS
 if need to work in a windows environment talk to it via named pipe
 #+begin_src emacs-lisp
 ;;  (defun ava/on-windows (cmd &rest args)
@@ -814,21 +828,28 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
 [[https://github.com/joaotavora/eglot][homepage]]
 
 #+begin_src emacs-lisp
-  (use-package eglot
-    :ensure t
-    :commands eglot
-    :bind (:map eglot-mode-map
-                ("C-h ." . eldoc)
-                ("C-c e a" . eglot-code-actions)
-                ("C-c e r" . eglot-rename))
-    :custom
-    (eglot-events-buffer-size 0)
-    (eglot-extend-to-xref t)
-    (eldoc-echo-area-use-multiline-p nil)
-    (eglot-ignored-server-capabilities '(:documentHighlightProvider))
-    :config
-    (add-hook 'eglot-managed-mode-hook (lambda () (flymake-mode -1))))
-  ;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "/custom/path/to/bin/clangd")
+(use-package eglot
+  :ensure t
+  :commands eglot
+  :preface
+  (defun ava/eglot-disable-flymake () (flymake-mode -1))
+  (defun ava/eglot-enable-eager-eldoc () (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly))
+  :bind (:map eglot-mode-map
+              ("C-h ." . eldoc)
+              ("C-c e a" . eglot-code-actions)
+              ("C-c e r" . eglot-rename)
+              ("C-c e q" . eglot-code-action-quickfix)
+              ("C-c e e" . eglot-code-action-extract)
+              ("C-c e i" . eglot-code-action-inline))
+  :custom
+  (eglot-events-buffer-size 0)
+  (eglot-extend-to-xref t)
+  (eldoc-echo-area-use-multiline-p nil)
+  (eglot-ignored-server-capabilities '(:documentHighlightProvider))
+  :config
+  (add-hook 'eglot-managed-mode-hook #'ava/eglot-disable-flymake)
+  (add-hook 'eglot-managed-mode-hook #'ava/eglot-enable-eager-eldoc))
+;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "/custom/path/to/bin/clangd")
 #+end_src
 ** elisp
 use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated-paredit.html][animated paredit guide]])
@@ -843,12 +864,6 @@ use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated
     (add-hook 'ielm-mode-hook #'paredit-mode)
     (add-hook 'lisp-mode-hook #'paredit-mode)
     (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
-#+END_SRC
-also enable eldoc
-#+BEGIN_SRC emacs-lisp
-  (use-package eldoc
-    :diminish
-    :hook ((emacs-lisp-mode) . eldoc-mode))
 #+END_SRC
 ** erc
 use =M-x erc-tls= to start
