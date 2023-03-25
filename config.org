@@ -774,17 +774,18 @@ uses rg for fast grep
 #+END_SRC
 ** dired related
 #+BEGIN_SRC emacs-lisp
-  (with-eval-after-load 'dired
-    (require 'dired-x)
-    (setq
-     dired-recursive-copies 'always
-     dired-recursive-deletes 'always
-     dired-dwim-target t
-     dired-auto-revert-buffer 'dired-directory-changed-p
-     dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"
-     dired-hide-details-hide-symlink-targets nil
-     dired-kill-when-opening-new-dired-buffer t)
-    (add-hook 'dired-mode-hook (lambda () (interactive) (dired-hide-details-mode 1))))
+(with-eval-after-load 'dired
+  (require 'dired-x)
+  (setq
+   dired-recursive-copies 'always
+   dired-recursive-deletes 'always
+   dired-dwim-target t
+   dired-auto-revert-buffer 'dired-directory-changed-p
+   dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"
+   dired-hide-details-hide-symlink-targets nil
+   dired-kill-when-opening-new-dired-buffer t
+   wdired-allow-to-change-permissions t)
+  (add-hook 'dired-mode-hook (lambda () (interactive) (dired-hide-details-mode 1))))
 #+END_SRC
 a much nicer dired (can in-place expand subdirectory contents)
 #+BEGIN_SRC emacs-lisp
