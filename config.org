@@ -27,6 +27,34 @@ As early as possible do this
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 #+END_SRC
+*** modeline
+#+begin_src emacs-lisp
+(setq display-time-format "%H:%M - %a %b %d"
+      display-time-24hr-format t
+      display-time-default-load-average nil)
+
+(column-number-mode t)
+(display-battery-mode t)
+(display-time-mode 1)
+(size-indication-mode t)
+
+(use-package doom-modeline
+  :ensure t
+  :custom
+  (doom-modeline-env-version nil)
+  (doom-modeline-icon nil)
+  (doom-modeline-minor-modes t)
+  (doom-modeline-buffer-encoding nil)
+  (doom-modeline-modal-icon nil) ; evil specific
+  :init (doom-modeline-mode 1))
+
+(use-package minions
+  :ensure t
+  :custom
+  (minions-mode-line-lighter "+")
+  (minions-prominent-modes '(flycheck-mode multiple-cursors-mode projectile-mode tree-sitter-mode))
+  :init (minions-mode))
+#+end_src
 *** start
 Disable a bunch of visuals
 #+BEGIN_SRC emacs-lisp
@@ -145,18 +173,6 @@ Save some history across sessions. (savehist-mode) on auto-save can be slow so w
            (read-expression-history . 8000)
            query-replace-history
            regexp-history)))
-#+END_SRC
-*** mode bar
-show battery, column number and nicely formatted time
-#+BEGIN_SRC emacs-lisp
-  (setq column-number-mode t
-        display-time-format "%H:%M - %Y%m%d"
-        display-time-24hr-format t
-        display-time-default-load-average nil)
-
-  (display-battery-mode t)
-  (display-time-mode 1)
-  (size-indication-mode t)
 #+END_SRC
 *** highlighting
 #+BEGIN_SRC emacs-lisp
