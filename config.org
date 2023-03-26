@@ -52,7 +52,7 @@ As early as possible do this
   :ensure t
   :custom
   (minions-mode-line-lighter "+")
-  (minions-prominent-modes '(flycheck-mode multiple-cursors-mode projectile-mode tree-sitter-mode))
+  (minions-prominent-modes '(flycheck-mode multiple-cursors-mode view-mode vlf-mode))
   :init (minions-mode))
 #+end_src
 *** start
