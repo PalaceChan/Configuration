@@ -100,48 +100,52 @@ Disable common warnings
 #+END_SRC
 *** basic settings
 #+BEGIN_SRC emacs-lisp
-  (setq scroll-step 1
-        scroll-margin 3
-        scroll-conservatively most-positive-fixnum
-        scroll-preserve-screen-position t
-        grep-highlight-matches t
-        shell-file-name "bash"
-        x-alt-keysym 'meta
-        kill-ring-max 100
-        undo-outer-limit 50000000
-        make-backup-files nil
-        calendar-mode-line-format nil
-        set-mark-command-repeat-pop t
-        load-prefer-newer t
-        view-read-only t
-        display-raw-bytes-as-hex t
-        frame-resize-pixelwise t)
+(setq scroll-step 1
+      scroll-margin 3
+      scroll-conservatively most-positive-fixnum
+      scroll-preserve-screen-position t
+      grep-highlight-matches t
+      shell-file-name "bash"
+      x-alt-keysym 'meta
+      kill-ring-max 100
+      undo-outer-limit 50000000
+      make-backup-files nil
+      calendar-mode-line-format nil
+      set-mark-command-repeat-pop t
+      load-prefer-newer t
+      view-read-only t
+      display-raw-bytes-as-hex t
+      frame-resize-pixelwise t)
 
-  (use-package paren
-    :custom
-    (show-paren-delay 0)
-    (show-paren-when-point-inside-paren t)
-    :config
-    (show-paren-mode 1))
+(use-package paren
+  :custom
+  (show-paren-delay 0)
+  (show-paren-when-point-inside-paren t)
+  :config
+  (show-paren-mode 1))
 
-  (setq enable-recursive-minibuffers t)
-  (minibuffer-depth-indicate-mode)
+(setq enable-recursive-minibuffers t)
+(minibuffer-depth-indicate-mode)
 
-  ;;; too slow on old server
-  (unless (string= (system-name) "avalenovo")
-    (setq completion-styles '(flex)))
+;;; too slow on old server
+(unless (string= (system-name) "avalenovo")
+  (setq completion-styles '(flex)))
 
-  (use-package apropos
-    :custom
-    (apropos-do-all t))
+(use-package apropos
+  :custom
+  (apropos-do-all t))
 
-  (use-package delsel
-    :config (delete-selection-mode t))
+(use-package delsel
+  :config (delete-selection-mode t))
 
-  (use-package info
-    :defer t
-    :config
-    (add-hook 'Info-mode-hook 'variable-pitch-mode))
+(use-package info
+  :defer t
+  :config
+  (let ((texinfo-path "~/.texinfo"))
+    (when (file-directory-p texinfo-path)
+      (f-entries texinfo-path
+                 (lambda (path) (add-to-list 'Info-additional-directory-list path)))))
+  (add-hook 'Info-mode-hook 'variable-pitch-mode))
 #+END_SRC
 *** save place
 #+BEGIN_SRC emacs-lisp
@@ -665,24 +669,10 @@ from [[https://gist.github.com/karthink/af013ffd77fe09e67360f040b57b4c7b][karthi
       (setf (alist-get ?M avy-dispatch-alist) 'avy-action-man)))
 #+END_SRC
 ** bookmarks
-modified from https://github.com/howardabrams/dot-files/blob/master/emacs.org
 #+begin_src emacs-lisp
-  (use-package bookmark
-    :init (setq bookmark-save-flag 1)
-    :config
-    (defun ava/add-bookmark (name)
-      (interactive
-       (list
-        (let* ((initial
-                (cond
-                 ((and (fboundp 'which-function) (not (string= (projectile-project-name) "-")))
-                  (format "%s::%s:%s - " (projectile-project-name) (file-name-base (buffer-file-name)) (which-function)))
-                 ((buffer-file-name)
-                  (format "%s - " (buffer-file-name)))
-                 (t "? - "))))
-          (read-string "Bookmark: " initial))))
-      (bookmark-set name))
-    :bind (("C-x r m" . ava/add-bookmark)))
+(use-package bookmark
+  :custom
+  (bookmark-save-flag 1))
 #+end_src
 ** clang-format
 #+BEGIN_SRC emacs-lisp
