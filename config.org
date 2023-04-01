@@ -949,10 +949,8 @@ use =M-x erc-tls= to start
 #+end_src
 ** flycheck
 #+BEGIN_SRC emacs-lisp
-  (use-package flycheck :ensure t)
+(use-package flycheck :ensure t)
 #+END_SRC
-
-add clang-tidy to flycheck
 
 #+begin_src emacs-lisp
 ;  (use-package flycheck-clang-tidy
@@ -973,6 +971,15 @@ add clang-tidy to flycheck
     :ensure t
     :bind ("C-x v t" . git-timemachine-toggle))
 #+END_SRC
+** gptel
+https://github.com/karthink/gptel
+
+#+begin_src emacs-lisp
+(use-package gptel
+  :ensure t
+  :custom
+  (gptel-default-mode 'org-mode))
+#+end_src
 ** helm
 #+BEGIN_SRC emacs-lisp
 (use-package helm
@@ -1221,50 +1228,50 @@ remap =term-previous-matching-input= to a helm frontend
 #+end_src
 ** magit
 #+BEGIN_SRC emacs-lisp
-  (use-package magit
-    :ensure t
-    :preface
-    (defun ava/format-staged ()
-      (interactive)
-      (dolist (name (magit-staged-files))
-        (let ((fname (expand-file-name name (magit-toplevel))))
-          (when (file-exists-p fname)
-            (pcase (file-name-extension name)
-              ("py"
-               (shell-command (format "dos2unix -q %s" fname)))
-              ((or "C" "H" "I" "c" "h" "cpp" "hpp")
-               (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname))))))))
-    :custom
-    (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
-    (magit-log-section-commit-count 25)
-    (magit-diff-refine-hunk 'all)
-    (magit-no-confirm '(stage-all-changes unstage-all-changes set-and-push))
-    :bind
-    ("C-x g" . magit-status)
-    ("C-c m" . magit-file-dispatch))
+(use-package magit
+  :ensure t
+  :preface
+  (defun ava/format-staged ()
+    (interactive)
+    (dolist (name (magit-staged-files))
+      (let ((fname (expand-file-name name (magit-toplevel))))
+        (when (file-exists-p fname)
+          (pcase (file-name-extension name)
+            ("py"
+             (shell-command (format "dos2unix -q %s" fname)))
+            ((or "C" "H" "I" "c" "h" "cpp" "hpp")
+             (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname))))))))
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+  (magit-log-section-commit-count 25)
+  (magit-diff-refine-hunk 'all)
+  (magit-no-confirm '(stage-all-changes unstage-all-changes set-and-push))
+  :bind
+  ("C-x g" . magit-status)
+  ("C-c m" . magit-file-dispatch))
 #+END_SRC
 
 #+begin_src emacs-lisp
-  (use-package forge
-    :ensure t
-    :after magit
-    :config
-    (remove-hook 'magit-status-sections-hook 'forge-insert-issues))
+(use-package forge
+  :ensure t
+  :after magit
+  :config
+  (remove-hook 'magit-status-sections-hook 'forge-insert-issues))
 #+end_src
 ** mixed-pitch
 addresses the issues with =variable-pitch-mode= in modes like org (tables/code-blocks)
 #+begin_src emacs-lisp
-  (use-package mixed-pitch
-    :ensure t
-    :defer t
-    :config
-    (dolist (face '(org-date org-priority org-tag org-special-keyword))
-      (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
+(use-package mixed-pitch
+  :ensure t
+  :defer t
+  :config
+  (dolist (face '(org-date org-priority org-tag org-special-keyword))
+    (add-to-list 'mixed-pitch-fixed-pitch-faces face)))
 #+end_src
 ** move-text
 meta up and down to move text or region
 #+begin_src emacs-lisp
-  (use-package move-text :ensure t :config (move-text-default-bindings))
+(use-package move-text :ensure t :config (move-text-default-bindings))
 #+end_src
 ** multiple cursors
 - power hydra [[https://github.com/abo-abo/hydra/wiki/multiple-cursors][here]]
@@ -1273,36 +1280,36 @@ meta up and down to move text or region
 - pull in phi-search as well to get incremental search while in mc
 - protip: easy-kill ==C-SPC== will turn selection into region
 #+BEGIN_SRC emacs-lisp
-  (use-package multiple-cursors
-    :ensure t
-    :config (progn
-              (use-package phi-search-mc
-                :ensure t
-                :config
-                (phi-search-mc/setup-keys)))
-    (defhydra ava/multiple-cursors-hydra (:hint nil)
-      "
-   Up^^             Down^^           Miscellaneous           % 2(mc/num-cursors) cursor%s(if (> (mc/num-cursors) 1) \"s\" \"\")
-  ------------------------------------------------------------------
-   [_p_]   Next     [_n_]   Next     [_l_] Edit lines  [_d_] Mark sym defun  [_|_] Vertical align
-   [_P_]   Skip     [_N_]   Skip     [_a_] Mark all    [_r_] Mark all regex  [_q_] Quit
-   [_M-p_] Unmark   [_M-n_] Unmark   [_s_] Mark sym    [_0_] Insert numbers"
-      ("n" mc/mark-next-like-this)
-      ("N" mc/skip-to-next-like-this)
-      ("M-n" mc/unmark-next-like-this)
-      ("p" mc/mark-previous-like-this)
-      ("P" mc/skip-to-previous-like-this)
-      ("M-p" mc/unmark-previous-like-this)
-      ("|" mc/vertical-align)
-      ("0" mc/insert-numbers)
-      ("l" mc/edit-beginnings-of-lines)
-      ("a" mc/mark-all-like-this :exit t)
-      ("s" mc/mark-all-symbols-like-this :exit t)
-      ("d" mc/mark-all-symbols-like-this-in-defun :exit t)
-      ("r" mc/mark-all-in-region-regexp :exit t)
-      ("q" nil))
-    :bind (("C-c i" . ava/multiple-cursors-hydra/body)
-           :map mc/keymap ("C-s" . phi-search)))
+(use-package multiple-cursors
+  :ensure t
+  :config (progn
+            (use-package phi-search-mc
+              :ensure t
+              :config
+              (phi-search-mc/setup-keys)))
+  (defhydra ava/multiple-cursors-hydra (:hint nil)
+    "
+ Up^^             Down^^           Miscellaneous           % 2(mc/num-cursors) cursor%s(if (> (mc/num-cursors) 1) \"s\" \"\")
+------------------------------------------------------------------
+ [_p_]   Next     [_n_]   Next     [_l_] Edit lines  [_d_] Mark sym defun  [_|_] Vertical align
+ [_P_]   Skip     [_N_]   Skip     [_a_] Mark all    [_r_] Mark all regex  [_q_] Quit
+ [_M-p_] Unmark   [_M-n_] Unmark   [_s_] Mark sym    [_0_] Insert numbers"
+    ("n" mc/mark-next-like-this)
+    ("N" mc/skip-to-next-like-this)
+    ("M-n" mc/unmark-next-like-this)
+    ("p" mc/mark-previous-like-this)
+    ("P" mc/skip-to-previous-like-this)
+    ("M-p" mc/unmark-previous-like-this)
+    ("|" mc/vertical-align)
+    ("0" mc/insert-numbers)
+    ("l" mc/edit-beginnings-of-lines)
+    ("a" mc/mark-all-like-this :exit t)
+    ("s" mc/mark-all-symbols-like-this :exit t)
+    ("d" mc/mark-all-symbols-like-this-in-defun :exit t)
+    ("r" mc/mark-all-in-region-regexp :exit t)
+    ("q" nil))
+  :bind (("C-c i" . ava/multiple-cursors-hydra/body)
+         :map mc/keymap ("C-s" . phi-search)))
 #+END_SRC
 ** org-mode
 *** org
@@ -1376,320 +1383,291 @@ meta up and down to move text or region
 *** org-appear
 hide emphasis markers the nice way
 #+begin_src emacs-lisp
-  (use-package org-appear
-    :ensure t
-    :commands (org-appear-mode)
-    :hook (org-mode . org-appear-mode)
-    :custom
-    (org-appear-autoemphasis t)
-    (org-appear-autokeywords t)
-    (org-appear-autolinks t))
+(use-package org-appear
+  :ensure t
+  :commands (org-appear-mode)
+  :hook (org-mode . org-appear-mode)
+  :custom
+  (org-appear-autoemphasis t)
+  (org-appear-autokeywords t)
+  (org-appear-autolinks t))
 #+end_src
 *** org-modern
 #+BEGIN_SRC emacs-lisp
-  (use-package org-modern
-    :ensure t
-    :hook ((org-mode . org-modern-mode)
-           (org-agenda-finalize . org-modern-agenda))
-    :custom
-    (org-modern-star '("◉" "○" "●" "○" "●" "○" "●"))
-    (org-modern-table-vertical 1)
-    (org-modern-progress nil)
-    (org-modern-block-fringe nil))
+(use-package org-modern
+  :ensure t
+  :hook ((org-mode . org-modern-mode)
+         (org-agenda-finalize . org-modern-agenda))
+  :custom
+  (org-modern-star '("◉" "○" "●" "○" "●" "○" "●"))
+  (org-modern-table-vertical 1)
+  (org-modern-progress nil)
+  (org-modern-block-fringe nil))
 #+END_SRC
 *** org-mime
 #+BEGIN_SRC emacs-lisp
-  (use-package org-mime
-    :ensure t
-    :config
-    (setq mail-host-address (getenv "HOST")
-          org-mime-export-options '(:section-numbers nil
-                                    :with-author nil
-                                    :with-toc nil
-                                    :with-latex imagemagick))
-    (add-hook 'message-mode-hook
-              (lambda ()
-                (local-set-key (kbd "C-c M-o") 'org-mime-htmlize)))
-    (add-hook 'org-mode-hook
-              (lambda ()
-                (local-set-key (kbd "C-c M-o") 'org-mime-org-subtree-htmlize))))
+(use-package org-mime
+  :ensure t
+  :config
+  (setq mail-host-address (getenv "HOST")
+        org-mime-export-options '(:section-numbers nil
+                                  :with-author nil
+                                  :with-toc nil
+                                  :with-latex imagemagick))
+  (add-hook 'message-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c M-o") 'org-mime-htmlize)))
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c M-o") 'org-mime-org-subtree-htmlize))))
 #+END_SRC
 *** orgit
 #+begin_src emacs-lisp
-  (use-package orgit :ensure t)
+(use-package orgit :ensure t)
 #+end_src
 *** org-agenda
 #+begin_src emacs-lisp
-  (use-package org-agenda
-    :after org
-    :custom
-    (org-agenda-files '("todo.org" "projects.org"))
-    (org-agenda-span 'day)
-    (org-agenda-window-setup 'current-window)
-    (org-agenda-restore-windows-after-quit t)
-    (org-agenda-todo-ignore-scheduled 'future)
-    (org-agenda-skip-deadline-if-done t)
-    (org-agenda-skip-scheduled-if-done t)
-    (org-agenda-skip-deadline-prewarning-if-scheduled t)
-    :init
-    (global-set-key (kbd "C-c a") 'org-agenda))
-#+end_src
-*** org-projectile
-#+begin_src emacs-lisp
-  (use-package org-projectile
-    :ensure t
-    :after org
-    :custom
-    (org-projectile-capture-template "* TODO %^{title}\n%?")
-    :config
-    (add-to-list 'org-capture-templates (org-projectile-project-todo-entry :capture-heading "project todo")))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package helm-org :ensure t)
-  (use-package org-projectile-helm
-    :ensure t
-    :after (org-projectile helm-org))
+(use-package org-agenda
+  :after org
+  :custom
+  (org-agenda-files '("todo.org" "projects.org"))
+  (org-agenda-span 'day)
+  (org-agenda-window-setup 'current-window)
+  (org-agenda-restore-windows-after-quit t)
+  (org-agenda-todo-ignore-scheduled 'future)
+  (org-agenda-skip-deadline-if-done t)
+  (org-agenda-skip-scheduled-if-done t)
+  (org-agenda-skip-deadline-prewarning-if-scheduled t)
+  :init
+  (global-set-key (kbd "C-c a") 'org-agenda))
 #+end_src
 *** org-noter
 #+begin_src emacs-lisp
-  (use-package org-noter
-   :ensure t
-   :custom
-   (org-noter-always-create-frame nil))
+(use-package org-noter
+ :ensure t
+ :custom
+ (org-noter-always-create-frame nil))
 #+end_src
 ** pdf-tools
 #+begin_src emacs-lisp
-  (use-package pdf-tools
-    :ensure t
-    :custom
-    (pdf-view-display-size 'fit-page)
-    (pdf-view-continuous nil)
-    (pdf-view-use-scaling t)
-    :config
-    (pdf-loader-install)
-    (setq pdf-view-resize-factor 1.1)
-    (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode))
+(use-package pdf-tools
+  :ensure t
+  :custom
+  (pdf-view-display-size 'fit-page)
+  (pdf-view-continuous nil)
+  (pdf-view-use-scaling t)
+  :config
+  (pdf-loader-install)
+  (setq pdf-view-resize-factor 1.1)
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode))
 #+end_src
 ** projectile
 #+BEGIN_SRC emacs-lisp
-  (use-package projectile
+(use-package projectile
+  :ensure t
+  :diminish projectile-mode
+  :custom
+  (projectile-project-root-files-bottom-up '(".git" ".projectile"))
+  ;; (projectile-project-root-files '("WORKSPACE"))
+  :init
+  (setq projectile-enable-caching t
+        projectile-project-search-path '("~/development"))
+  (when (executable-find "rg")
+    (setq projectile-generic-command "rg -0 --hidden --files --color never"))
+  :config
+  (projectile-mode t)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-vterm)
+  (define-key projectile-mode-map (kbd "C-c p S") 'helm-multi-swoop-projectile)
+  (define-key projectile-mode-map (kbd "C-c p R") 'ava/generate-tags)
+  (use-package helm-projectile
     :ensure t
-    :diminish projectile-mode
-    :custom
-    (projectile-project-root-files-bottom-up '(".git" ".projectile"))
-    ;; (projectile-project-root-files '("WORKSPACE"))
     :init
-    (setq projectile-enable-caching t
-          projectile-project-search-path '("~/development"))
-    (when (executable-find "rg")
-      (setq projectile-generic-command "rg -0 --hidden --files --color never"))
-    :config
-    (projectile-mode t)
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-vterm)
-    (define-key projectile-mode-map (kbd "C-c p S") 'helm-multi-swoop-projectile)
-    (define-key projectile-mode-map (kbd "C-c p R") 'ava/generate-tags)
-    (use-package helm-projectile
-      :ensure t
-      :init
-      (helm-projectile-on)
-      (setq projectile-switch-project-action #'helm-projectile)
-      (setq projectile-completion-system 'helm)))
+    (helm-projectile-on)
+    (setq projectile-switch-project-action #'helm-projectile)
+    (setq projectile-completion-system 'helm)))
 #+END_SRC
 ** python
 make sure imenu does not override dumb-jump in python mode
 #+begin_src emacs-lisp
-  (use-package python
-    :defer t
-    :config
-    (bind-key "C-c C-j" #'dumb-jump-go python-mode-map))
+(use-package python
+  :defer t
+  :config
+  (bind-key "C-c C-j" #'dumb-jump-go python-mode-map))
 #+end_src
 
 To use a venv set a pyvenv-activate directory local or file local variable to the venv path
 (if one gets "exited abnormally with code 1" errors run =M-x elpy-rpc-reinstall-virtualenv=
 as per https://github.com/jorgenschaefer/elpy/issues/1729)
 #+BEGIN_SRC emacs-lisp
-  (use-package elpy
-    :ensure t
-    :commands elpy-enable
-    :custom
-    ;; (elpy-rpc-virtualenv-path 'system)
-    (elpy-get-info-from-shell t)
-    :preface
-    ;; https://elpy.readthedocs.io/en/latest/customization_tips.html
-    (defun ava/elpy-goto-definition-or-rgrep ()
-      "Go to the definition of the symbol at point, if found. Otherwise, run `elpy-rgrep-symbol'."
-      (interactive)
-      (xref-push-marker-stack)
-      (condition-case nil (elpy-goto-definition)
-        (error (elpy-rgrep-symbol
-                (concat "\\(def\\|class\\)\s" (thing-at-point 'symbol) "(")))))
-    :init
-    (progn
-      (elpy-enable)
-      (setq elpy-modules
-            '(elpy-module-sane-defaults
-              elpy-module-company
-              elpy-module-eldoc
-              elpy-module-highlight-indentation
-              elpy-module-pyvenv
-              elpy-module-yasnippet
-              elpy-module-folding))
-      (eval-after-load "elpy"
-        '(cl-dolist (key '("C-<return>" "C-<up>" "C-<down>" "C-<left>" "C-<right>"))
-           (define-key elpy-mode-map (kbd key) nil))))
-    :config
-    (setq python-shell-interpreter "python")
-    (setq python-shell-interpreter-args "-i")
-    (setq elpy-rpc-python-command "python")
-    (setq elpy-rpc-timeout 10)
-    (setq python-shell-prompt-detect-failure-warning nil)
-    (define-key elpy-mode-map (kbd "M-.") 'ava/elpy-goto-definition-or-rgrep)
-    (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter")
-    (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-    (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1))))
+(use-package elpy
+  :ensure t
+  :commands elpy-enable
+  :custom
+  ;; (elpy-rpc-virtualenv-path 'system)
+  (elpy-get-info-from-shell t)
+  :preface
+  ;; https://elpy.readthedocs.io/en/latest/customization_tips.html
+  (defun ava/elpy-goto-definition-or-rgrep ()
+    "Go to the definition of the symbol at point, if found. Otherwise, run `elpy-rgrep-symbol'."
+    (interactive)
+    (xref-push-marker-stack)
+    (condition-case nil (elpy-goto-definition)
+      (error (elpy-rgrep-symbol
+              (concat "\\(def\\|class\\)\s" (thing-at-point 'symbol) "(")))))
+  :init
+  (progn
+    (elpy-enable)
+    (setq elpy-modules
+          '(elpy-module-sane-defaults
+            elpy-module-company
+            elpy-module-eldoc
+            elpy-module-highlight-indentation
+            elpy-module-pyvenv
+            elpy-module-yasnippet
+            elpy-module-folding))
+    (eval-after-load "elpy"
+      '(cl-dolist (key '("C-<return>" "C-<up>" "C-<down>" "C-<left>" "C-<right>"))
+         (define-key elpy-mode-map (kbd key) nil))))
+  :config
+  (setq python-shell-interpreter "python")
+  (setq python-shell-interpreter-args "-i")
+  (setq elpy-rpc-python-command "python")
+  (setq elpy-rpc-timeout 10)
+  (setq python-shell-prompt-detect-failure-warning nil)
+  (define-key elpy-mode-map (kbd "M-.") 'ava/elpy-goto-definition-or-rgrep)
+  (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter")
+  (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
+  (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1))))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (use-package python-black
-    :ensure t
-    :after (python)
-    :config
-    (setq python-black-command "/usr/bin/black")
-    (define-key python-mode-map "\C-cb" 'python-black-buffer)
-    (define-key python-mode-map "\C-cb" 'python-black-region))
+(use-package python-black
+  :ensure t
+  :after (python)
+  :config
+  (setq python-black-command "/usr/bin/black")
+  (define-key python-mode-map "\C-cb" 'python-black-buffer)
+  (define-key python-mode-map "\C-cb" 'python-black-region))
 #+END_SRC
 ** recentf
 #+BEGIN_SRC emacs-lisp
-  (use-package recentf
-    :custom
-    (recentf-max-saved-items 500)
-    (recentf-auto-cleanup "05:00am")
-    (recentf-exclude '(file-remote-p))
-    :config
-    (recentf-mode t))
+(use-package recentf
+  :custom
+  (recentf-max-saved-items 500)
+  (recentf-auto-cleanup "05:00am")
+  (recentf-exclude '(file-remote-p))
+  :config
+  (recentf-mode t))
 #+END_SRC
 ** smart comment
 #+begin_src emacs-lisp
-  (use-package smart-comment
-    :ensure t
-    :bind ("M-;" . smart-comment))
-#+end_src
-** stan
-#+begin_src emacs-lisp
-  (use-package stan-mode
-    :ensure t)
-
-  (use-package company-stan
-    :ensure t
-    :hook (stan-mode . company-stan-setup))
-
-  (use-package eldoc-stan
-    :ensure t
-    :hook (stan-mode . eldoc-stan-setup))
+(use-package smart-comment
+  :ensure t
+  :bind ("M-;" . smart-comment))
 #+end_src
 ** transpose frame
 #+BEGIN_SRC emacs-lisp
-  (use-package transpose-frame
-    :ensure t
-    :bind (("C-x |" . rotate-frame-clockwise)
-           ("C-x \\" . rotate-frame-anticlockwise)))
+(use-package transpose-frame
+  :ensure t
+  :bind (("C-x |" . rotate-frame-clockwise)
+         ("C-x \\" . rotate-frame-anticlockwise)))
 #+END_SRC
 ** tree-sitter
-references:
 https://emacs-tree-sitter.github.io/installation/
 
 #+begin_src emacs-lisp
-  (use-package tree-sitter-langs :ensure t)
+(use-package tree-sitter-langs :ensure t)
 
-  (use-package tree-sitter
-    :ensure t
-    :after tree-sitter-langs
-    :config
-    (global-tree-sitter-mode)
-    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+(use-package tree-sitter
+  :ensure t
+  :after tree-sitter-langs
+  :config
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 #+end_src
 ** undo-tree
-A better non-linear undo
+
 #+BEGIN_SRC emacs-lisp
-  (use-package undo-tree
-    :ensure t
-    :diminish undo-tree-mode
-    :custom
-    (undo-tree-auto-save-history nil)
-    (undo-tree-enable-undo-in-region nil)
-    (undo-tree-visualizer-diff t)
-    (undo-tree-visualizer-timestamps t)
-    (undo-tree-incompatible-major-modes '(term-mode vterm-mode))
-    :config
-    (global-undo-tree-mode))
+(use-package undo-tree
+  :ensure t
+  :diminish undo-tree-mode
+  :custom
+  (undo-tree-auto-save-history nil)
+  (undo-tree-enable-undo-in-region nil)
+  (undo-tree-visualizer-diff t)
+  (undo-tree-visualizer-timestamps t)
+  (undo-tree-incompatible-major-modes '(term-mode vterm-mode))
+  :config
+  (global-undo-tree-mode))
 #+END_SRC
 ** vlf
 use for opening files larger than =large-file-warning-threshold=
 #+BEGIN_SRC emacs-lisp
-  (use-package vlf
-    :ensure t
-    :custom
-    (vlf-save-in-place t)
-    :config
-    (require 'vlf-setup))
+(use-package vlf
+  :ensure t
+  :custom
+  (vlf-save-in-place t)
+  :config
+  (require 'vlf-setup))
 #+END_SRC
 ** vterm
 #+BEGIN_SRC emacs-lisp
-    (use-package vterm
-      :ensure t
-      :config
-      (setq vterm-max-scrollback 100000)
-      (define-key vterm-mode-map (kbd "C-c C-j") 'vterm-copy-mode))
+(use-package vterm
+  :ensure t
+  :config
+  (setq vterm-max-scrollback 100000)
+  (define-key vterm-mode-map (kbd "C-c C-j") 'vterm-copy-mode))
 #+END_SRC
+
 start a remote vterm
 #+BEGIN_SRC emacs-lisp
-  (defun ava/rvterm (hos)
-    "Start a dir-tracking vterm on hos (or host at point if host is nil)"
-    (interactive "P")
-    (let* ((host (or hos (thing-at-point 'sexp)))
-           (user (getenv "USER"))
-           (bname (format "*vterm %s*" host)))
-      (vterm bname)
-      (switch-to-buffer bname)
-      (let* ((inhibit-read-only t)
-             (sshcmd (format "ssh -Y %s@%s" user host))
-             (fn1cmd "function vterm_printf() { \n printf \"\\e]%s\\e\\\\\" \"$1\" \n}")
-             (fn2cmd "function vterm_prompt_end() { \n vterm_printf \"51;A$(whoami)@$(hostname):$(pwd)\" \n }")
-             (ps1cmd "PS1=$PS1\'\\[$(vterm_promt_end)\\]\'")
-             (bigcmd (format "%s\n%s\n%s\n%s\n" sshcmd fn1cmd fn2cmd ps1cmd)))
-        (vterm-send-string bigcmd t))))
+(defun ava/rvterm (hos)
+  "Start a dir-tracking vterm on hos (or host at point if host is nil)"
+  (interactive "P")
+  (let* ((host (or hos (thing-at-point 'sexp)))
+         (user (getenv "USER"))
+         (bname (format "*vterm %s*" host)))
+    (vterm bname)
+    (switch-to-buffer bname)
+    (let* ((inhibit-read-only t)
+           (sshcmd (format "ssh -Y %s@%s" user host))
+           (fn1cmd "function vterm_printf() { \n printf \"\\e]%s\\e\\\\\" \"$1\" \n}")
+           (fn2cmd "function vterm_prompt_end() { \n vterm_printf \"51;A$(whoami)@$(hostname):$(pwd)\" \n }")
+           (ps1cmd "PS1=$PS1\'\\[$(vterm_promt_end)\\]\'")
+           (bigcmd (format "%s\n%s\n%s\n%s\n" sshcmd fn1cmd fn2cmd ps1cmd)))
+      (vterm-send-string bigcmd t))))
 #+END_SRC
+
 start a few common vterms
 #+BEGIN_SRC emacs-lisp
-  (defun ava/start-vterms ()
-    "Start a few common vterms"
-    (interactive)
-    (let ((vterm-start-helper (lambda (name cmd)
-                                (let ((bname (format "*vterm %s*" name)))
-                                  (if (eq nil (get-buffer bname))
-                                      (progn
-                                        (vterm bname)
-                                        (with-current-buffer bname
-                                          (let ((inhibit-read-only t))
-                                            (vterm-send-string (format "%s\n" cmd) t)))))))))
-      (save-window-excursion
-        (funcall vterm-start-helper "rand2" "")
-        (funcall vterm-start-helper "rand1" "")
-        (funcall vterm-start-helper "rand0" ""))))
+(defun ava/start-vterms ()
+  "Start a few common vterms"
+  (interactive)
+  (let ((vterm-start-helper (lambda (name cmd)
+                              (let ((bname (format "*vterm %s*" name)))
+                                (if (eq nil (get-buffer bname))
+                                    (progn
+                                      (vterm bname)
+                                      (with-current-buffer bname
+                                        (let ((inhibit-read-only t))
+                                          (vterm-send-string (format "%s\n" cmd) t)))))))))
+    (save-window-excursion
+      (funcall vterm-start-helper "rand2" "")
+      (funcall vterm-start-helper "rand1" "")
+      (funcall vterm-start-helper "rand0" ""))))
 #+END_SRC
 ** webjump
 #+begin_src emacs-lisp
-  (use-package webjump
-    :bind (("C-c j" . webjump))
-    :config
-    (setq webjump-sites '(("Emacs Wiki" . [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" ""])
-                          ("DuckDuckGo" .  [simple-query "duckduckgo.com" "duckduckgo.com/?q=" ""])
-                          ("Google" .  [simple-query "www.google.com" "www.google.com/search?q=" ""])
-                          ("Google Maps" . [simple-query "www.google.com/maps" "www.google.com/maps/search/" ""])
-                          ("Wikipedia" .  [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
-                          ("AUR" . [simple-query "https://aur.archlinux.org" "https://aur.archlinux.org/packages/?O=0&K=" ""]))))
+(use-package webjump
+  :bind (("C-c j" . webjump))
+  :config
+  (setq webjump-sites '(("Emacs Wiki" . [simple-query "www.emacswiki.org" "www.emacswiki.org/cgi-bin/wiki/" ""])
+                        ("DuckDuckGo" .  [simple-query "duckduckgo.com" "duckduckgo.com/?q=" ""])
+                        ("Google" .  [simple-query "www.google.com" "www.google.com/search?q=" ""])
+                        ("Google Maps" . [simple-query "www.google.com/maps" "www.google.com/maps/search/" ""])
+                        ("Wikipedia" .  [simple-query "wikipedia.org" "wikipedia.org/wiki/" ""])
+                        ("AUR" . [simple-query "https://aur.archlinux.org" "https://aur.archlinux.org/packages/?O=0&K=" ""]))))
 #+end_src
 ** wgrep
 1. Execute one of the search commands like =projectile-ag=
@@ -1697,74 +1675,74 @@ start a few common vterms
 3. Use =C-c C-p= within that result buffer to execute =wgrep-change-to-wgrep-mode= and now you can make edits to any lines you please (including regular emacs search-and-replace commands)
 4. Use =C-c C-c= to save you changes, which will be promulgated to all files you’ve chosen to edit
 #+begin_src emacs-lisp
-  (use-package wgrep
-    :ensure t
-    :config (use-package wgrep-helm :ensure t))
+(use-package wgrep
+  :ensure t
+  :config (use-package wgrep-helm :ensure t))
 #+end_src
 ** which key
 show options for bindings in realtime
 #+BEGIN_SRC emacs-lisp
-  (use-package which-key
-    :ensure t
-    :init
-    (which-key-mode))
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode))
 #+END_SRC
 ** with editor
 magit uses this but can also use it to make crontab editing work from a running emacs
 #+begin_src emacs-lisp
-  (use-package with-editor
-    :ensure t
-    :config
-    (defun ava/crontab ()
-      "Run `crontab -e` from an emacs buffer"
-      (interactive)
-      (with-editor-async-shell-command "crontab -e")))
+(use-package with-editor
+  :ensure t
+  :config
+  (defun ava/crontab ()
+    "Run `crontab -e` from an emacs buffer"
+    (interactive)
+    (with-editor-async-shell-command "crontab -e")))
 #+end_src
 ** wrap region
 automatically encloses double quotes or parens
 #+BEGIN_SRC emacs-lisp
-  (use-package wrap-region
-    :ensure t
-    :config
-    (wrap-region-global-mode t)
-    :diminish wrap-region-mode)
+(use-package wrap-region
+  :ensure t
+  :config
+  (wrap-region-global-mode t)
+  :diminish wrap-region-mode)
 #+END_SRC
 ** ws-butler
 advantage over =(add-hook 'before-save-hook #'delete-trailing-whitespace)= is that it does mess with others whitespace
 #+begin_src emacs-lisp
-  (use-package ws-butler
-    :ensure t
-    :hook
-    (prog-mode . ws-butler-mode)
-    (text-mode . ws-butler-mode))
+(use-package ws-butler
+  :ensure t
+  :hook
+  (prog-mode . ws-butler-mode)
+  (text-mode . ws-butler-mode))
 #+end_src
 ** yasnippet
 #+BEGIN_SRC emacs-lisp
-    (use-package yasnippet
-      :ensure t
-      :diminish yas-minor-mode
-      :commands (yas-minor-mode)
-      :init
-      (progn
-        (add-hook 'ess-r-mode-hook #'yas-minor-mode)
-        (add-hook 'python-mode-hook #'yas-minor-mode)
-        (add-hook 'lisp-interaction-mode-hook #'yas-minor-mode)
-        (add-hook 'emacs-lisp-mode-hook #'yas-minor-mode)
-        (add-hook 'c++-mode-hook #'yas-minor-mode)
-        (add-hook 'c-mode-hook #'yas-minor-mode))
-      :config
-      (use-package yasnippet-snippets
-        :ensure t)
-      (yas-reload-all))
+(use-package yasnippet
+  :ensure t
+  :diminish yas-minor-mode
+  :commands (yas-minor-mode)
+  :init
+  (progn
+    (add-hook 'ess-r-mode-hook #'yas-minor-mode)
+    (add-hook 'python-mode-hook #'yas-minor-mode)
+    (add-hook 'lisp-interaction-mode-hook #'yas-minor-mode)
+    (add-hook 'emacs-lisp-mode-hook #'yas-minor-mode)
+    (add-hook 'c++-mode-hook #'yas-minor-mode)
+    (add-hook 'c-mode-hook #'yas-minor-mode))
+  :config
+  (use-package yasnippet-snippets
+    :ensure t)
+  (yas-reload-all))
 #+END_SRC
 ** ztree
 nice directory level diffing
 #+BEGIN_SRC emacs-lisp
-  (use-package ztree
-    :ensure t
-    :commands ztree-diff
-    :bind (:map ztree-mode-map
-                ("j" . ztree-jump-side)))
+(use-package ztree
+  :ensure t
+  :commands ztree-diff
+  :bind (:map ztree-mode-map
+              ("j" . ztree-jump-side)))
 #+END_SRC
 * inactive packages
 ** clojure
@@ -2098,6 +2076,22 @@ a second reference setup (works with outlook)
 ;;            gnus-icalendar-org-capture-headline '("calendar"))
 ;;      (gnus-icalendar-org-setup)))
 #+end_src
+** org
+*** org-projectile
+#+begin_src emacs-lisp
+;; (use-package org-projectile
+;;   :ensure t
+;;   :after org
+;;   :custom
+;;   (org-projectile-capture-template "* TODO %^{title}\n%?")
+;;   :config
+;;   (add-to-list 'org-capture-templates (org-projectile-project-todo-entry :capture-heading "project todo")))
+
+;; (use-package helm-org :ensure t)
+;; (use-package org-projectile-helm
+;;   :ensure t
+;;   :after (org-projectile helm-org))
+#+end_src
 ** rmsbolt
 #+BEGIN_SRC emacs-lisp
 ;  (use-package rmsbolt
@@ -2111,6 +2105,19 @@ a second reference setup (works with outlook)
 ;    :disabled
 ;    :commands (speed-type-text))
 #+END_SRC
+** stan
+#+begin_src emacs-lisp
+;; (use-package stan-mode
+;;   :ensure t)
+
+;; (use-package company-stan
+;;   :ensure t
+;;   :hook (stan-mode . company-stan-setup))
+
+;; (use-package eldoc-stan
+;;   :ensure t
+;;   :hook (stan-mode . eldoc-stan-setup))
+#+end_src
 ** switch window
 #+BEGIN_SRC emacs-lisp
 ;;  (use-package switch-window
