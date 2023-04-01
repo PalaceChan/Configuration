@@ -58,35 +58,42 @@ As early as possible do this
 *** start
 Disable a bunch of visuals
 #+BEGIN_SRC emacs-lisp
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  (blink-cursor-mode -1)
-  (tooltip-mode -1)
-  (transient-mark-mode 1)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(blink-cursor-mode -1)
+(tooltip-mode -1)
+(transient-mark-mode 1)
 #+END_SRC
 
 Disable audible bell
 #+begin_src emacs-lisp
-  (setq ring-bell-function 'ignore)
+(setq ring-bell-function 'ignore)
 #+end_src
 
 Disable startup messages and text in scratch
 #+BEGIN_SRC emacs-lisp
-  (setq initial-major-mode 'fundamental-mode
-        inhibit-startup-message t
-        inhibit-startup-echo-area-message t
-        initial-scratch-message nil)
+(setq initial-major-mode 'fundamental-mode
+      inhibit-startup-message t
+      inhibit-startup-echo-area-message t
+      initial-scratch-message nil)
 #+END_SRC
 
 Disable suspend
 #+begin_src emacs-lisp
-  (use-package frame :bind ("C-z" . nil))
+(use-package frame :bind ("C-z" . nil))
 #+end_src
 
 Mute some warnings out of our control
 #+begin_src emacs-lisp
-  (setq ad-redefinition-action 'accept)
+(setq ad-redefinition-action 'accept)
+#+end_src
+
+reduce rendering/line scan work for emacs by not rendering cursors or regions in non-focused windows and left to right rendering only
+#+begin_src emacs-lisp
+(setq-default cursor-in-non-selected-windows nil
+              bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
 #+end_src
 *** warnings
 Disable common warnings
@@ -115,7 +122,12 @@ Disable common warnings
       load-prefer-newer t
       view-read-only t
       display-raw-bytes-as-hex t
-      frame-resize-pixelwise t)
+      frame-resize-pixelwise t
+      window-combination-resize t
+      fast-but-imprecise-scrolling t
+      redisplay-skip-fontification-on-input t
+      frame-inhibit-implied-resize t
+      use-dialog-box nil)
 
 (use-package paren
   :custom
@@ -688,41 +700,42 @@ from [[https://gist.github.com/karthink/af013ffd77fe09e67360f040b57b4c7b][karthi
 ** company
 *** company
 #+BEGIN_SRC emacs-lisp
-  (use-package company
-    :ensure t
-    :custom
-    (company-dabbrev-downcase nil)
-    (company-idle-delay 0.1)
-    (company-minimum-prefix-length 1)
-    (company-require-match nil)
-    (company-show-numbers t)
-    (company-tooltip-limit 20)
-    (company-tooltip-align-annotations t)
-    (company-selection-wrap-around t)
-    (company-global-modes '(not compilation-mode magit-status-mode reb-mode))
-    (company-backends '(company-clang company-capf company-files
-                                      (company-dabbrev-code company-gtags company-etags company-keywords)
-                                      company-dabbrev))
-    :config
-    (define-key company-mode-map (kbd "C-:") 'company-complete-common)
-    (define-key company-active-map (kbd "<tab>") 'smarter-yas-expand-next-field-complete)
-    (global-company-mode 1)
-    (defun smarter-yas-expand-next-field-complete ()
-      "Try to `yas-expand' and `yas-next-field' at current cursor position.
+(use-package company
+  :ensure t
+  :custom
+  (company-dabbrev-downcase nil)
+  (company-dabbrev-other-buffers t)
+  (company-idle-delay 0.1)
+  (company-minimum-prefix-length 1)
+  (company-require-match nil)
+  (company-show-numbers t)
+  (company-tooltip-limit 20)
+  (company-tooltip-align-annotations t)
+  (company-selection-wrap-around t)
+  (company-global-modes '(not compilation-mode magit-status-mode reb-mode))
+  (company-backends '(company-clang company-capf company-files
+                                    (company-dabbrev-code company-gtags company-etags company-keywords)
+                                    company-dabbrev))
+  :config
+  (define-key company-mode-map (kbd "C-:") 'company-complete-common)
+  (define-key company-active-map (kbd "<tab>") 'smarter-yas-expand-next-field-complete)
+  (global-company-mode 1)
+  (defun smarter-yas-expand-next-field-complete ()
+    "Try to `yas-expand' and `yas-next-field' at current cursor position.
 
-  If failed try to complete the common part with `company-complete-common'"
-      (interactive)
-      (if yas-minor-mode
-          (let ((old-point (point))
-                (old-tick (buffer-chars-modified-tick)))
-            (yas-expand)
+If failed try to complete the common part with `company-complete-common'"
+    (interactive)
+    (if yas-minor-mode
+        (let ((old-point (point))
+              (old-tick (buffer-chars-modified-tick)))
+          (yas-expand)
+          (when (and (eq old-point (point))
+                     (eq old-tick (buffer-chars-modified-tick)))
+            (ignore-errors (yas-next-field))
             (when (and (eq old-point (point))
                        (eq old-tick (buffer-chars-modified-tick)))
-              (ignore-errors (yas-next-field))
-              (when (and (eq old-point (point))
-                         (eq old-tick (buffer-chars-modified-tick)))
-                (company-complete-common))))
-        (company-complete-common))))
+              (company-complete-common))))
+      (company-complete-common))))
 #+END_SRC
 *** posframe
 A much nicer frame for completion candidates
@@ -1345,6 +1358,7 @@ meta up and down to move text or region
   (org-clock-out-remove-zero-time-clocks t)
   (org-link-elisp-confirm-function nil)
   (org-edit-src-content-indentation 0)
+  (org-fontify-quote-and-verse-blocks t)
   :hook
   (org-mode . org-indent-mode)
   (org-mode . mixed-pitch-mode)
@@ -1677,6 +1691,8 @@ start a few common vterms
 #+begin_src emacs-lisp
 (use-package wgrep
   :ensure t
+  :custom
+  (wgrep-auto-save-buffer t)
   :config (use-package wgrep-helm :ensure t))
 #+end_src
 ** which key
