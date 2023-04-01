@@ -18,6 +18,7 @@
 	kill-region
 	org-end-of-line
 	org-self-insert-command
+	paredit-backward-kill-word
 	phi-search
 	))
 
