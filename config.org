@@ -1701,7 +1701,12 @@ start a few common vterms
   :ensure t
   :custom
   (wgrep-auto-save-buffer t)
-  :config (use-package wgrep-helm :ensure t))
+  :config
+  (use-package wgrep-helm :ensure t)
+  (use-package wgrep-deadgrep
+    :ensure t
+    :config
+    (add-hook 'deadgrep-finished-hook 'wgrep-deadgrep-setup)))
 #+end_src
 ** which key
 show options for bindings in realtime
