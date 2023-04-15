@@ -991,7 +991,8 @@ https://github.com/karthink/gptel
 (use-package gptel
   :ensure t
   :custom
-  (gptel-default-mode 'org-mode))
+  (gptel-default-mode 'org-mode)
+  :hook (gptel-mode . visual-fill-column-mode))
 #+end_src
 ** helm
 #+BEGIN_SRC emacs-lisp
