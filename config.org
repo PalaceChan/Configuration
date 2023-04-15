@@ -1530,6 +1530,10 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
     (condition-case nil (elpy-goto-definition)
       (error (elpy-rgrep-symbol
               (concat "\\(def\\|class\\)\s" (thing-at-point 'symbol) "(")))))
+  (defun ava/elpy-enable-inferior-eldoc ()
+    (when (and (version< "28.0.0" emacs-version)
+               (boundp 'eldoc-documentation-functions))
+      (add-hook 'eldoc-documentation-functions 'elpy-eldoc-documentation t nil)))
   :init
   (progn
     (elpy-enable)
@@ -1544,16 +1548,19 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
     (eval-after-load "elpy"
       '(cl-dolist (key '("C-<return>" "C-<up>" "C-<down>" "C-<left>" "C-<right>"))
          (define-key elpy-mode-map (kbd key) nil))))
+  :bind
+  (:map inferior-python-mode-map
+        ("C-c C-d" . elpy-doc)
+        ("M-." . elpy-goto-definition))
   :config
-  (setq python-shell-interpreter "python")
   (setq python-shell-interpreter-args "-i")
-  (setq elpy-rpc-python-command "python")
   (setq elpy-rpc-timeout 10)
   (setq python-shell-prompt-detect-failure-warning nil)
   (define-key elpy-mode-map (kbd "M-.") 'ava/elpy-goto-definition-or-rgrep)
   (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter")
   (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
-  (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1))))
+  (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))
+  (add-hook 'inferior-python-mode-hook #'ava/elpy-enable-inferior-eldoc))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
