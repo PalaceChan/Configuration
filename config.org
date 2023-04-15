@@ -816,14 +816,6 @@ add rsync option to dired
     :custom (dired-rsync-unmark-on-completion nil)
     :hook (dired-rsync-failed . dired-rsync--pop-to-rsync-failed-buf))
 #+end_src
-** discover
-discover major mode
-#+BEGIN_SRC emacs-lisp
-  (use-package discover-my-major
-    :ensure t
-    :bind (("C-h C-m" . discover-my-major)
-           ("C-h C-d" . discover-my-mode)))
-#+END_SRC
 ** dumb jump
 #+begin_src emacs-lisp
   (use-package dumb-jump
@@ -1015,7 +1007,6 @@ https://github.com/karthink/gptel
          ("C-c h g" . helm-google-suggest)
          ("C-c h t" . helm-top)
          ("C-c h x" . helm-shell-history)
-         ("C-c h p" . org-projectile-helm-template-or-project)
          ("C-c h <SPC>" . helm-all-mark-rings))
   :config
   (setq helm-candidate-number-limit 100
@@ -1813,6 +1804,13 @@ nice directory level diffing
 ;          ;nrepl-hide-special-buffers t
 ;          )
 ;    (cider-repl-toggle-pretty-printing))
+#+END_SRC
+** discover
+#+BEGIN_SRC emacs-lisp
+;; (use-package discover-my-major
+;;   :ensure t
+;;   :bind (("C-h C-m" . discover-my-major)
+;;          ("C-h C-d" . discover-my-mode)))
 #+END_SRC
 ** dmenu
 to launch applications from exwm (not in use)
