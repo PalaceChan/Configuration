@@ -1232,6 +1232,8 @@ remap =term-previous-matching-input= to a helm frontend
   (js-indent-level 2))
 #+end_src
 ** magit
+(can use ~magit-toggle-verbose-refresh~ to profile status buffer)
+
 #+BEGIN_SRC emacs-lisp
 (use-package magit
   :ensure t
@@ -1251,9 +1253,13 @@ remap =term-previous-matching-input= to a helm frontend
   (magit-log-section-commit-count 25)
   (magit-diff-refine-hunk 'all)
   (magit-no-confirm '(stage-all-changes unstage-all-changes set-and-push))
+  ;; (magit-refresh-status-buffer nil) ;set to nil as last resort for perf
   :bind
   ("C-x g" . magit-status)
   ("C-c m" . magit-file-dispatch))
+
+;;; if too slow remove some headers like this
+;:config (remove-hook 'magit-status-section-hook 'magit-insert-tags-header)
 #+END_SRC
 
 #+begin_src emacs-lisp
