@@ -1255,7 +1255,7 @@ remap =term-previous-matching-input= to a helm frontend
             ((or "C" "H" "I" "c" "h" "cpp" "hpp")
              (shell-command (format "dos2unix -q %s && clang-format --style=file -i %s" fname fname))))))))
   :custom
-  (magit-display-buffer-function #'magit-display-buffer-fullcolumn-most-v1)
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   (magit-log-section-commit-count 25)
   (magit-diff-refine-hunk 'all)
   (magit-no-confirm '(stage-all-changes unstage-all-changes set-and-push))
