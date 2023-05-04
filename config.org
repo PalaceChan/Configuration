@@ -372,11 +372,14 @@ if need to work in a windows environment talk to it via named pipe
 ** development
 *** general
 #+BEGIN_SRC emacs-lisp
-  (setq text-scale-mode-step 1.1
-        help-enable-symbol-autoload t)
-  (setq-default tab-width 4
-                fill-column 80
-                indent-tabs-mode nil)
+(setq text-scale-mode-step 1.1
+      help-enable-symbol-autoload t)
+(setq-default tab-width 4
+              fill-column 80
+              indent-tabs-mode nil)
+
+(use-package simple
+  :custom (async-shell-command-buffer 'new-buffer))
 #+END_SRC
 *** tags and locate
 based on https://emacs.stackexchange.com/questions/41256/using-advice-to-run-function-before-tag-symbol-lookup/41277
