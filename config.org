@@ -1463,36 +1463,20 @@ hide emphasis markers the nice way
 #+end_src
 ** paredit
 use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated-paredit.html][animated paredit guide]])
-the conditional enable and restore hack to fix newline during minibuffer evals is from this [[https://apps.bram85.nl/gitea/bram/gists/src/commit/e4c92482b800288b88446e0be7fd0cdb712c79be/gists/minibuffer-paredit.el][gist]] referenced by this [[https://www.reddit.com/r/emacs/comments/101uwgd/comment/j31np24/?utm_source=share&utm_medium=web2x&context=3][reddit post]] (it sometimes fails though)
 #+BEGIN_SRC emacs-lisp
 (use-package paredit
-  :ensure t
-  ;:bind (:map paredit-mode-map ("M-I" . paredit-splice-sexp)) ;fixme (breaks paredit hooks below)
-  :hook
-  (minibuffer-setup . ava/conditionally-enable-paredit-mode)
-  (minibuffer-exit . ava/restore-paredit-key)
-  :config
-  (defvar ava/paredit-minibuffer-commands '(eval-expression
-                                            pp-eval-expression
-                                            eval-expression-with-eldoc
-                                            ibuffer-do-eval
-                                            ibuffer-do-view-and-evalh)
-    "Interactive commands for which paredit should be enabled in the minibuffer.")
-
-  (defun ava/conditionally-enable-paredit-mode ()
-    "Enable paredit during lisp-related minibuffer commands."
-    (when (memq this-command ava/paredit-minibuffer-commands)
-      (enable-paredit-mode)
-      (unbind-key (kbd "RET") paredit-mode-map)))
-
-  (defun ava/restore-paredit-key ()
-    "Restore the RET binding that was disabled by ava/conditionally-enable-paredit-mode."
-    (bind-key (kbd "RET") #'paredit-newline paredit-mode-map))
-  (add-hook 'paredit-mode-hook #'(lambda () (unbind-key "M-s" paredit-mode-map)))
-  (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
-  (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
-  (add-hook 'ielm-mode-hook #'paredit-mode)
-  (add-hook 'lisp-mode-hook #'paredit-mode))
+  :bind (
+         :map paredit-mode-map
+         ("M-s" . nil) ; used for isearch
+         ("RET" . nil) ; used during M-: to evaluate the input
+         ("C-j" . paredit-newline) ; replacement for RET
+         ("M-I" . paredit-splice-sexp))
+  :hook ((emacs-lisp-mode
+          lisp-mode
+          lisp-interaction-mode
+          eval-expression-minibuffer-setup
+          ielm-mode
+          lisp-data-mode) . enable-paredit-mode))
 #+END_SRC
 ** pdf-tools
 #+begin_src emacs-lisp
