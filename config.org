@@ -866,20 +866,6 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
   (add-hook 'eglot-managed-mode-hook #'ava/eglot-enable-eager-eldoc))
 ;; (add-to-list 'eglot-server-programs '((c++-mode c-mode) "/custom/path/to/bin/clangd")
 #+end_src
-** elisp
-use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated-paredit.html][animated paredit guide]])
-#+BEGIN_SRC emacs-lisp
-  (use-package paredit
-    :ensure t
-    ;:bind (:map paredit-mode-map ("M-I" . paredit-splice-sexp)) ;fixme (breaks paredit hooks below)
-    :config
-    (add-hook 'paredit-mode-hook #'(lambda () (unbind-key "M-s" paredit-mode-map)))
-    (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
-    (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
-    (add-hook 'ielm-mode-hook #'paredit-mode)
-    (add-hook 'lisp-mode-hook #'paredit-mode)
-    (add-hook 'eval-expression-minibuffer-setup-hook #'paredit-mode))
-#+END_SRC
 ** erc
 use =M-x erc-tls= to start
 #+begin_src emacs-lisp
@@ -1475,6 +1461,39 @@ hide emphasis markers the nice way
  :custom
  (org-noter-always-create-frame nil))
 #+end_src
+** paredit
+use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated-paredit.html][animated paredit guide]])
+the conditional enable and restore hack to fix newline during minibuffer evals is from this [[https://apps.bram85.nl/gitea/bram/gists/src/commit/e4c92482b800288b88446e0be7fd0cdb712c79be/gists/minibuffer-paredit.el][gist]] referenced by this [[https://www.reddit.com/r/emacs/comments/101uwgd/comment/j31np24/?utm_source=share&utm_medium=web2x&context=3][reddit post]] (it sometimes fails though)
+#+BEGIN_SRC emacs-lisp
+(use-package paredit
+  :ensure t
+  ;:bind (:map paredit-mode-map ("M-I" . paredit-splice-sexp)) ;fixme (breaks paredit hooks below)
+  :hook
+  (minibuffer-setup . ava/conditionally-enable-paredit-mode)
+  (minibuffer-exit . ava/restore-paredit-key)
+  :config
+  (defvar ava/paredit-minibuffer-commands '(eval-expression
+                                            pp-eval-expression
+                                            eval-expression-with-eldoc
+                                            ibuffer-do-eval
+                                            ibuffer-do-view-and-evalh)
+    "Interactive commands for which paredit should be enabled in the minibuffer.")
+
+  (defun ava/conditionally-enable-paredit-mode ()
+    "Enable paredit during lisp-related minibuffer commands."
+    (when (memq this-command ava/paredit-minibuffer-commands)
+      (enable-paredit-mode)
+      (unbind-key (kbd "RET") paredit-mode-map)))
+
+  (defun ava/restore-paredit-key ()
+    "Restore the RET binding that was disabled by ava/conditionally-enable-paredit-mode."
+    (bind-key (kbd "RET") #'paredit-newline paredit-mode-map))
+  (add-hook 'paredit-mode-hook #'(lambda () (unbind-key "M-s" paredit-mode-map)))
+  (add-hook 'emacs-lisp-mode-hook #'paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'paredit-mode)
+  (add-hook 'ielm-mode-hook #'paredit-mode)
+  (add-hook 'lisp-mode-hook #'paredit-mode))
+#+END_SRC
 ** pdf-tools
 #+begin_src emacs-lisp
 (use-package pdf-tools
