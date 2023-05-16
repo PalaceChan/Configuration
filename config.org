@@ -773,10 +773,16 @@ backend for shells
 ** deadgrep
 uses rg for fast grep
 #+BEGIN_SRC emacs-lisp
-  (use-package deadgrep
-    :ensure t
-    :bind (("M-s g" . deadgrep)
-           (:map deadgrep-mode-map ("C-c C-w" . #'deadgrep-edit-mode))))
+(use-package deadgrep
+  :ensure t
+  :preface
+  (defun ava/deadgrep--include-args (rg-args)
+    "https://github.com/Wilfred/deadgrep/issues/24#issuecomment-942290197"
+    (push "--hidden" rg-args))
+  :bind (("M-s g" . deadgrep)
+         (:map deadgrep-mode-map ("C-c C-w" . #'deadgrep-edit-mode)))
+  :config
+  (advice-add 'deadgrep--arguments :filter-return #'ava/deadgrep--include-args))
 #+END_SRC
 ** dired related
 #+BEGIN_SRC emacs-lisp
