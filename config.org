@@ -772,8 +772,8 @@ backend for shells
 #+END_SRC
 ** copilot
 clone via ~git clone https://github.com/zerolfx/copilot.el.git copilot~ in emacs user dir =lisp= subdir
-use ~M-x copilot-login~ to authenticate, =copilot-mode= would turn it on automatically but then bindings can shadow company bindings
-and the disable-predicates lists aren't helping that much so instead use ~M-C-<return>~ to trigger it manually
+use ~M-x copilot-login~ to authenticate. =copilot-mode= to turn it on automatically blending in with company (use ~C-n~ and ~C-p~ to control company when they overlap).
+can also use ~M-C-<return>~ to summon it manually instead
 
 #+begin_src emacs-lisp
 (use-package editorconfig :ensure t)
