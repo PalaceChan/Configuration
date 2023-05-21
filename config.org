@@ -52,7 +52,7 @@ As early as possible do this
   :ensure t
   :custom
   (minions-mode-line-lighter "+")
-  (minions-prominent-modes '(flycheck-mode multiple-cursors-mode view-mode vlf-mode))
+  (minions-prominent-modes '(copilot-mode flycheck-mode multiple-cursors-mode view-mode vlf-mode))
   :init (minions-mode))
 #+end_src
 *** start
@@ -770,6 +770,39 @@ backend for shells
                        (set (make-local-variable 'company-backends)
                             '((company-capf company-files company-shell company-shell-env) company-dabbrev)))))
 #+END_SRC
+** copilot
+clone via ~git clone https://github.com/zerolfx/copilot.el.git copilot~ in emacs user dir =lisp= subdir
+use ~M-x copilot-login~ to authenticate, =copilot-mode= would turn it on automatically but then bindings can shadow company bindings
+and the disable-predicates lists aren't helping that much so instead use ~M-C-<return>~ to trigger it manually
+
+#+begin_src emacs-lisp
+(use-package editorconfig :ensure t)
+(use-package copilot
+  :if (file-directory-p "~/.emacs.d/lisp/copilot")
+  :load-path "~/.emacs.d/lisp/copilot"
+  :preface
+  (defun ava/copilot-quit ()
+    (when copilot--overlay
+          (copilot-clear-overlay)))
+  (defun ava/copilot-complete-or-accept ()
+    "Either trigger a completion or accept one if available."
+    (interactive)
+    (if (copilot--overlay-visible)
+        (progn
+          (copilot-accept-completion)
+          (open-line 1)
+          (next-line))
+      (copilot-complete)))
+  :bind (("M-C-<return>" . #'ava/copilot-complete-or-accept)
+         (:map copilot-completion-map
+               ("M-n" . #'copilot-next-completion)
+               ("M-p" . #'copilot-previous-completion)
+               ("M-<return>" . #'copilot-accept-completion)))
+  :config
+  ;; (add-to-list 'copilot-disable-predicates #'company--active-p)
+  ;; (add-to-list 'copilot-disable-display-predicates #'company--active-p)
+  (advice-add 'keyboard-quit :before #'ava/copilot-quit))
+#+end_src
 ** deadgrep
 uses rg for fast grep
 #+BEGIN_SRC emacs-lisp
@@ -1394,6 +1427,7 @@ meta up and down to move text or region
   (add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
   (add-to-list 'org-structure-template-alist '("py" . "src python"))
   (add-to-list 'org-structure-template-alist '("R" . "src R"))
+  (add-to-list 'org-structure-template-alist '("cpp" . "src C"))
   (add-to-list 'org-structure-template-alist '("conf" . "src conf"))
   (add-to-list 'org-structure-template-alist '("xml" . "src nxml"))
   (dolist (face '((org-level-1 . 1.20) (org-level-2 . 1.10) (org-level-3 . 1.05)))
