@@ -222,7 +222,7 @@ kill current buffer no prompt
   (add-to-list 'same-window-buffer-names "*grep*")
   (add-to-list 'same-window-buffer-names "*Buffer List*")
 #+end_src
-*** misc builtin settings
+*** misc builtins
 **** world clock
 #+BEGIN_SRC emacs-lisp
   (setq world-clock-time-format "%a, %d %b %I:%M %p %Z"
@@ -475,29 +475,33 @@ toggle between implementation and header
         (let ((inhibit-read-only t))
           (ansi-color-apply-on-region compilation-filter-start (point))))))
 #+END_SRC
-*** ediff
+*** diffing
 #+BEGIN_SRC emacs-lisp
-  (use-package ediff
-    :custom
-    (ediff-highlight-all-diffs nil)
-    (ediff-window-setup-function #'ediff-setup-windows-plain)
-    (ediff-split-window-function #'split-window-horizontally)
-    (ediff-grab-mouse nil)
-    (ediff-keep-variants nil)
-    (ediff-diff-options "-w")
-    :bind (("C-c = b" . ediff-buffers)
-           ("C-c = B" . ediff-buffers3)
-           ("C-c = c" . compare-windows)
-           ("C-c = f" . ediff-files)
-           ("C-c = F" . ediff-files3)
-           ("C-c = m" . count-matches)
-           ("C-c = r" . ediff-revision)
-           ("C-c = p" . ediff-patch-file)
-           ("C-c = P" . ediff-patch-buffer)
-           ("C-c = l" . ediff-regions-linewise)
-           ("C-c = w" . ediff-regions-wordwise))
-    :config
-    (add-hook 'ediff-prepare-buffer-hook #'outline-show-all))
+(use-package diff-mode
+  :defer t
+  :bind (:map diff-mode-map ("M-o" . nil)))
+
+(use-package ediff
+  :custom
+  (ediff-highlight-all-diffs nil)
+  (ediff-window-setup-function #'ediff-setup-windows-plain)
+  (ediff-split-window-function #'split-window-horizontally)
+  (ediff-grab-mouse nil)
+  (ediff-keep-variants nil)
+  (ediff-diff-options "-w")
+  :bind (("C-c = b" . ediff-buffers)
+         ("C-c = B" . ediff-buffers3)
+         ("C-c = c" . compare-windows)
+         ("C-c = f" . ediff-files)
+         ("C-c = F" . ediff-files3)
+         ("C-c = m" . count-matches)
+         ("C-c = r" . ediff-revision)
+         ("C-c = p" . ediff-patch-file)
+         ("C-c = P" . ediff-patch-buffer)
+         ("C-c = l" . ediff-regions-linewise)
+         ("C-c = w" . ediff-regions-wordwise))
+  :config
+  (add-hook 'ediff-prepare-buffer-hook #'outline-show-all))
 #+END_SRC
 *** re-builder
 bridge re-builder with query regexp replace
@@ -903,7 +907,6 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
   (eglot-extend-to-xref t)
   (eldoc-echo-area-use-multiline-p nil)
   (eglot-ignored-server-capabilities '(:documentHighlightProvider)))
-
 #+end_src
 ** erc
 use =M-x erc-tls= to start
