@@ -908,35 +908,12 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
   (eldoc-echo-area-use-multiline-p nil)
   (eglot-ignored-server-capabilities '(:documentHighlightProvider)))
 #+end_src
-** erc
-use =M-x erc-tls= to start
+** ement
 #+begin_src emacs-lisp
-(use-package erc
+(use-package ement
   :ensure t
-  :preface
-  (defun ava/erc-quit ()
-    "Kill ERC buffers and terminate its child process."
-    (interactive)
-    (let ((kill-buffer-query-functions nil)
-          (erc-buffers (erc-buffer-list)))
-      (dolist (buffer erc-buffers) (kill-buffer buffer)))
-    (erc-buffer-list))
-  :init
-  (require 'erc-autoaway)
   :custom
-  (erc-lurker-hide-list '("PART" "QUIT" "JOIN"))
-  (erc-server "irc.libera.chat")
-  (erc-nick "hooxen")
-  (erc-join-buffer 'buffer)
-  (erc-interpret-mirc-color t)
-  (erc-server-reconnect-timeout 10)
-  (erc-autoaway-idle-seconds 600)
-  :config
-  (add-hook 'erc-text-matched-hook #'(lambda (match-type nickuserhost msg)
-                                       (shell-command-to-string (format "notify-send erc '%s'" msg))))
-  (use-package erc-colorize
-    :ensure t
-    :config (erc-colorize-mode 1)))
+  (ement-save-sessions t))
 #+end_src
 ** ess
 #+BEGIN_SRC emacs-lisp
@@ -1896,6 +1873,36 @@ Disabled as not snappy enough
 ;            )
 ;    )
 #+END_SRC
+** erc
+use =M-x erc-tls= to start
+#+begin_src emacs-lisp
+;; (use-package erc
+;;   :ensure t
+;;   :preface
+;;   (defun ava/erc-quit ()
+;;     "Kill ERC buffers and terminate its child process."
+;;     (interactive)
+;;     (let ((kill-buffer-query-functions nil)
+;;           (erc-buffers (erc-buffer-list)))
+;;       (dolist (buffer erc-buffers) (kill-buffer buffer)))
+;;     (erc-buffer-list))
+;;   :init
+;;   (require 'erc-autoaway)
+;;   :custom
+;;   (erc-lurker-hide-list '("PART" "QUIT" "JOIN"))
+;;   (erc-server "irc.libera.chat")
+;;   (erc-nick "hooxen")
+;;   (erc-join-buffer 'buffer)
+;;   (erc-interpret-mirc-color t)
+;;   (erc-server-reconnect-timeout 10)
+;;   (erc-autoaway-idle-seconds 600)
+;;   :config
+;;   (add-hook 'erc-text-matched-hook #'(lambda (match-type nickuserhost msg)
+;;                                        (shell-command-to-string (format "notify-send erc '%s'" msg))))
+;;   (use-package erc-colorize
+;;     :ensure t
+;;     :config (erc-colorize-mode 1)))
+#+end_src
 ** expand region
 #+begin_src emacs-lisp
 ;; (use-package expand-region
