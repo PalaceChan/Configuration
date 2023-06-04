@@ -1,42 +1,53 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                         BOOTSTRAP
+;;                                         INIT
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
                          ("melpa-stable" . "https://stable.melpa.org/packages/")
                          ("elpa" . "https://elpa.gnu.org/packages/")))
+(require 'package)
 (package-initialize)
 
-(defvar ava/default-install-packages
-  (list 'use-package 'bind-key 'diminish)
-  "Packages that should be installed by default.")
-(unless package-archive-contents
-  (package-refresh-contents))
-(dolist (package ava/default-install-packages)
-  (unless (package-installed-p package)
-    (package-install package)))
-(require 'bind-key)
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
 (require 'use-package)
-(require 'diminish)
+(use-package diminish)
+(use-package bind-key)
+(setq use-package-enable-imenu-support t)
+
+(use-package gcmh
+  :ensure t
+  :custom
+  (gcmh-verbose t)
+  :config
+  (gcmh-mode 1))
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs ready in %s with %d garbage collections."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                         CONFIGURATION
+;;                                       LITERATE CONFIG
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (when (file-readable-p "~/.emacs.d/config.org")
   (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;                                           TAIL
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(company-show-quick-access t nil nil "Customized with use-package company")
+ '(inferior-ess-r-program "/usr/bin/R" nil nil "Customized with use-package ess")
  '(package-selected-packages
-   '(helpful org-mime company-auctex auctex vterm gcmh clj-refactor clojure-mode flycheck company-lsp lsp-mode phi-search-mc multiple-cursors helm-descbinds iedit dumb-jump erc-colorize crux speed-type auto-package-update vlf discover-my-major company-posframe company-shell python-black easy-kill dired-git-info helm-ag helm-rg helm-projectile projectile rmsbolt irony-eldoc company-c-headers leetcode yasnippet-snippets undo-tree visual-fill-column paredit deadgrep ztree fancy-narrow elfeed doom-themes org-bullets magit dmenu which-key irony company-irony exwm wrap-region company dired-subtree ess use-package))
- '(send-mail-function 'sendmail-send-it))
+   '(ztree yasnippet-snippets ws-butler wrap-region which-key wgrep-helm wgrep-deadgrep vterm vlf visual-fill-column use-package undo-tree tree-sitter-langs transpose-frame sqlite3 speed-type smart-comment rmsbolt python-black phi-search-mc pdf-tools orgit org-noter org-modern org-mime org-appear move-text mixed-pitch minions lsp-ui leetcode json-mode jq-mode irony-eldoc iedit ibuffer-vc helpful helm-swoop helm-rg helm-projectile helm-org-rifle helm-org helm-git-grep helm-descbinds helm-dash helm-company helm-ag gptel git-timemachine git-gutter gcmh forge flycheck-clang-tidy fancy-narrow expand-region ess erc-colorize ement emacsql-sqlite elpy elfeed eldoc-stan eglot editorconfig easy-kill dumb-jump doom-themes doom-modeline dmenu discover-my-major dired-subtree dired-rsync dired-recent dired-git-info diminish deadgrep crux company-stan company-shell company-posframe company-irony company-c-headers company-auctex clj-refactor clang-format auto-package-update ace-window ace-link)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

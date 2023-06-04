@@ -1,24 +1,5 @@
 * settings
 ** startup
-*** gc
-As early as possible do this
-#+BEGIN_SRC emacs-lisp
-  (use-package gcmh
-    :ensure t
-    :diminish t
-    :init
-    (require 'gcmh)
-    (gcmh-mode 1)
-    :config
-    (setq gcmh-verbose t)
-    (setq gcmh-high-cons-threshold (* 100 1024 1024)))
-#+END_SRC
-*** native compilation
-#+begin_src emacs-lisp
-  (when (and (fboundp 'native-comp-available-p)
-         (native-comp-available-p))
-    (setq package-native-compile t))
-#+end_src
 *** theme
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes :ensure t :defer t)
@@ -56,13 +37,9 @@ As early as possible do this
   :init (minions-mode))
 #+end_src
 *** start
-Disable a bunch of visuals
+Disable more visuals
 #+BEGIN_SRC emacs-lisp
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(scroll-bar-mode -1)
 (blink-cursor-mode -1)
-(tooltip-mode -1)
 (transient-mark-mode 1)
 #+END_SRC
 
@@ -122,11 +99,8 @@ Disable common warnings
       load-prefer-newer t
       view-read-only t
       display-raw-bytes-as-hex t
-      frame-resize-pixelwise t
       window-combination-resize t
-      fast-but-imprecise-scrolling t
       redisplay-skip-fontification-on-input t
-      frame-inhibit-implied-resize t
       use-dialog-box nil)
 
 (use-package paren
