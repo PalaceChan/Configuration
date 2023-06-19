@@ -352,8 +352,17 @@ if need to work in a windows environment talk to it via named pipe
               fill-column 80
               indent-tabs-mode nil)
 
+; uncomment below if need aliases visible
 (use-package simple
-  :custom (async-shell-command-buffer 'new-buffer))
+  ;; :preface
+  ;; (defun ava/use-interactive-shell-command-switch (orig-fun &rest args)
+  ;;   "i flag makes interactive (but not login) so you can see any aliases in bashrc"
+  ;;   (let ((shell-command-switch "-ic"))
+  ;;     (apply orig-fun args)))
+  :custom (async-shell-command-buffer 'new-buffer)
+  ;; :config
+  ;; (advice-add 'async-shell-command :around #'ava/use-interactive-shell-command-switch)
+  )
 #+END_SRC
 *** tags and locate
 based on https://emacs.stackexchange.com/questions/41256/using-advice-to-run-function-before-tag-symbol-lookup/41277
