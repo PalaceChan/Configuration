@@ -947,9 +947,13 @@ https://github.com/karthink/gptel
 #+begin_src emacs-lisp
 (use-package gptel
   :ensure t
+  :preface
+  (defun ava/init-gptel-mode ()
+    (visual-line-mode)
+    (setq-local gptel--system-message "You are a computer programmer's assistant living inside Emacs. Your responses are always concise, succinct, and to the point. You never apologize for anything as that is a waste of time."))
+  :hook (gptel-mode . ava/init-gptel-mode)
   :custom
-  (gptel-default-mode 'org-mode)
-  :hook (gptel-mode . visual-line-mode))
+  (gptel-default-mode 'org-mode))
 #+end_src
 ** helm
 #+BEGIN_SRC emacs-lisp
