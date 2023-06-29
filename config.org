@@ -352,17 +352,34 @@ if need to work in a windows environment talk to it via named pipe
               fill-column 80
               indent-tabs-mode nil)
 
-; uncomment below if need aliases visible
 (use-package simple
-  ;; :preface
+  :preface
   ;; (defun ava/use-interactive-shell-command-switch (orig-fun &rest args)
   ;;   "i flag makes interactive (but not login) so you can see any aliases in bashrc"
   ;;   (let ((shell-command-switch "-ic"))
   ;;     (apply orig-fun args)))
+  (defun ava/path-slug (dir)
+    "Returns the initials of `dir`s path, with the last part appended fully
+Example: (path-slug \"/foo/bar/hello\") => \"f/b/hello\""
+    (let* ((path (replace-regexp-in-string "\\." "" dir))
+	       (path (split-string path "/" t))
+	       (path-s (mapconcat (lambda (it) (cl-subseq it 0 1)) (nbutlast (copy-sequence path) 1) "/"))
+	       (path-s (concat path-s "/" (car (last path)))))
+      path-s))
+  (defun ava/put-command-in-async-buff-name (orig-fun &rest args)
+    (let* ((path-s (if default-directory (ava/path-slug default-directory) ""))
+	       (command (car args))
+	       (buffname (concat path-s " " command))
+	       (shell-command-buffer-name-async
+	        (format
+	         "*async-shell-command %s*"
+	         (string-trim
+	          (substring buffname 0 (min (length buffname) 50))))))
+      (apply orig-fun args)))
   :custom (async-shell-command-buffer 'new-buffer)
-  ;; :config
+  :config
   ;; (advice-add 'async-shell-command :around #'ava/use-interactive-shell-command-switch)
-  )
+  (advice-add 'shell-command :around #'ava/put-command-in-async-buff-name))
 #+END_SRC
 *** tags and locate
 based on https://emacs.stackexchange.com/questions/41256/using-advice-to-run-function-before-tag-symbol-lookup/41277
