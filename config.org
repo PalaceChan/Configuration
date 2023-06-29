@@ -817,6 +817,7 @@ uses rg for fast grep
    dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"
    dired-hide-details-hide-symlink-targets nil
    dired-kill-when-opening-new-dired-buffer t
+   ; dired-guess-shell-alist-user (list '("\\.foobar$" "some command")) ;; suggestions for ! and & in Dired
    wdired-allow-to-change-permissions t)
   (add-hook 'dired-mode-hook (lambda () (interactive) (dired-hide-details-mode 1))))
 #+END_SRC
