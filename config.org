@@ -372,9 +372,9 @@ Example: (path-slug \"/foo/bar/hello\") => \"f/b/hello\""
 	       (buffname (concat path-s " " command))
 	       (shell-command-buffer-name-async
 	        (format
-	         "*async-shell-command %s*"
+	         "*async-shell %s*"
 	         (string-trim
-	          (substring buffname 0 (min (length buffname) 50))))))
+	          (substring buffname 0 (min (length buffname) 150))))))
       (apply orig-fun args)))
   :custom (async-shell-command-buffer 'new-buffer)
   :config
