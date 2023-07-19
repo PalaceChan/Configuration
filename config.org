@@ -858,9 +858,9 @@ replaces list-directory with recentf for dirs
 
 add rsync option to dired
 #+begin_src emacs-lisp
-(use-package dired-rsync
+(use-package dired-rsync-transient
   :ensure t
-  :bind (:map dired-mode-map ("r" . dired-rsync))
+  :bind (:map dired-mode-map ("r" . dired-rsync-transient))
   :custom (dired-rsync-unmark-on-completion nil)
   :hook (dired-rsync-failed . dired-rsync--pop-to-rsync-failed-buf))
 #+end_src
