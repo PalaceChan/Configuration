@@ -892,9 +892,9 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
   :ensure t
   :commands eglot
   :init
-  (defun ava/eglot-disable-flymake () (flymake-mode -1))
+  ;(defun ava/eglot-disable-flymake () (flymake-mode -1))
+  ;(add-hook 'eglot-managed-mode-hook #'ava/eglot-disable-flymake)
   (defun ava/eglot-enable-eager-eldoc () (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly))
-  (add-hook 'eglot-managed-mode-hook #'ava/eglot-disable-flymake)
   (add-hook 'eglot-managed-mode-hook #'ava/eglot-enable-eager-eldoc)
   :bind (:map eglot-mode-map
               ("C-h ." . eldoc)
@@ -902,12 +902,26 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
               ("C-c e r" . eglot-rename)
               ("C-c e q" . eglot-code-action-quickfix)
               ("C-c e e" . eglot-code-action-extract)
-              ("C-c e i" . eglot-code-action-inline))
+              ("C-c e i" . eglot-code-action-inline)
+              ("C-c e n" . flymake-goto-next-error)
+              ("C-c e p" . flymake-goto-prev-error))
   :custom
   (eglot-events-buffer-size 0)
   (eglot-extend-to-xref t)
   (eldoc-echo-area-use-multiline-p nil)
-  (eglot-ignored-server-capabilities '(:documentHighlightProvider)))
+  (eglot-ignored-server-capabilities '(:documentHighlightProvider))
+  :config
+  (setcdr
+   (assoc (list 'c++-mode 'c-mode) eglot-server-programs)
+   (list "clangd"
+         ;"-j=6"
+         "--malloc-trim"
+         "--log=info"
+         "--background-index"
+         "--clang-tidy"
+         "--completion-style=detailed"
+         "--header-insertion=never"
+         "--header-insertion-decorators=0")))
 #+end_src
 ** ement
 #+begin_src emacs-lisp
