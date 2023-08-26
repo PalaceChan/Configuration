@@ -369,13 +369,14 @@ Example: (path-slug \"/foo/bar/hello\") => \"f/b/hello\""
   (defun ava/put-command-in-async-buff-name (orig-fun &rest args)
     (let* ((path-s (if default-directory (ava/path-slug default-directory) ""))
 	       (command (car args))
-	       (buffname (concat path-s " " command))
-	       (shell-command-buffer-name-async
-	        (format
-	         "*async-shell %s*"
-	         (string-trim
-	          (substring buffname 0 (min (length buffname) 150))))))
-      (apply orig-fun args)))
+	       (long-buffname (concat path-s " " command))
+           (buffname (format "*async-shell %s*" (string-trim (substring long-buffname 0 (min (length long-buffname) 150)))))
+	       (shell-command-buffer-name-async buffname))
+      (apply orig-fun args)
+      (let ((buffer (get-buffer buffname)))
+        (when buffer
+          (with-current-buffer buffer
+            (setq-local ava/shell-command command))))))
   :custom (async-shell-command-buffer 'new-buffer)
   :config
   ;; (advice-add 'async-shell-command :around #'ava/use-interactive-shell-command-switch)
