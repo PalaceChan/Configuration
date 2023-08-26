@@ -606,20 +606,6 @@ bridge re-builder with query regexp replace
                                                 company-auctex-symbols
                                                 company-capf))))))
 #+END_SRC
-** auto package updating
-stay up to date
-#+BEGIN_SRC emacs-lisp
-(use-package auto-package-update
-  :ensure t
-  :if (not (daemonp))
-  :custom
-  (auto-package-update-interval 90)
-  (auto-package-update-prompt-before-update t)
-  (auto-package-update-delete-old-versions t)
-  (auto-package-update-hide-results t)
-  :config
-  (auto-package-update-maybe))
-#+END_SRC
 ** avy
 from [[https://gist.github.com/karthink/af013ffd77fe09e67360f040b57b4c7b][karthink]]
 #+BEGIN_SRC emacs-lisp
@@ -1794,6 +1780,19 @@ nice directory level diffing
               ("j" . ztree-jump-side)))
 #+END_SRC
 * inactive packages
+** auto package updating
+#+BEGIN_SRC emacs-lisp
+;; (use-package auto-package-update
+;;   :ensure t
+;;   :if (not (daemonp))
+;;   :custom
+;;   (auto-package-update-interval 90)
+;;   (auto-package-update-prompt-before-update t)
+;;   (auto-package-update-delete-old-versions t)
+;;   (auto-package-update-hide-results t)
+;;   :config
+;;   (auto-package-update-maybe))
+#+END_SRC
 ** clojure
 #+BEGIN_SRC emacs-lisp
 ;  (use-package clojure-mode
