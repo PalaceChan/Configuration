@@ -67,7 +67,7 @@ export HISTFILESIZE=
 export HISTTIMEFORMAT='%Y%m%d %T '
 export HISTFILE=~/.bash_eternal_history
 
-PROMPT_COMMAND='history -a; history | tail -n1 | ~/history/dump_history.sh'
+PROMPT_COMMAND='history -a; history 1 | ~/history/dump_history.sh'
 export PROMPT_COMMAND
 
 PATH=$PATH:~/scripts
