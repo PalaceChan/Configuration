@@ -869,7 +869,24 @@ Use ~M-w~ and modifiers to more efficiently save things to kill ring
 :ensure t
 :config
 (global-set-key [remap kill-ring-save] #'easy-kill)
-(global-set-key [remap mark-sexp] #'easy-mark))
+  (global-set-key [remap mark-sexp] #'easy-mark)
+  (defun ava/easy-kill-on-buffer-file-name-with-line-number (n)
+    "Get `buffer-file-name' or `default-directory' with line number if N is 2.
+If N is zero, remove the directory part; -, remove the file name
+part; +, full path; 9, name with line number.; 8 full name with line number"
+    (if (easy-kill-get mark)
+        (easy-kill-echo "Not supported in `easy-mark'")
+      (pcase (or buffer-file-name default-directory)
+        (`nil (easy-kill-echo "No `buffer-file-name'"))
+        (file (let* ((file (directory-file-name file))
+                     (text (pcase n
+                             (`- (file-name-directory file))
+                             (`0 (file-name-nondirectory file))
+                             (`8 (concat file ":" (number-to-string (line-number-at-pos))))
+                             (`9 (concat (file-name-nondirectory file) ":" (number-to-string (line-number-at-pos))))
+                             (_ file))))
+                (easy-kill-adjust-candidate 'buffer-file-name text))))))
+  (advice-add 'easy-kill-on-buffer-file-name :override #'ava/easy-kill-on-buffer-file-name-with-line-number))
 #+END_SRC
 ** eglot
 [[https://github.com/joaotavora/eglot][homepage]]
