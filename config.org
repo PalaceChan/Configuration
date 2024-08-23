@@ -674,15 +674,6 @@ from [[https://gist.github.com/karthink/af013ffd77fe09e67360f040b57b4c7b][karthi
       (select-window (cdr (ring-ref avy-ring 0))) t)
     (setf (alist-get ?M avy-dispatch-alist) 'avy-action-man)))
 #+END_SRC
-** blamer
-#+begin_src emacs-lisp
-(use-package blamer
-  :ensure t
-  :custom
-  (blamer-idle-time 0.3)
-  :config
-  (global-blamer-mode 1))
-#+end_src
 ** bookmarks
 #+begin_src emacs-lisp
 (use-package bookmark
