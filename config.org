@@ -986,11 +986,27 @@ https://github.com/karthink/gptel
   :preface
   (defun ava/init-gptel-mode ()
     (visual-line-mode)
-    (setq-local gptel--system-message "You are a computer programmer's assistant living inside Emacs. Your responses are always concise, succinct, and to the point. You never apologize for anything as that is a waste of time."))
+    (setq-local  gptel-expert-commands t)
+    (setq-local gptel--num-messages-to-send 6)
+    (setq-local gptel--system-message (alist-get 'default gptel-directives)))
+  (defun ava/gptel--rewrite-message ()
+    "Overrides the default in gptel-rewrite.el to include code comments for easier ediff."
+    (if (derived-mode-p 'prog-mode)
+        (format "You are a %s programmer. Refactor the following code. Generate only code, include succinct explanations only in separate lines as code comments. The output you generate will be diffed against the original code."
+                (gptel--strip-mode-suffix major-mode))
+      (format "You are a prose editor. Rewrite the following text to be more professional.")))
   :hook (gptel-mode . ava/init-gptel-mode)
   :custom
   (gptel-model "gpt-4o")
-  (gptel-default-mode 'org-mode))
+  (gptel-default-mode 'org-mode)
+  (gptel-directives '((default . "You are a helpful assistant living inside Emacs. The user is a computer programmer. Your responses are always concise, succinct, and to the point. You never apologize for confusions as that wastes time. If you generate blocks using three backticks inspect your response and add the appropriate programming language after the opening backticks.")
+                      (programmer . "You are a careful programmer. Provide code and only code as output without any additional text, prompt, or note. Do NOT use markdown backticks (```) to format your response.")
+                      (emacser . "You are an emacs maven. Reply with the most appropriate built-in Emacs command for the task I specify. Do NOT generate any additional description or explanation.")
+                      (cliwhiz . "You are a command line helper. Generate command line commands that do what is requested, without any additional description or explanation. Generate ONLY the command, without any markdown code fences.")
+                      (explainer . "You are a computer programmer's assistant. Explain what this code does")
+                      (differ . "You are a computer programmer's assistant. Explain what this code diff hunk is doing, is it trying to fix something? Is it just a refactor? What is your understanding of the diff")))
+  :config
+  (advice-add 'gptel--rewrite-message :override #'ava/gptel--rewrite-message))
 #+end_src
 ** helm
 #+BEGIN_SRC emacs-lisp
