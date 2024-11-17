@@ -1433,9 +1433,10 @@ hide emphasis markers the nice way
   :commands (org-appear-mode)
   :hook (org-mode . org-appear-mode)
   :custom
+  (org-appear-delay 0.5)
+  (org-appear-autolinks t)
   (org-appear-autoemphasis t)
-  (org-appear-autokeywords t)
-  (org-appear-autolinks t))
+  (org-appear-autokeywords t))
 #+end_src
 *** org-modern
 #+BEGIN_SRC emacs-lisp
