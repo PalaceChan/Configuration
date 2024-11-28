@@ -1643,18 +1643,22 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   :bind (("C-x |" . rotate-frame-clockwise)
          ("C-x \\" . rotate-frame-anticlockwise)))
 #+END_SRC
-** tree-sitter
-https://emacs-tree-sitter.github.io/installation/
-
+** treesit
 #+begin_src emacs-lisp
-(use-package tree-sitter-langs :ensure t)
+(use-package treesit
+  :if (version<= "29" emacs-version)
+  :ensure nil
+  :custom
+  (treesit-font-lock-level 4))
 
-(use-package tree-sitter
+(use-package treesit-auto
+  :if (version<= "29" emacs-version)
   :ensure t
-  :after tree-sitter-langs
+  :custom
+  (treesit-auto-install 'prompt)
   :config
-  (global-tree-sitter-mode)
-  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
 #+end_src
 ** undo-tree
 
@@ -2337,6 +2341,20 @@ start a few common terms
 ;        (funcall term-start-helper "rand1" "")
 ;        (funcall term-start-helper "rand2" ""))))
 #+END_SRC
+** tree-sitter
+(this is built in as =treesit= after emacs 29)
+
+https://emacs-tree-sitter.github.io/installation/
+#+begin_src emacs-lisp
+;; (use-package tree-sitter-langs :ensure t)
+
+;; (use-package tree-sitter
+;;   :ensure t
+;;   :after tree-sitter-langs
+;;   :config
+;;   (global-tree-sitter-mode)
+;;   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
 ** visual-fill-column
 reference: [[https://github.com/joostkremers/visual-fill-column][visual-fill-column]] (to center code in wide monitors)
 
