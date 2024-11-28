@@ -103,10 +103,14 @@ Disable common warnings
       redisplay-skip-fontification-on-input t
       use-dialog-box nil)
 
+(when (version<= "29.1" emacs-version)
+  (pixel-scroll-precision-mode 1))
+
 (use-package paren
   :custom
   (show-paren-delay 0)
   (show-paren-when-point-inside-paren t)
+  (show-paren-context-when-offscreen 'overlay)
   :config
   (show-paren-mode 1))
 
@@ -821,6 +825,7 @@ uses rg for fast grep
    dired-listing-switches "-Al --si --time-style long-iso --group-directories-first"
    dired-hide-details-hide-symlink-targets nil
    dired-kill-when-opening-new-dired-buffer t
+   dired-mouse-drag-files t
    ; dired-guess-shell-alist-user (list '("\\.foobar$" "some command")) ;; suggestions for ! and & in Dired
    wdired-allow-to-change-permissions t)
   (add-hook 'dired-mode-hook (lambda () (interactive) (dired-hide-details-mode 1))))
