@@ -899,11 +899,16 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
 
 #+begin_src emacs-lisp
 (use-package eglot
-  :ensure t
   :commands eglot
   :init
   ;(defun ava/eglot-disable-flymake () (flymake-mode -1))
   ;(add-hook 'eglot-managed-mode-hook #'ava/eglot-disable-flymake)
+  ;; (defvar ava/eglot-enabled-projects '("foo" "bar")) ;; <- if want to auto enable in some projects
+  ;; (defun ava/eglot-ensure ()
+  ;;   (when (and (eq major-mode 'c++-mode)
+  ;;              (member (projectile-project-name) ava/eglot-enabled-projects))
+  ;;     (eglot-ensure)))
+  ;; (add-hook 'eglot-managed-mode-hook #'ava/eglot-ensure)
   (defun ava/eglot-enable-eager-eldoc () (setq eldoc-documentation-strategy 'eldoc-documentation-compose-eagerly))
   (add-hook 'eglot-managed-mode-hook #'ava/eglot-enable-eager-eldoc)
   :bind (:map eglot-mode-map
@@ -921,17 +926,19 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
   (eldoc-echo-area-use-multiline-p nil)
   (eglot-ignored-server-capabilities '(:documentHighlightProvider))
   :config
-  (setcdr
-   (assoc (list 'c++-mode 'c-mode) eglot-server-programs)
-   (list "clangd"
-         ;"-j=6"
+  (let ((clangd-options (list "clangd"
          "--malloc-trim"
          "--log=info"
          "--background-index"
          "--clang-tidy"
          "--completion-style=detailed"
          "--header-insertion=never"
-         "--header-insertion-decorators=0")))
+                              "--header-insertion-decorators=0"))
+        (clangd-modes (list 'c++-mode 'c++-ts-mode 'c-mode 'c-ts-mode)))
+    (let ((entry (assoc clangd-modes eglot-server-programs)))
+      (if entry
+          (setcdr entry clangd-options)
+        (push (cons clangd-modes clangd-options) eglot-server-programs)))))
 #+end_src
 ** ement
 #+begin_src emacs-lisp
