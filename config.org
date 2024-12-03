@@ -467,7 +467,6 @@ toggle between implementation and header
   (compile-command "make")
   (compilation-always-kill t)
   (compilation-scroll-output 'first-error)
-  (compilation-auto-jump-to-first-error t)
   (compilation-read-command nil)
   (compilation-ask-about-save nil)
   (compilation-skip-threshold 2)
