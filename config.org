@@ -1111,9 +1111,12 @@ remap =term-previous-matching-input= to a helm frontend
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-  (use-package helm-descbinds
-    :ensure t
-    :init (helm-descbinds-mode))
+(use-package helm-descbinds
+  :ensure t
+  :custom
+  (helm-descbinds-disable-which-key nil)
+  :init
+  (helm-descbinds-mode))
 #+END_SRC
 
 [[https://lucasg.github.io/2017/02/05/Downloading-Dash-docsets/][dash docsets]]
@@ -1503,6 +1506,7 @@ hide emphasis markers the nice way
 use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated-paredit.html][animated paredit guide]])
 #+BEGIN_SRC emacs-lisp
 (use-package paredit
+  :ensure t
   :bind (
          :map paredit-mode-map
          ("M-s" . nil) ; used for isearch
@@ -1525,7 +1529,7 @@ use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated
   (pdf-view-continuous nil)
   (pdf-view-use-scaling t)
   :config
-  (pdf-loader-install)
+  (pdf-tools-install)
   (setq pdf-view-resize-factor 1.1)
   (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode))
 #+end_src
@@ -2132,37 +2136,37 @@ Only use lsp with flycheck
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
-    (use-package lsp-ui
-      :ensure t
-      :after lsp-mode flycheck
-      :diminish
-      :commands lsp-ui-mode
-      :bind
-      (:map lsp-ui-mode-map
-            ;("C-c u" . lsp-ui-imenu)
-            ;("C-c C-d" . lsp-ui-doc-glance)
-            ("C-c d" . lsp-ui-doc-show)
-            ("M-i" . lsp-ui-doc-focus-frame))
-      :custom
-      (lsp-ui-peek-enable t)
-      (lsp-ui-doc-enable t)
-      (lsp-ui-doc-alignment 'window)
-      (lsp-ui-doc-header t)
-      (lsp-ui-doc-max-height 45)
-      (lsp-ui-doc-position 'at-point)
-      (lsp-ui-doc-show-with-mouse nil)
-      (lsp-ui-doc-show-with-cursor nil)
-      (lsp-ui-doc-include-signature t)
-      (lsp-ui-doc-border (face-foreground 'default))
-      (lsp-ui-sideline-enable t)
-      (lsp-ui-sideline-ignore-duplicate t)
-      (lsp-ui-sideline-show-code-actions nil)
-      (lsp-ui-sideline-show-diagnostics nil)
-      (lsp-ui-sideline-show-hover nil))
+;; (use-package lsp-ui
+;;   :ensure t
+;;   :after lsp-mode flycheck
+;;   :diminish
+;;   :commands lsp-ui-mode
+;;   :bind
+;;   (:map lsp-ui-mode-map
+;;         ;("C-c u" . lsp-ui-imenu)
+;;         ;("C-c C-d" . lsp-ui-doc-glance)
+;;         ("C-c d" . lsp-ui-doc-show)
+;;         ("M-i" . lsp-ui-doc-focus-frame))
+;;   :custom
+;;   (lsp-ui-peek-enable t)
+;;   (lsp-ui-doc-enable t)
+;;   (lsp-ui-doc-alignment 'window)
+;;   (lsp-ui-doc-header t)
+;;   (lsp-ui-doc-max-height 45)
+;;   (lsp-ui-doc-position 'at-point)
+;;   (lsp-ui-doc-show-with-mouse nil)
+;;   (lsp-ui-doc-show-with-cursor nil)
+;;   (lsp-ui-doc-include-signature t)
+;;   (lsp-ui-doc-border (face-foreground 'default))
+;;   (lsp-ui-sideline-enable t)
+;;   (lsp-ui-sideline-ignore-duplicate t)
+;;   (lsp-ui-sideline-show-code-actions nil)
+;;   (lsp-ui-sideline-show-diagnostics nil)
+;;   (lsp-ui-sideline-show-hover nil))
 
-  ;(use-package company-lsp
-  ;    :ensure t
-  ;    :custom (company-lsp-cache-candidates 'auto))
+;;(use-package company-lsp
+;;    :ensure t
+;;    :custom (company-lsp-cache-candidates 'auto))
 #+END_SRC
 ** mu4e
 The smtp portion will require app specific password and will store it in ~/.authinfo after first use
