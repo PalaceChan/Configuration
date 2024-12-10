@@ -1269,12 +1269,16 @@ remap =term-previous-matching-input= to a helm frontend
   :ensure t
   :mode "\\.jq\\'")
 
-(use-package json-mode
-  :ensure t
-  :mode "\\.json\\'"
-  :bind (:map json-mode-map ("C-c C-i" . #'jq-interactively))
-  :hook (json-mode . flycheck-mode)
-  :custom (js-indent-level 2))
+(with-eval-after-load 'json-ts-mode
+  (require 'json)
+  (require 'jq-mode)
+  (add-hook 'json-ts-mode-hook (lambda () (flycheck-mode)))
+  (setq json-ts-mode-indent-offset 4)
+  (setq json-encoding-pretty-print t)
+  (setq json-encoding-default-indentation "    ")
+  (let ((map json-ts-mode-map))
+    (define-key map (kbd "C-c C-i") #'jq-interactively)
+    (define-key map (kbd "C-c C-f") #'json-pretty-print-buffer)))
 #+end_src
 ** magit
 (can use ~magit-toggle-verbose-refresh~ to profile status buffer)
@@ -1665,10 +1669,9 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   :custom
   (treesit-font-lock-level 4)
   :config
-  ; opt out for these
+  ; TODO fix elpy or opt out
   (setq major-mode-remap-alist
-        '((python-ts-mode python-mode) ; issues with elpy
-          (json-ts-mode json-mode)))) ; issues with json
+        '((python-ts-mode python-mode))))
 
 (use-package treesit-auto
   :if (version<= "29" emacs-version)
@@ -1821,12 +1824,11 @@ advantage over =(add-hook 'before-save-hook #'delete-trailing-whitespace)= is th
 (use-package yasnippet
   :ensure t
   :diminish yas-minor-mode
-  :commands (yas-minor-mode)
-  :hook ((ess-r-mode python-mode lisp-interaction-mode emacs-lisp-mode c++-mode c-mode) . yas-minor-mode)
-  :config
+  :hook (prog-mode . yas-minor-mode))
+
   (use-package yasnippet-snippets
-    :ensure t)
-  (yas-reload-all))
+  :ensure t
+  :after yasnippet)
 #+END_SRC
 ** ztree
 nice directory level diffing
