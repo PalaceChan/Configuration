@@ -16,6 +16,15 @@ function mgrep()
     eval ${CMD%| }
 }
 
+function ediff
+{
+    if [ -d $1 ]; then
+	emacsclient -q -eval "(ztree-diff \"$1\" \"$2\")"
+    else
+	emacsclient -q -eval "(ediff-files \"$1\" \"$2\")"
+    fi
+}
+
 function vterm_printf() {
     if [ -n "$TMUX" ] && ([ "${TERM%%-*}" = "tmux" ] || [ "${TERM%%-*}" = "screen" ]); then
         # Tell tmux to pass the escape sequences through

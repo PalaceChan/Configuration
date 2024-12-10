@@ -8,4 +8,6 @@ PATH=$PATH:~/scripts
 PATH=$PATH:~/.local/bin
 export PATH
 
-xset r rate 200 70
+if [ -z "$DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
+    exec startx
+fi
