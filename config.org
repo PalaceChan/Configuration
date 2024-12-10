@@ -694,6 +694,11 @@ from [[https://gist.github.com/karthink/af013ffd77fe09e67360f040b57b4c7b][karthi
   :defer t
   :config
   (bind-key "C-c b" #'clang-format-buffer c-mode-base-map))
+
+(use-package c-ts-mode
+  :defer t
+  :config
+  (bind-key "C-c b" #'clang-format-buffer c++-ts-mode-map))
 #+END_SRC
 ** company
 *** company
@@ -1003,7 +1008,7 @@ https://github.com/karthink/gptel
     (setq-local gptel--system-message (alist-get 'default gptel-directives)))
   :hook (gptel-mode . ava/init-gptel-mode)
   :custom
-  (gptel-model "gpt-4o")
+  (gptel-model 'gpt-4o)
   (gptel-default-mode 'org-mode)
   (gptel-track-media t)
   (gptel-directives '((default . "You are a helpful assistant living inside Emacs. The user is a computer programmer. Your responses are always concise, succinct, and to the point. You never apologize for confusions as that wastes time. If you generate blocks using three backticks inspect your response and add the appropriate programming language after the opening backticks.")
@@ -1658,7 +1663,12 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   :if (version<= "29" emacs-version)
   :ensure nil
   :custom
-  (treesit-font-lock-level 4))
+  (treesit-font-lock-level 4)
+  :config
+  ; opt out for these
+  (setq major-mode-remap-alist
+        '((python-ts-mode python-mode) ; issues with elpy
+          (json-ts-mode json-mode)))) ; issues with json
 
 (use-package treesit-auto
   :if (version<= "29" emacs-version)

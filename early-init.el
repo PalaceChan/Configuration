@@ -10,7 +10,8 @@
 
 (setq frame-resize-pixelwise t
       fast-but-imprecise-scrolling t
-      frame-inhibit-implied-resize t)
+      frame-inhibit-implied-resize t
+      initial-frame-alist '((fullscreen . maximized)))
 
 (when (native-comp-available-p)
   (setq package-native-compile t

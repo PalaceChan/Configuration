@@ -13,7 +13,8 @@
   (package-install 'use-package))
 
 (require 'use-package)
-(use-package diminish)
+(use-package diminish
+  :ensure t)
 (use-package bind-key)
 (setq use-package-enable-imenu-support t)
 
@@ -31,9 +32,6 @@
                              (float-time
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
-
-(when (native-comp-available-p)
-  (setq native-comp-async-report-warnings-errors 'silent))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                       LITERATE CONFIG
