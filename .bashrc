@@ -1,5 +1,4 @@
 # Functions
-
 function ff()
 {
     local dir="${2:-.}"
@@ -42,8 +41,7 @@ function vterm_prompt_end()
     vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
 }
 
-# Aliases coca rata
-
+# Aliases
 alias e='/usr/bin/emacsclient -n'
 alias ew='/usr/bin/emacs -Q -nw'
 alias hist='cat ~/history/history.txt'
@@ -62,17 +60,12 @@ else
 fi
 
 # Env
-
-export PS1='\h: '
-PS1=$PS1'\[$(vterm_prompt_end)\]'
-
+export PS1='\h: \[$(vterm_prompt_end)\]'
 export LESS='-iMFXR' #cat if fits
-
 export R_HISTFILE="~/.Rhistory"
 
 export HISTSIZE=
 export HISTFILESIZE=
 export HISTTIMEFORMAT='%Y%m%d %T '
 export HISTFILE=~/.bash_eternal_history
-
 export PROMPT_COMMAND='history -a; history 1 | ~/history/dump_history.sh'
