@@ -1124,7 +1124,6 @@ remap =term-previous-matching-input= to a helm frontend
   (helm-descbinds-mode))
 #+END_SRC
 
-[[https://lucasg.github.io/2017/02/05/Downloading-Dash-docsets/][dash docsets]]
 #+begin_src emacs-lisp
   (use-package helm-dash
     :ensure t
@@ -1134,7 +1133,7 @@ remap =term-previous-matching-input= to a helm frontend
     (dash-docs-browser-func #'eww)
     :config
     (require 'dash-docs)
-    (setq dash-docs-common-docsets '("Matplotlib" "Python 3" "NumPy" "Pandas")))
+    (setq dash-docs-common-docsets '("Emacs Lisp", "Python 3" "NumPy" "Pandas")))
 #+end_src
 
 #+begin_src emacs-lisp

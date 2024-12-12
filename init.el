@@ -18,20 +18,26 @@
 (use-package bind-key)
 (setq use-package-enable-imenu-support t)
 
-(use-package gcmh
-  :ensure t
-  :custom
-  (gcmh-verbose t)
-  :config
-  (gcmh-mode 1))
+;; (use-package gcmh
+;;   :ensure t
+;;   :custom
+;;   (gcmh-verbose t)
+;;   :config
+;;   (gcmh-mode 1))
+
+(setq gc-cons-percentage 0.2)
+(setq gc-cons-threshold (* 200 1000 1000))
+      (add-hook
+       'after-init-hook
+       (lambda () (setq gc-cons-threshold (* 20 1000 1000))))
 
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (message "Emacs ready in %s with %d garbage collections."
+            (message "Emacs ready in %s with %d gcs and %.2f seconds of gc"
                      (format "%.2f seconds"
                              (float-time
                               (time-subtract after-init-time before-init-time)))
-                     gcs-done)))
+                     gcs-done gc-elapsed)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;                                       LITERATE CONFIG
