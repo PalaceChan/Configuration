@@ -1666,11 +1666,7 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   :if (version<= "29" emacs-version)
   :ensure nil
   :custom
-  (treesit-font-lock-level 4)
-  :config
-  ; TODO fix elpy or opt out
-  (setq major-mode-remap-alist
-        '((python-ts-mode python-mode))))
+  (treesit-font-lock-level 4))
 
 (use-package treesit-auto
   :if (version<= "29" emacs-version)
@@ -1678,7 +1674,9 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   :custom
   (treesit-auto-install 'prompt)
   :config
+  (setq treesit-auto-langs (delete 'python treesit-auto-langs))
   (treesit-auto-add-to-auto-mode-alist 'all)
+  (setq c-ts-base-mode-hook c-mode-common-hook)
   (global-treesit-auto-mode))
 #+end_src
 ** undo-tree
