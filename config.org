@@ -102,6 +102,7 @@ Disable common warnings
       scroll-margin 3
       scroll-conservatively most-positive-fixnum
       scroll-preserve-screen-position t
+      use-short-answers t
       grep-highlight-matches t
       shell-file-name "bash"
       x-alt-keysym 'meta
@@ -150,6 +151,8 @@ Disable common warnings
       (f-entries texinfo-path
                  (lambda (path) (add-to-list 'Info-additional-directory-list path)))))
   (add-hook 'Info-mode-hook 'variable-pitch-mode))
+
+(add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
 *** save place
 #+BEGIN_SRC emacs-lisp
@@ -241,9 +244,8 @@ kill current buffer no prompt
     (winner-mode 1))
 #+END_SRC
 
-**** yes/no zap and unset C-x o
+**** align-rx, char zap, and unbind C-x o
 #+BEGIN_SRC emacs-lisp
-  (defalias 'yes-or-no-p 'y-or-n-p)
   (global-set-key (kbd "C-x l") 'align-regexp)
   (global-set-key [remap eval-last-sexp] 'pp-eval-last-sexp)
 #+END_SRC
@@ -270,11 +272,6 @@ kill current buffer no prompt
             isearch-allow-scroll 'unlimited))
     (define-key isearch-mode-map [remap isearch-delete-char] #'isearch-del-char))
 #+END_SRC
-
-#+begin_src emacs-lisp
-  (add-hook 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
-#+end_src
-
 **** proced
 #+begin_src emacs-lisp
   (use-package proced
@@ -312,7 +309,6 @@ kill current buffer no prompt
 #+end_src
 
 **** eldoc
-also enable eldoc
 #+begin_src emacs-lisp
 (use-package eldoc
   :diminish
@@ -440,19 +436,6 @@ check if projectile root has a TAGS file and if not generate something
           (ava/generate-tags)))))
 
   (advice-add 'xref-find-definitions :before #'ava/before-xref-find-defs)
-#+END_SRC
-*** semantic mode
-use semantic without it interfering with completion and without auto-parsing in idle time
-(only use it for helm-semantic-or-imenu and thus parses buffer on demand)
-#+BEGIN_SRC emacs-lisp
-  (require 'semantic)
-  (add-hook 'semantic-mode-hook
-            (lambda ()
-              (dolist (x (default-value 'completion-at-point-functions))
-                (when (string-prefix-p "semantic-" (symbol-name x))
-                  (remove-hook 'completion-at-point-functions x)))))
-  (setq semantic-default-submodes '(global-semanticdb-minor-mode))
-  (semantic-mode 1)
 #+END_SRC
 *** c/c++
 indentation related
@@ -769,21 +752,6 @@ A much nicer frame for completion candidates
   :config
   (define-key company-mode-map (kbd "C-:") 'helm-company))
 #+END_SRC
-*** company-shell
-backend for shells
-#+BEGIN_SRC emacs-lisp
-(use-package company-shell
-  :ensure t
-  :after company
-  :config
-  (add-to-list 'company-shell-modes 'term-mode)
-  (add-hook
-   'term-mode-hook (lambda ()
-                     (set (make-local-variable 'company-idle-delay) 0.5)
-                     (set (make-local-variable 'company-minimum-prefix-length) 2)
-                     (set (make-local-variable 'company-backends)
-                          '((company-capf company-files company-shell company-shell-env) company-dabbrev)))))
-#+END_SRC
 ** copilot
 clone via ~git clone https://github.com/zerolfx/copilot.el.git copilot~ in emacs user dir =lisp= subdir
 use ~M-x copilot-login~ to authenticate. =copilot-mode= to turn it on automatically blending in with company (use ~C-n~ and ~C-p~ to control company when they overlap).
@@ -923,7 +891,7 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
   ;(add-hook 'eglot-managed-mode-hook #'ava/eglot-disable-flymake)
   ;; (defvar ava/eglot-enabled-projects '("foo" "bar")) ;; <- if want to auto enable in some projects
   ;; (defun ava/eglot-ensure ()
-  ;;   (when (and (eq major-mode 'c++-mode)
+  ;;   (when (and (derived-mode-p 'c++-mode 'c++-ts-mode)
   ;;              (member (projectile-project-name) ava/eglot-enabled-projects))
   ;;     (eglot-ensure)))
   ;; (add-hook 'eglot-managed-mode-hook #'ava/eglot-ensure)
@@ -1151,13 +1119,13 @@ remap =term-previous-matching-input= to a helm frontend
 #+end_src
 
 #+begin_src emacs-lisp
-  (use-package helm-org-rifle
-    :ensure t
-    :bind
-    ("C-c h r r" . helm-org-rifle)
-    ("C-c h r b" . helm-org-rifle-current-buffer)
-    ("C-c h r a" . helm-org-rifle-org-agenda-files)
-    ("C-c h r o" . helm-org-rifle-org-directory))
+(use-package helm-org-rifle
+  :ensure t
+  :bind
+  ("C-c h r r" . helm-org-rifle)
+  ("C-c h r b" . helm-org-rifle-current-buffer)
+  ("C-c h r a" . helm-org-rifle-agenda-files)
+  ("C-c h r o" . helm-org-rifle-org-directory))
 #+end_src
 ** helpful
 #+BEGIN_SRC emacs-lisp
@@ -1659,6 +1627,10 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   (recentf-auto-cleanup "05:00am")
   (recentf-exclude '(file-remote-p))
   :config
+  (defun ava/recentf-cleanup-silent (fun)
+    "Call `recentf-cleanup' suppressing messages."
+    (let (message-log-max (inhibit-message t)) (funcall fun)))
+  (advice-add 'recentf-cleanup :around #'ava/recentf-cleanup-silent)
   (recentf-mode t))
 #+END_SRC
 ** smart comment
