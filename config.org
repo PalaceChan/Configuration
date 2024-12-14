@@ -1,12 +1,26 @@
 * settings
 ** startup
+*** system
+specialize a few things depending on which system
+#+begin_src emacs-lisp
+(defconst ava/host
+  (pcase (system-name)
+    ("avat14" 't14)
+    ("avalenovo" 'x220)
+    ("avelazqu01" 'desktop)
+    (_ 'unknown)))
+#+end_src
 *** theme
 #+BEGIN_SRC emacs-lisp
 (use-package doom-themes :ensure t :defer t)
 (load-theme 'doom-one t)
-(set-frame-font "Monospace-13")
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
+
+(set-frame-font
+ (pcase ava/host
+   ('t14 "Monospace-18")
+   (_ "Monospace-13")))
 #+END_SRC
 *** modeline
 #+begin_src emacs-lisp
@@ -117,8 +131,8 @@ Disable common warnings
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode)
 
-;;; too slow on old server
-(unless (string= (system-name) "avalenovo")
+;too slow otherwise
+(unless (eq ava/host 'x220)
   (setq completion-styles '(flex)))
 
 (use-package apropos
