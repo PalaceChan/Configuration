@@ -12,8 +12,11 @@ specialize a few things depending on which system
 #+end_src
 *** theme
 #+BEGIN_SRC emacs-lisp
-(use-package doom-themes :ensure t :defer t)
-(load-theme 'doom-one t)
+(use-package modus-themes
+  :ensure t
+  :config
+  (load-theme 'modus-vivendi-tinted t))
+
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
 
@@ -439,11 +442,25 @@ check if projectile root has a TAGS file and if not generate something
 #+END_SRC
 *** c/c++
 indentation related
-#+BEGIN_SRC emacs-lisp
-(setq c-default-style "linux"
-      c-basic-offset 4)
-(c-set-offset 'innamespace 0)
-#+END_SRC
+#+begin_src emacs-lisp
+;;; source: https://www.reddit.com/r/emacs/comments/1bgdw0y/custom_namespace_indentation_in_ctsmode/
+(use-package c-ts-mode
+    :preface
+    (defun ava/c-ts-indent-style()
+        "Override the built-in BSD indentation style with some additional rules.
+         Docs: https://www.gnu.org/software/emacs/manual/html_node/elisp/Parser_002dbased-Indentation.html
+         Notes: `treesit-explore-mode' can be very useful to see where you're at in the tree-sitter tree,
+                especially paired with `(setq treesit--indent-verbose t)' to debug what rules is being
+                applied at a given point."
+        `(;; do not indent namespace children
+          ((n-p-gp nil nil "namespace_definition") grand-parent 0)
+          ;; append to bsd style
+          ,@(alist-get 'bsd (c-ts-mode--indent-styles 'cpp))))
+    :config
+    (setq c-ts-mode-indent-offset 4)
+    (setq c-ts-mode-indent-style #'ava/c-ts-indent-style))
+#+end_src
+
 toggle between implementation and header
 #+BEGIN_SRC emacs-lisp
   (setq cc-search-directories '("."))
@@ -800,6 +817,10 @@ uses rg for fast grep
   :config
   (advice-add 'deadgrep--arguments :filter-return #'ava/deadgrep--include-args))
 #+END_SRC
+** devdocs
+#+begin_src emacs-lisp
+(use-package devdocs-browser :ensure t)
+#+end_src
 ** dired related
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'dired
