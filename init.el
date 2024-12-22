@@ -8,22 +8,10 @@
 (require 'package)
 (package-initialize)
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(require 'use-package)
 (use-package diminish
   :ensure t)
 (use-package bind-key)
 (setq use-package-enable-imenu-support t)
-
-;; (use-package gcmh
-;;   :ensure t
-;;   :custom
-;;   (gcmh-verbose t)
-;;   :config
-;;   (gcmh-mode 1))
 
 (setq gc-cons-percentage 0.2)
 (setq gc-cons-threshold (* 200 1000 1000))

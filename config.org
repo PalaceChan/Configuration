@@ -15,7 +15,16 @@ specialize a few things depending on which system
 (use-package modus-themes
   :ensure t
   :config
-  (load-theme 'modus-vivendi-tinted t))
+  (load-theme 'modus-vivendi-tinted t)
+  (defun ava/toggle-theme ()
+    (interactive)
+    (let ((light-theme 'modus-operandi-tinted)
+          (dark-theme 'modus-vivendi-tinted)
+          (current-theme (car custom-enabled-themes)))
+      (mapc #'disable-theme custom-enabled-themes)
+      (if (eq current-theme dark-theme)
+          (load-theme light-theme t)
+        (load-theme dark-theme t)))))
 
 (global-font-lock-mode t)
 (setq font-lock-maximum-decoration t)
@@ -332,6 +341,12 @@ kill current buffer no prompt
           (format "\\(%s\\)\\|\\(%s\\)"
                   vc-ignore-dir-regexp
                   tramp-file-name-regexp)))
+#+end_src
+**** eww
+#+begin_src emacs-lisp
+(use-package eww
+  :custom
+  (eww-auto-rename-buffer 'title))
 #+end_src
 *** if on a windows OS
 if need to work in a windows environment talk to it via named pipe
