@@ -346,7 +346,9 @@ kill current buffer no prompt
 #+begin_src emacs-lisp
 (use-package eww
   :custom
-  (eww-auto-rename-buffer 'title))
+  (eww-auto-rename-buffer 'title)
+  :config
+  (setq browse-url-browser-function 'eww-browse-url))
 #+end_src
 *** if on a windows OS
 if need to work in a windows environment talk to it via named pipe
@@ -962,13 +964,21 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
           (setcdr entry clangd-options)
         (push (cons clangd-modes clangd-options) eglot-server-programs)))))
 #+end_src
-** ement
-#+begin_src emacs-lisp
-(use-package ement
+** elfeed
+#+BEGIN_SRC emacs-lisp
+(use-package elfeed
   :ensure t
+  :commands elfeed
   :custom
-  (ement-save-sessions t))
-#+end_src
+  (elfeed-search-filter "@1-week-ago ")
+  (elfeed-feeds
+   '(("https://www.archlinux.org/feeds/news/" arch)
+     ("https://matklad.github.io/feed.xml" programming)
+     ("http://www.reddit.com/r/emacs/.rss" emacs reddit)
+     ("http://sachachua.com/blog/category/emacs-news/feed" emacs)
+     ("http://www.masteringemacs.org/feed/" emacs)
+     ("http://emacsredux.com/atom.xml" emacs))))
+#+END_SRC
 ** ess
 #+BEGIN_SRC emacs-lisp
 (use-package ess
@@ -1702,7 +1712,6 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   (global-treesit-auto-mode))
 #+end_src
 ** undo-tree
-
 #+BEGIN_SRC emacs-lisp
 (use-package undo-tree
   :ensure t
@@ -1950,27 +1959,13 @@ Disabled as not snappy enough
 ;          (_      (apply orig-fn file args)))))
 ;    (advice-add #'find-file :around #'adviser-find-file))
 #+END_SRC
-** elfeed
-#+BEGIN_SRC emacs-lisp
-;  (use-package elfeed
-;    :disabled
-;    :ensure   t
-;    :commands elfeed
-;    :config
-;    (setq-default elfeed-search-filter "@1-week-ago ")
-;    (setq elfeed-feeds
-;          '(("https://www.archlinux.org/feeds/news/" arch)
-;            ("http://www.reddit.com/r/emacs/.rss" emacs reddit)
-;            ("http://sachachua.com/blog/category/emacs-news/feed" emacs sacha)
-;            ("http://endlessparentheses.com/atom.xml" emacs)
-;            ("http://www.masteringemacs.org/feed/" emacs)
-;            ("http://emacs-fu.blogspot.com/feeds/posts/default" emacs)
-;            ("http://emacsredux.com/atom.xml" emacs)
-;            ("http://arxiv.org/rss/q-fin.TR" arxiv trading)
-;            ("http://feeds.feedburner.com/zerohedge/feed"))
-;            )
-;    )
-#+END_SRC
+** ement
+#+begin_src emacs-lisp
+;; (use-package ement
+;;   :ensure t
+;;   :custom
+;;   (ement-save-sessions t))
+#+end_src
 ** erc
 use =M-x erc-tls= to start
 #+begin_src emacs-lisp
