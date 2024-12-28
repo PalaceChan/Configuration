@@ -977,7 +977,8 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
      ("http://www.reddit.com/r/emacs/.rss" emacs reddit)
      ("http://sachachua.com/blog/category/emacs-news/feed" emacs)
      ("http://www.masteringemacs.org/feed/" emacs)
-     ("http://emacsredux.com/atom.xml" emacs))))
+     ("http://emacsredux.com/atom.xml" emacs)
+     ("https://emacs.tv/videos.rss" emacs))))
 #+END_SRC
 ** ess
 #+BEGIN_SRC emacs-lisp
@@ -1197,7 +1198,7 @@ remap =term-previous-matching-input= to a helm frontend
    Up^^        Down^^               Miscellaneous
   ------------------------------------------------------------------
    [_p_] Prev  [_n_] Next [_<SPC>_] Show  [_r_] Revert [_q_] Quit
-   [_h_] First [_l_] Last [_s_]     Stage [_d_] Digest"
+   [_h_] First [_l_] Last [_s_]     Stage [_d_] Digest [_b_] Set Base Revision"
      ("n" git-gutter:next-hunk)
      ("p" git-gutter:previous-hunk)
      ("h" (progn (goto-char (point-min)) (git-gutter:next-hunk 1)))
@@ -1207,6 +1208,7 @@ remap =term-previous-matching-input= to a helm frontend
      ("r" git-gutter:revert-hunk)
      ("r" git-gutter:revert-hunk)
      ("d" git-gutter:statistic)
+     ("b" git-gutter:set-start-revision)     
      ("q" nil)))
 
   (with-eval-after-load 'paredit
