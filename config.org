@@ -828,7 +828,8 @@ uses rg for fast grep
   :init
   (defun ava/deadgrep--include-args (rg-args)
     "https://github.com/Wilfred/deadgrep/issues/24#issuecomment-942290197"
-    (push "--hidden" rg-args))
+    (push "--hidden" rg-args)
+    (push "--no-ignore-vcs" rg-args))
   :bind (("M-s g" . deadgrep)
          (:map deadgrep-mode-map ("C-c C-w" . #'deadgrep-edit-mode)))
   :config
@@ -1582,13 +1583,13 @@ use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated
   :ensure t
   :diminish projectile-mode
   :custom
-  (projectile-project-root-files-bottom-up '(".git" ".projectile"))
+  (projectile-project-root-files-bottom-up '(".projectile"))
   ;; (projectile-project-root-files '("WORKSPACE"))
   :init
   (setq projectile-enable-caching t
         projectile-project-search-path '("~/development"))
   (when (executable-find "rg")
-    (setq projectile-generic-command "rg -0 --hidden --files --color never"))
+    (setq projectile-generic-command "rg -0 --no-ignore-vcs --hidden --files --color never"))
   :config
   (projectile-mode t)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
