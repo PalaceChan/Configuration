@@ -1,9 +1,1 @@
-#Docs
-tags
-Doxyfile
-html/
-*.txt
-*.out
-
-#repos
-.svn/
+.projectile
