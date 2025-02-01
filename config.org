@@ -350,6 +350,16 @@ kill current buffer no prompt
   :config
   (setq browse-url-browser-function 'eww-browse-url))
 #+end_src
+**** midnight mode
+#+begin_src emacs-lisp
+(use-package midnight
+  :custom
+  (midnight-delay 25200) ;7am
+  (clean-buffer-list-delay-general 3)
+  (clean-buffer-list-kill-never-buffer-names '("*ChatGPT*" "*scratch*" "*Messages*"))
+  :config
+  (midnight-mode t))
+#+end_src
 *** if on a windows OS
 if need to work in a windows environment talk to it via named pipe
 #+begin_src emacs-lisp
