@@ -230,6 +230,11 @@ kill current buffer no prompt
   (add-to-list 'same-window-buffer-names "*Buffer List*")
 #+end_src
 *** misc builtins
+**** auto-revert
+#+begin_src emacs-lisp
+(use-package autorevert
+  :custom (auto-revert-verbose nil))
+#+end_src
 **** world clock
 #+BEGIN_SRC emacs-lisp
   (setq world-clock-time-format "%a, %d %b %I:%M %p %Z"
@@ -244,7 +249,6 @@ kill current buffer no prompt
                            ("Etc/UTC" "UTC")
                            ("Europe/Zurich" "Zurich")))
 #+END_SRC
-
 **** winner
 #+BEGIN_SRC emacs-lisp
   (use-package winner
@@ -959,7 +963,7 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
   (eglot-events-buffer-size 0)
   (eglot-extend-to-xref t)
   (eldoc-echo-area-use-multiline-p nil)
-  (eglot-ignored-server-capabilities '(:documentHighlightProvider))
+  (eglot-ignored-server-capabilities '(:documentHighlightProvider :inlayHintProvider))
   :config
   (let ((clangd-options (list "clangd"
          "--malloc-trim"
