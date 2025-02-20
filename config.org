@@ -729,22 +729,6 @@ from [[https://gist.github.com/karthink/af013ffd77fe09e67360f040b57b4c7b][karthi
   :custom
   (bookmark-save-flag 1))
 #+end_src
-** clang-format
-#+BEGIN_SRC emacs-lisp
-(use-package clang-format
-  :ensure t
-  :commands clang-format-buffer clang-format-region)
-
-(use-package cc-mode
-  :defer t
-  :config
-  (bind-key "C-c b" #'clang-format-buffer c-mode-base-map))
-
-(use-package c-ts-mode
-  :defer t
-  :config
-  (bind-key "C-c b" #'clang-format-buffer c++-ts-mode-map))
-#+END_SRC
 ** company
 *** company
 #+BEGIN_SRC emacs-lisp
@@ -1677,16 +1661,6 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))
   (add-hook 'inferior-python-mode-hook #'ava/elpy-enable-inferior-eldoc))
 #+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-(use-package python-black
-  :ensure t
-  :after (python)
-  :config
-  (setq python-black-command "/usr/bin/black")
-  (define-key python-mode-map "\C-cb" 'python-black-buffer)
-  (define-key python-mode-map "\C-cb" 'python-black-region))
-#+END_SRC
 ** recentf
 #+BEGIN_SRC emacs-lisp
 (use-package recentf
@@ -1701,6 +1675,24 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   (advice-add 'recentf-cleanup :around #'ava/recentf-cleanup-silent)
   (recentf-mode t))
 #+END_SRC
+** reformatter
+#+begin_src emacs-lisp
+(use-package reformatter
+  :ensure t
+  :config
+  (reformatter-define ruff-format
+    :program "ruff"
+    :args `("format" "--stdin-filename" ,buffer-file-name "-"))
+  (reformatter-define clang-format
+    :program "clang-format"
+    :args `("-style=file"))
+  (with-eval-after-load 'cc-mode
+    (define-key c-mode-base-map (kbd "C-c b") #'clang-format-buffer))
+  (with-eval-after-load 'c-ts-mode
+    (define-key c++-ts-mode-map (kbd "C-c b") #'clang-format-buffer))
+  (with-eval-after-load 'python
+    (define-key python-mode-map (kbd "C-c b") #'ruff-format-buffer)))
+#+end_src
 ** smart comment
 #+begin_src emacs-lisp
 (use-package smart-comment
