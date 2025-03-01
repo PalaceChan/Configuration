@@ -1621,14 +1621,6 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
   ;; (elpy-rpc-virtualenv-path 'system)
   (elpy-get-info-from-shell t)
   :preface
-  ;; https://elpy.readthedocs.io/en/latest/customization_tips.html
-  (defun ava/elpy-goto-definition-or-rgrep ()
-    "Go to the definition of the symbol at point, if found. Otherwise, run `elpy-rgrep-symbol'."
-    (interactive)
-    (xref-push-marker-stack)
-    (condition-case nil (elpy-goto-definition)
-      (error (elpy-rgrep-symbol
-              (concat "\\(def\\|class\\)\s" (thing-at-point 'symbol) "(")))))
   (defun ava/elpy-enable-inferior-eldoc ()
     (when (and (version< "28.0.0" emacs-version)
                (boundp 'eldoc-documentation-functions))
@@ -1649,13 +1641,11 @@ as per https://github.com/jorgenschaefer/elpy/issues/1729)
          (define-key elpy-mode-map (kbd key) nil))))
   :bind
   (:map inferior-python-mode-map
-        ("C-c C-d" . elpy-doc)
-        ("M-." . elpy-goto-definition))
+        ("C-c C-d" . elpy-doc))
   :config
   (setq python-shell-interpreter-args "-i")
   (setq elpy-rpc-timeout 10)
   (setq python-shell-prompt-detect-failure-warning nil)
-  (define-key elpy-mode-map (kbd "M-.") 'ava/elpy-goto-definition-or-rgrep)
   (add-to-list 'python-shell-completion-native-disabled-interpreters "jupyter")
   (add-to-list 'process-coding-system-alist '("python" . (utf-8 . utf-8)))
   (add-hook 'elpy-mode-hook (lambda () (elpy-shell-toggle-dedicated-shell 1)))
