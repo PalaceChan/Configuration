@@ -1028,28 +1028,51 @@ https://github.com/karthink/gptel
 #+begin_src emacs-lisp
 (use-package gptel
   :ensure t
-  :preface
+  :init
   (defun ava/init-gptel-mode ()
     (visual-line-mode)
     (setq-local gptel-expert-commands t)
     (setq-local gptel--system-message (alist-get 'default gptel-directives)))
   :hook (gptel-mode . ava/init-gptel-mode)
   :custom
-  (gptel-model 'gpt-4o)
+  (gptel-model 'o3-mini)
   (gptel-default-mode 'org-mode)
   (gptel-track-media t)
-  (gptel-directives '((default . "You are a helpful assistant living inside Emacs. The user is a computer programmer. Your responses are always concise, succinct, and to the point. You never apologize for confusions as that wastes time. If you generate blocks using three backticks inspect your response and add the appropriate programming language after the opening backticks. Do not use the asterisk character followed by whitespace for bullet points in your responses as this can interfere with org-mode rendering (you can use a hyphen instead)")
+  (gptel-directives '((default . "Formatting re-enabled. You are a helpful assistant living inside Emacs. The user is a computer programmer. Your responses are always concise, succinct, and to the point. You never apologize for confusions as that wastes time. If you generate blocks using three backticks inspect your response and add the appropriate programming language after the opening backticks. Do not use the asterisk character followed by whitespace for bullet points in your responses as this can interfere with org-mode rendering (you can use a hyphen instead)")
                       (programmer . "You are a careful programmer. Provide code and only code as output without any additional text, prompt, or note. Do NOT use markdown backticks (```) to format your response.")
                       (emacser . "You are an emacs maven. Reply with the most appropriate built-in Emacs command for the task I specify. Do NOT generate any additional description or explanation.")
                       (cliwhiz . "You are a command line helper. Generate command line commands that do what is requested, without any additional description or explanation. Generate ONLY the command, without any markdown code fences.")
                       (explainer . "You are a computer programmer's assistant. Explain what this code does")
                       (differ . "You are a computer programmer's assistant. Explain what this code diff hunk is doing, is it trying to fix something? Is it just a refactor? What is your understanding of the diff")))
   :config
+  ;(setq gptel-log-level 'debug)
+  (defun ava/add-or-update-openai-model (model-name properties)
+    "Add a model to `gptel--openai-models` or update it if it already exists."
+    (let ((existing (assoc model-name gptel--openai-models)))
+      (if existing
+          (setcdr existing properties)
+        (add-to-list 'gptel--openai-models (cons model-name properties) t))))
+  (ava/add-or-update-openai-model 'o3-mini
+                                  '(:description "Reasoning model designed to solve hard problems across domains"
+                                                 :context-window 200
+                                                 :input-cost 15
+                                                 :output-cost 60
+                                                 :cutoff-date "2023-10"
+                                                 :request-params (:stream t :reasoning_effort "high")))
+  (setq ava/openai-model-list
+        (let ((desired-models '("o3-mini" "gpt-4o"))
+              (result '()))
+          (dolist (desired-name desired-models)
+            (let ((found (assoc (intern desired-name) gptel--openai-models)))
+              (when found (push found result))))
+          (nreverse result)))
+  (gptel-make-anthropic "claude" :key gptel-api-key :stream t)
+  (setq ava/gptel-openai-backend (gptel-make-openai "ChatGPT" :key gptel-api-key :stream t :models ava/openai-model-list))
+  (setq-default gptel-backend ava/gptel-openai-backend)
   (setf (alist-get 'org-mode gptel-prompt-prefix-alist) "*Prompt*: "
         (alist-get 'org-mode gptel-response-prefix-alist) "*Response*:\n")
   (with-eval-after-load 'gptel-org
-    (setq-default gptel-org-branching-context t))
-  (gptel-make-anthropic "claude" :key gptel-api-key :stream t))
+    (setq-default gptel-org-branching-context t)))
 #+end_src
 ** helm
 #+BEGIN_SRC emacs-lisp
