@@ -946,6 +946,7 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
   :custom
   (eglot-events-buffer-size 0)
   (eglot-extend-to-xref t)
+  (eglot-report-progress nil)
   (eldoc-echo-area-use-multiline-p nil)
   (eglot-ignored-server-capabilities '(:documentHighlightProvider :inlayHintProvider))
   :config
