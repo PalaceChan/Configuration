@@ -1036,7 +1036,7 @@ https://github.com/karthink/gptel
     (setq-local gptel--system-message (alist-get 'default gptel-directives)))
   :hook (gptel-mode . ava/init-gptel-mode)
   :custom
-  (gptel-model 'o3-mini)
+  (gptel-model 'gpt5-high)
   (gptel-default-mode 'org-mode)
   (gptel-track-media t)
   (gptel-directives '((default . "Formatting re-enabled. You are a helpful assistant living inside Emacs. The user is a computer programmer. Your responses are always concise, succinct, and to the point. You never apologize for confusions as that wastes time. If you generate blocks using three backticks inspect your response and add the appropriate programming language after the opening backticks. Do not use the asterisk character followed by whitespace for bullet points in your responses as this can interfere with org-mode rendering (you can use a hyphen instead)")
@@ -1060,8 +1060,15 @@ https://github.com/karthink/gptel
                                                  :output-cost 60
                                                  :cutoff-date "2023-10"
                                                  :request-params (:stream t :reasoning_effort "high")))
+  (ava/add-or-update-openai-model 'gpt5-high
+                                  '(:description "Reasoning model designed to solve hard problems across domains"
+                                                 :context-window 400
+                                                 :input-cost 1.25
+                                                 :output-cost 10
+                                                 :cutoff-date "2024-10"
+                                                 :request-params (:model "gpt-5" :stream t :reasoning_effort "high")))
   (setq ava/openai-model-list
-        (let ((desired-models '("o3-mini" "gpt-4o"))
+        (let ((desired-models '("gpt5-high" "o3-mini"))
               (result '()))
           (dolist (desired-name desired-models)
             (let ((found (assoc (intern desired-name) gptel--openai-models)))
