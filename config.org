@@ -1060,6 +1060,13 @@ https://github.com/karthink/gptel
                                                  :output-cost 60
                                                  :cutoff-date "2023-10"
                                                  :request-params (:stream t :reasoning_effort "high")))
+  (ava/add-or-update-openai-model 'gpt-5
+                                  '(:description "Reasoning model designed to solve hard problems across domains"
+                                                 :context-window 400
+                                                 :input-cost 1.25
+                                                 :output-cost 10
+                                                 :cutoff-date "2024-10"
+                                                 :request-params (:stream t :reasoning_effort "minimal")))
   (ava/add-or-update-openai-model 'gpt5-high
                                   '(:description "Reasoning model designed to solve hard problems across domains"
                                                  :context-window 400
@@ -1068,7 +1075,7 @@ https://github.com/karthink/gptel
                                                  :cutoff-date "2024-10"
                                                  :request-params (:model "gpt-5" :stream t :reasoning_effort "high")))
   (setq ava/openai-model-list
-        (let ((desired-models '("gpt5-high" "o3-mini"))
+        (let ((desired-models '("gpt-5" "gpt5-high" "o3-mini"))
               (result '()))
           (dolist (desired-name desired-models)
             (let ((found (assoc (intern desired-name) gptel--openai-models)))
