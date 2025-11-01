@@ -785,18 +785,27 @@ A much nicer frame for completion candidates
   (define-key company-mode-map (kbd "C-:") 'helm-company))
 #+END_SRC
 ** copilot
-clone via ~git clone https://github.com/zerolfx/copilot.el.git copilot~ in emacs user dir =lisp= subdir
 use ~M-x copilot-login~ to authenticate. =copilot-mode= to turn it on automatically blending in with company (use ~C-n~ and ~C-p~ to control company when they overlap).
 can also use ~M-C-<return>~ to summon it manually instead
 
 #+begin_src emacs-lisp
 (use-package editorconfig :ensure t)
 (use-package copilot
-  :if (file-directory-p "~/.emacs.d/lisp/copilot")
-  :load-path "~/.emacs.d/lisp/copilot"
+  :ensure t
   :preface
+  (defvar ava/copilot-enabled-projects '("insert_project_names"))
+  (defun ava/copilot--project-enabled-p ()
+    (when (fboundp 'projectile-project-name)
+      (let ((name (projectile-project-name)))
+        (and name (member name ava/copilot-enabled-projects)))))
+  (defun ava/copilot-ensure ()
+    "Enable copilot in supported modes for allowed projects."
+    (when (and (derived-mode-p 'c++-mode 'c++-ts-mode 'python-mode 'python-ts-mode)
+               (ava/copilot--project-enabled-p))
+      (copilot-mode 1)))
   (defun ava/copilot-quit ()
-    (when copilot--overlay
+    "Clear copilot ghost text on quit."
+    (when (bound-and-true-p copilot--overlay)
           (copilot-clear-overlay)))
   (defun ava/copilot-complete-or-accept ()
     "Either trigger a completion or accept one if available."
@@ -807,6 +816,8 @@ can also use ~M-C-<return>~ to summon it manually instead
           (open-line 1)
           (next-line))
       (copilot-complete)))
+  ;:custom
+  ;(copilot-max-char -1)
   :bind (("M-C-<return>" . #'ava/copilot-complete-or-accept)
          (:map copilot-completion-map
                ("M-n" . #'copilot-next-completion)
@@ -815,6 +826,13 @@ can also use ~M-C-<return>~ to summon it manually instead
   :config
   ;; (add-to-list 'copilot-disable-predicates #'company--active-p)
   ;; (add-to-list 'copilot-disable-display-predicates #'company--active-p)
+  (dolist (hook '(python-mode-hook
+                  python-ts-mode-hook
+                  c++-mode-hook
+                  c++-ts-mode-hook))
+    (add-hook hook #'ava/copilot-ensure))
+  (add-to-list 'copilot-major-mode-alist '("c++-ts" "cpp"))
+  (add-to-list 'copilot-major-mode-alist '("python-ts" "python"))
   (advice-add 'keyboard-quit :before #'ava/copilot-quit))
 #+end_src
 ** deadgrep
