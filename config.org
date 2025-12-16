@@ -1107,6 +1107,10 @@ https://github.com/karthink/gptel
   (with-eval-after-load 'gptel-org
     (setq-default gptel-org-branching-context t)))
 #+end_src
+** gptel-agent
+#+begin_src emacs-lisp
+(use-package gptel-agent :ensure t)
+#+end_src
 ** helm
 #+BEGIN_SRC emacs-lisp
 (use-package helm
