@@ -41,5 +41,8 @@ xset r rate 200 70
 #xterm -geometry 80x20+494-0 &
 #exec xterm -geometry 80x66+0+0 -name login
 #exec i3 ##--shmlog-size=26214400
+xrandr --output DP-2 --primary --rotate normal \
+       --output DP-4 --left-of DP-2 \
+       --output DP-0 --right-of DP-2 --rotate left
 exec openbox-session
 
