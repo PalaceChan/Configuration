@@ -1163,37 +1163,16 @@ https://github.com/karthink/gptel
   (advice-add 'helm-buffers-sort-transformer
               :override #'ava/around-helm-buffers-sort-transformer)
   (defun ava/reset-helm-buffer-max-length (&rest ignore) (setq helm-buffer-max-length nil))
-  (advice-add 'helm-mini :before #'ava/reset-helm-buffer-max-length))
+  (advice-add 'helm-mini :before #'ava/reset-helm-buffer-max-length)
+  (with-eval-after-load 'isearch
+    (define-key isearch-mode-map (kbd "M-i") #'helm-occur-from-isearch)))
 #+END_SRC
 
-#+BEGIN_SRC emacs-lisp
-(use-package helm-swoop
-  :ensure t
-  :bind (("C-c h s" . helm-multi-swoop))
-  :custom (helm-swoop-speed-or-color t)
-  :init
-  (bind-key "M-i" 'helm-swoop-from-isearch isearch-mode-map)
-  :config
-  (define-key helm-swoop-map (kbd "M-i") 'helm-multi-swoop-current-mode-from-helm-swoop))
-
+#+begin_src emacs-lisp
 (use-package helm-rg
   :ensure t
-  :bind
-  (("C-c h r g" . helm-rg)))
-
-(use-package helm-ag
-  :ensure t
-  :bind
-  (("C-c h a" . helm-ag))
-  :custom
-  (helm-ag-use-agignore t)
-  (helm-ag-insert-at-point 'symbol))
-
-(use-package helm-git-grep
-  :ensure t
-  :bind
-  (("C-c h g g" . helm-git-grep-at-point)))
-#+END_SRC
+  :bind (("C-c h r g" . helm-rg)))
+#+end_src
 
 remap =term-previous-matching-input= to a helm frontend
 #+BEGIN_SRC emacs-lisp
