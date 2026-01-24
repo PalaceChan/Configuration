@@ -935,6 +935,26 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
                 (easy-kill-adjust-candidate 'buffer-file-name text))))))
   (advice-add 'easy-kill-on-buffer-file-name :override #'ava/easy-kill-on-buffer-file-name-with-line-number))
 #+END_SRC
+** eca
+#+begin_src emacs-lisp
+(use-package eca
+  :ensure t
+  :custom
+  (eca-chat-use-side-window nil)
+  :preface
+  (defun ava/eca-authinfo-password (host)
+    "Return auth-source password for HOST using user \"apikey\"."
+    (require 'auth-source)
+    (auth-source-pick-first-password :host host :user "apikey"))
+  :init
+  (setenv "OPENAI_API_KEY"    (ava/eca-authinfo-password "api.openai.com"))
+  (setenv "ANTHROPIC_API_KEY" (ava/eca-authinfo-password "api.anthropic.com"))
+  :bind (("C-c k e" . eca)
+         ("C-c k ." . eca-transient-menu)
+         ("C-c k c" . eca-chat-toggle-window)
+         ("C-c k k" . eca-stop)
+         ("C-c k r" . eca-restart)))
+#+end_src
 ** eglot
 [[https://github.com/joaotavora/eglot][homepage]]
 
