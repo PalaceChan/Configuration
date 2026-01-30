@@ -1418,15 +1418,32 @@ remap =term-previous-matching-input= to a helm frontend
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   (magit-log-section-commit-count 25)
-  (magit-diff-refine-hunk 'all)
+  (magit-diff-refine-hunk 'all) ;nil for extra perf
   (magit-no-confirm '(stage-all-changes unstage-all-changes set-and-push))
   ;; (magit-refresh-status-buffer nil) ;set to nil as last resort for perf
   :bind
-  ("C-x g" . magit-status)
-  ("C-c m" . magit-file-dispatch))
-
-;;; if too slow remove some headers like this
-;:config (remove-hook 'magit-status-section-hook 'magit-insert-tags-header)
+  (("C-x g" . magit-status)
+   ("C-c m" . magit-file-dispatch)
+   :map magit-mode-map
+   ("#" . ava/magit-tools))
+  :config
+  ;; if too slow remove some headers like this
+  ;; (remove-hook 'magit-status-section-hook 'magit-insert-tags-header)
+  ;; (remove-hook 'magit-status-section-hook 'magit-insert-status-headers)
+  ;; (remove-hook 'magit-status-section-hook 'magit-insert-untracked-files)
+  ;; (remove-hook 'magit-status-section-hook 'magit-insert-unpushed-to-pushremote)
+  ;; (remove-hook 'magit-status-section-hook 'magit-insert-unpulled-from-upstream)
+  ;; (remove-hook 'magit-status-section-hook 'magit-insert-unpulled-from-pushremote)
+  ;; (remove-hook 'magit-status-section-hook 'magit-insert-unpushed-to-upstream-or-recent)
+  (require 'transient)
+  (transient-define-prefix ava/magit-tools ()
+    "Ava Magit Tools."
+    ["Misc"
+     ("f" "Format staged files" ava/format-staged)])
+  (transient-append-suffix 'magit-dispatch "!" '("#" "Ava tools" ava/magit-tools))
+  ;; if we end up with other tools like open on bitbucket/github, copy link or need a make pull request without forge
+  ;; (transient-append-suffix 'magit-file-dispatch "B" '("#" "Ava tools" ava/magit-tools))
+  )
 #+END_SRC
 
 #+begin_src emacs-lisp
