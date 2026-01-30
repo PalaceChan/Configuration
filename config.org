@@ -769,9 +769,9 @@ from [[https://gist.github.com/karthink/af013ffd77fe09e67360f040b57b4c7b][karthi
   (company-tooltip-align-annotations t)
   (company-selection-wrap-around t)
   (company-global-modes '(not compilation-mode magit-status-mode reb-mode))
-  (company-backends '(company-clang company-capf company-files
-                                    (company-dabbrev-code company-gtags company-etags company-keywords)
-                                    company-dabbrev))
+  (company-backends '(company-capf company-files
+                                   (company-dabbrev-code company-gtags company-etags company-keywords)
+                                   company-dabbrev))
   :config
   (define-key company-mode-map (kbd "C-:") 'company-complete-common)
   (define-key company-active-map (kbd "<tab>") 'smarter-yas-expand-next-field-complete)
