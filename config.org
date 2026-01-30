@@ -1683,25 +1683,29 @@ use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated
   :ensure t
   :diminish projectile-mode
   :custom
-  (projectile-project-root-files-bottom-up '(".projectile"))
-  ;; (projectile-project-root-files '("WORKSPACE"))
+  (projectile-enable-caching t)
+  (projectile-auto-discover nil)
+  (projectile-per-project-compilation-buffer t)
+  (projectile-project-root-functions '(projectile-root-local projectile-root-marked))
+  (projectile-dirconfig-file ".projectile")
   :init
-  (setq projectile-enable-caching t
-        projectile-project-search-path '("~/development"))
   (when (executable-find "rg")
     (setq projectile-generic-command "rg -0 --no-ignore-vcs --hidden --files --color never"))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :bind
+  (:map projectile-command-map ("R" . ava/generate-tags))
   :config
-  (projectile-mode t)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c p t") 'projectile-run-vterm)
-  (define-key projectile-mode-map (kbd "C-c p S") 'helm-multi-swoop-projectile)
-  (define-key projectile-mode-map (kbd "C-c p R") 'ava/generate-tags)
+  (projectile-mode 1))
+
   (use-package helm-projectile
     :ensure t
-    :init
-    (helm-projectile-on)
-    (setq projectile-switch-project-action #'helm-projectile)
-    (setq projectile-completion-system 'helm)))
+  :after (helm projectile)
+  :custom
+  (projectile-completion-system 'helm)
+  (projectile-switch-project-action #'helm-projectile)
+  :config
+  (helm-projectile-on))
 #+END_SRC
 ** python
 make sure imenu does not override dumb-jump in python mode
