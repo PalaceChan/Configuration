@@ -364,6 +364,15 @@ kill current buffer no prompt
   :config
   (midnight-mode t))
 #+end_src
+**** repeat mode
+#+begin_src emacs-lisp
+(use-package repeat
+  :ensure nil
+  :custom
+  (repeat-exit-timeout 10)
+  :config
+  (repeat-mode 1))
+#+end_src
 *** if on a windows OS
 if need to work in a windows environment talk to it via named pipe
 #+begin_src emacs-lisp
