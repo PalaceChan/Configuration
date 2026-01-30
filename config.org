@@ -1254,6 +1254,15 @@ remap =term-previous-matching-input= to a helm frontend
   ("C-c h r a" . helm-org-rifle-agenda-files)
   ("C-c h r o" . helm-org-rifle-org-directory))
 #+end_src
+
+#+begin_src emacs-lisp
+(use-package helm-xref
+  :ensure t
+  :after helm
+  :custom
+  (xref-show-xrefs-function #'helm-xref-show-xrefs)
+  (xref-show-definitions-function #'helm-xref-show-defs))
+#+end_src
 ** helpful
 #+BEGIN_SRC emacs-lisp
 (use-package helpful
