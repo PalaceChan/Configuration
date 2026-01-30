@@ -517,11 +517,26 @@ toggle between implementation and header
 *** compilation
 #+BEGIN_SRC emacs-lisp
 (use-package compile
+  :preface
+  (defun ava/compilation-buffer-name (mode-name)
+    "Name compilation buffers as *<mode> <project> - <tool action>*."
+    (require 'subr-x)
+    (let* (( proj (and (fboundp 'projectile-project-name)
+                       (ignore-errors (projectile-project-name))))
+           (dir (file-name-nondirectory (directory-file-name default-directory)))
+           (ctx (or proj dir ""))
+           (cmd (string-trim (or compile-command "")))
+           ;; grab first two tokens: e.g. "bazel build", "bazel test", "ninja -C"
+           (kind (if (string-match "\\`\\([^ ]+\\(?: [^ ]+\\)?\\)" cmd)
+                     (match-string 1 cmd)
+                   ""))
+           (suffix (if (> (length kind) 0) (concat " - " kind) "")))
+      (format "*%s %s%s*" mode-name ctx suffix)))
   :custom
-  (compile-command "make")
+  (compilation-buffer-name-function #'ava/compilation-buffer-name)
+  (compilation-read-command t)
   (compilation-always-kill t)
   (compilation-scroll-output 'first-error)
-  (compilation-read-command nil)
   (compilation-ask-about-save nil)
   (compilation-skip-threshold 2)
   (next-error-message-highlight t)
