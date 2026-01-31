@@ -171,32 +171,6 @@ Disable common warnings
   (use-package saveplace
     :config (save-place-mode))
 #+END_SRC
-*** save history and desktop
-Save some history across sessions. (savehist-mode) on auto-save can be slow so we rely on desktop-save instead
-#+BEGIN_SRC emacs-lisp
-  (setq history-length 8000)
-  (setq history-delete-duplicates t)
-  (desktop-save-mode -1)
-
-  (setq desktop-globals-to-save
-        (append
-         '(desktop-missing-file-waning
-           (shell-command-history 8000)
-           tags-file-name
-           tags-table-list
-           (search-ring . 8000)
-           (regexp-search-ring . 8000)
-           (register-alist . 800)
-           (kill-ring . 8000)
-           (minibuffer-history . 8000)
-           (file-name-history . 8000)
-           (grep-history . 8000)
-           (extended-command-history . 8000)
-           (compile-history . 8000)
-           (read-expression-history . 8000)
-           query-replace-history
-           regexp-history)))
-#+END_SRC
 *** highlighting
 #+BEGIN_SRC emacs-lisp
 (global-hi-lock-mode 1)
@@ -233,7 +207,12 @@ kill current buffer no prompt
 **** auto-revert
 #+begin_src emacs-lisp
 (use-package autorevert
-  :custom (auto-revert-verbose nil))
+  :ensure nil
+  :custom
+  (auto-revert-verbose nil)
+  (global-auto-revert-non-file-buffers t)
+  :config
+  (global-auto-revert-mode 1))
 #+end_src
 **** world clock
 #+BEGIN_SRC emacs-lisp
@@ -540,14 +519,7 @@ toggle between implementation and header
   (compilation-ask-about-save nil)
   (compilation-skip-threshold 2)
   (next-error-message-highlight t)
-  :hook (compilation-filter . ava/colorize-compilation-buffer)
-  :config
-  (progn
-    ;; http://stackoverflow.com/questions/13397737
-    (defun ava/colorize-compilation-buffer ()
-      (require 'ansi-color)
-      (let ((inhibit-read-only t))
-        (ansi-color-apply-on-region compilation-filter-start (point))))))
+  :hook (compilation-filter . ansi-color-compilation-filter))
 #+END_SRC
 *** diffing
 #+BEGIN_SRC emacs-lisp
@@ -557,6 +529,7 @@ toggle between implementation and header
 
 (use-package ediff
   :custom
+  (ediff-show-clashes-only t)
   (ediff-highlight-all-diffs nil)
   (ediff-window-setup-function #'ediff-setup-windows-plain)
   (ediff-split-window-function #'split-window-horizontally)
@@ -855,8 +828,8 @@ can also use ~M-C-<return>~ to summon it manually instead
                   c++-mode-hook
                   c++-ts-mode-hook))
     (add-hook hook #'ava/copilot-ensure))
-  (add-to-list 'copilot-major-mode-alist '("c++-ts" "cpp"))
-  (add-to-list 'copilot-major-mode-alist '("python-ts" "python"))
+  (add-to-list 'copilot-major-mode-alist '("c++-ts" . "cpp"))
+  (add-to-list 'copilot-major-mode-alist '("python-ts" . "python"))
   (advice-add 'keyboard-quit :before #'ava/copilot-quit))
 #+end_src
 ** deadgrep
@@ -921,6 +894,18 @@ add rsync option to dired
   :bind (:map dired-mode-map ("r" . dired-rsync-transient))
   :custom (dired-rsync-unmark-on-completion nil)
   :hook (dired-rsync-failed . dired-rsync--pop-to-rsync-failed-buf))
+#+end_src
+
+make async friendly
+#+begin_src emacs-lisp
+(use-package async
+  :ensure t)
+
+(use-package dired-async
+  :ensure nil
+  :after (dired async)
+  :config
+  (dired-async-mode 1))
 #+end_src
 ** dumb jump
 #+begin_src emacs-lisp
@@ -1272,7 +1257,7 @@ remap =term-previous-matching-input= to a helm frontend
    ("C-h v" . helpful-variable)
    ("C-h k" . helpful-key)
    ("C-c C-d" . helpful-at-point)
-   ("C-h F" . helpful-funtion)
+   ("C-h F" . helpful-function)
    ("C-h C" . helpful-command)))
 #+END_SRC
 ** hydra
@@ -1324,7 +1309,7 @@ remap =term-previous-matching-input= to a helm frontend
    (kbd "C-c w")
    (defhydra hydra-windows (:hint nil)
      ("r" rotate-frame-clockwise "clockwise")
-     ("\\" rotate-frame-clockwise "anticlockwise")
+     ("\\" rotate-frame-anticlockwise "anticlockwise")
      ("v" flip-frame "flip")
      ("f" flop-frame "flop")
      ("j" (shrink-window -10) "down")
@@ -1856,21 +1841,26 @@ use for opening files larger than =large-file-warning-threshold=
 
 start a remote vterm
 #+BEGIN_SRC emacs-lisp
-(defun ava/rvterm (hos)
-  "Start a dir-tracking vterm on hos (or host at point if host is nil)"
-  (interactive "P")
-  (let* ((host (or hos (thing-at-point 'sexp)))
-         (user (getenv "USER"))
-         (bname (format "*vterm %s*" host)))
+(defun ava/rvterm (&optional host)
+  "Start a dir-tracking vterm on HOST (prompt if nil)."
+  (interactive
+   (list (read-string "Host: " (or (thing-at-point 'symbol) ""))))
+  (let* ((user (or (getenv "USER") user-login-name))
+         (bname (format "*vterm %s*" host))
+         (sshcmd (format "ssh -Y %s@%s" user host))
+         (setup
+          (mapconcat
+           #'identity
+           '("function vterm_printf() { printf \"\\e]%s\\e\\\\\" \"$1\"; }"
+             "function vterm_prompt_end() { vterm_printf \"51;A$(whoami)@$(hostname):$(pwd)\"; }"
+             "if [[ -n \"$PROMPT_COMMAND\" ]]; then PROMPT_COMMAND=\"vterm_prompt_end; $PROMPT_COMMAND\"; else PROMPT_COMMAND=\"vterm_prompt_end\"; fi"
+             "export PROMPT_COMMAND")
+           "\n"))
+         (bigcmd (concat sshcmd "\n" setup "\n")))
     (vterm bname)
     (switch-to-buffer bname)
-    (let* ((inhibit-read-only t)
-           (sshcmd (format "ssh -Y %s@%s" user host))
-           (fn1cmd "function vterm_printf() { \n printf \"\\e]%s\\e\\\\\" \"$1\" \n}")
-           (fn2cmd "function vterm_prompt_end() { \n vterm_printf \"51;A$(whoami)@$(hostname):$(pwd)\" \n }")
-           (ps1cmd "PS1=$PS1\'\\[$(vterm_promt_end)\\]\'")
-           (bigcmd (format "%s\n%s\n%s\n%s\n" sshcmd fn1cmd fn2cmd ps1cmd)))
-      (vterm-send-string bigcmd t))))
+    (vterm-send-string bigcmd)
+    (vterm-send-return)))
 #+END_SRC
 
 start a few common vterms
@@ -1924,7 +1914,7 @@ start a few common vterms
 show options for bindings in realtime
 #+BEGIN_SRC emacs-lisp
 (use-package which-key
-  :ensure t
+  :ensure nil
   :init
   (which-key-mode))
 #+END_SRC
