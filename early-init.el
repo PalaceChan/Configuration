@@ -15,5 +15,5 @@
 
 (when (native-comp-available-p)
   (setq package-native-compile t
-        native-comp-deferred-compilation t
+        native-comp-jit-compilation t
         native-comp-async-report-warnings-errors 'silent))
