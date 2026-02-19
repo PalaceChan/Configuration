@@ -1,0 +1,41 @@
+{
+    "$schema": "https://eca.dev/config.json",
+    "defaultModel": "openai/gpt-5.2-thinking",
+    "prompts": {
+        "tools": {
+            "eca__shell_command": "${file:/home/avelazqu/.config/eca/prompts/tools/shell_command.md}"
+        }
+    },
+    "toolCall": {
+        "approval": {
+            "byDefault": "allow",
+            "ask": {
+                "eca__shell_command": {
+                    "argsMatcher": {
+                        "command": [
+                            ".*\\brm\\b.*",
+                            ".*\\bgit\\s+(push|commit|reset)\\b",
+                            ".*\\bmv\\b.*"
+                        ]
+                    }
+                }
+            }
+        },
+        "outputTruncation": {
+            "lines": 5000,
+            "sizeKb": 200
+        }
+    },
+    "providers": {
+        "openai": {
+            "models": {
+                "gpt-5.2-thinking": {
+                    "modelName": "gpt-5.2",
+                    "extraPayload": {
+                        "reasoning_effort": "xhigh"
+                    }
+                }
+            }
+        }
+    }
+}
