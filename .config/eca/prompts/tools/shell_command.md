@@ -97,7 +97,7 @@ IMPORTANT: When the user asks you to create a pull request, follow these steps c
 - Assess the impact of these changes on the overall project
 - Do not use tools to explore code, beyond what is available in the git context
 - Check for any sensitive information that shouldn't be committed
-- Draft a concise (1-2 bullet points) pull request summary that focuses on the \"why\" rather than the \"what\"
+- Draft a concise pull request summary that focuses on the \"why\" rather than the \"what\"
 - Ensure the summary accurately reflects all changes since diverging from the master branch
 - Ensure your language is clear, concise, and to the point
 - Ensure the summary accurately reflects the changes and their purpose (ie. \"add\" means a wholly new feature, " update " means an enhancement to an existing feature, \"fix\" means a bug fix, etc.)
@@ -112,10 +112,7 @@ IMPORTANT: When the user asks you to create a pull request, follow these steps c
 <example>
 gh pr create --title \"the pr title\" --body \"$(cat <<'EOF'
 ## Summary
-<1-3 bullet points>
-
-## Test plan
-[Checklist of TODOs for testing the pull request...]
+Concise summary message.
 EOF
 )\"
 </example>
