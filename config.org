@@ -50,17 +50,10 @@ specialize a few things depending on which system
   :custom
   (doom-modeline-env-version nil)
   (doom-modeline-icon nil)
-  (doom-modeline-minor-modes t)
+  (doom-modeline-minor-modes nil)
   (doom-modeline-buffer-encoding nil)
   (doom-modeline-modal-icon nil) ; evil specific
   :init (doom-modeline-mode 1))
-
-(use-package minions
-  :ensure t
-  :custom
-  (minions-mode-line-lighter "+")
-  (minions-prominent-modes '(copilot-mode flycheck-mode multiple-cursors-mode view-mode vlf-mode))
-  :init (minions-mode))
 #+end_src
 *** start
 Disable more visuals
@@ -1666,6 +1659,10 @@ use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated
 #+BEGIN_SRC emacs-lisp
 (use-package projectile
   :ensure t
+  :init
+  (projectile-mode +1)
+  :hook
+  (emacs-startup . projectile-known-projects)
   :diminish projectile-mode
   :custom
   (projectile-enable-caching t)
@@ -1679,12 +1676,10 @@ use =paredit= in lisp modes ([[http://danmidwood.com/content/2014/11/21/animated
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :bind
-  (:map projectile-command-map ("R" . ava/generate-tags))
-  :config
-  (projectile-mode 1))
+  (:map projectile-command-map ("R" . ava/generate-tags)))
 
-  (use-package helm-projectile
-    :ensure t
+(use-package helm-projectile
+  :ensure t
   :after (helm projectile)
   :custom
   (projectile-completion-system 'helm)
