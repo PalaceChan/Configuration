@@ -10,12 +10,15 @@
         "approval": {
             "byDefault": "allow",
             "ask": {
-                "shell_command": {
-                    "argsMatcher": {
+                "eca__shell_command": {
+                    "argsMatchers": {
                         "command": [
-                            ".*\\brm\\b.*",
-                            ".*\\bgit\\s+(push|commit|reset)\\b",
-                            ".*\\bmv\\b.*"
+                            ".*[12&]?>>?\\s*(?!/dev/null($|\\s))(?!&\\d+($|\\s))\\S+.*",
+                            ".*\\b(rm|mv|cp)\\b.*",
+                            ".*\\bfind\\b.*\\s-delete\\b.*",
+                            ".*\\brsync\\b.*\\s--delete\\b.*",
+                            ".*\\bsudo\\b.*",
+                            ".*\\bgit\\s+(reset|clean|rebase)\\b.*"
                         ]
                     }
                 }
