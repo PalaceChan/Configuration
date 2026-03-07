@@ -1,5 +1,5 @@
 [core]
-    editor = 'emacs -nw'
+    editor = emacsclient -t
     pager = less
     excludesfile = ~/.gitignore_global
 
@@ -24,7 +24,7 @@
     email = XXX
 
 [merge]
-    conflictstyle = diff3
+    conflictstyle = zdiff3
 
 [credential]
     helper = cache --timeout=3600
