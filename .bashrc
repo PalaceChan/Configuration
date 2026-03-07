@@ -7,20 +7,41 @@ function ff()
 
 function mgrep()
 {
-    CMD=''
+    local awk_script='1'
+    local awk_args=()
+    local i=0
+
     while (($#)); do
-        CMD="$CMD grep '$1' | ";
-        shift;
-    done;
-    eval ${CMD%| }
+        i=$((i + 1))
+        awk_script="$awk_script && \$0 ~ pat$i"
+        awk_args+=(-v "pat$i=$1")
+        shift
+    done
+
+    awk "${awk_args[@]}" "$awk_script"
 }
 
 function ediff
 {
-    if [ -d $1 ]; then
-	emacsclient -q -eval "(ztree-diff \"$1\" \"$2\")"
+    local left=$1
+    local right=$2
+    local left_elisp
+    local right_elisp
+
+    if [ -z "$left" ] || [ -z "$right" ]; then
+        echo "usage: ediff PATH1 PATH2" >&2
+        return 1
+    fi
+
+    left_elisp=${left//\\/\\\\}
+    left_elisp=${left_elisp//\"/\\\"}
+    right_elisp=${right//\\/\\\\}
+    right_elisp=${right_elisp//\"/\\\"}
+
+    if [ -d "$left" ]; then
+	emacsclient -q --eval "(ztree-diff \"$left_elisp\" \"$right_elisp\")"
     else
-	emacsclient -q -eval "(ediff-files \"$1\" \"$2\")"
+	emacsclient -q --eval "(ediff-files \"$left_elisp\" \"$right_elisp\")"
     fi
 }
 
@@ -47,7 +68,6 @@ alias ew='/usr/bin/emacs -Q -nw'
 alias hist='cat ~/history/history.txt'
 alias ls='ls --color=auto -h'
 alias reset='echo -e \\033c'
-alias rc='source ~/.bash_profile'
 alias R='R --no-save --no-restore-data --quiet'
 
 if [ "eterm-color" == "$TERM" ]; then
@@ -62,8 +82,9 @@ fi
 # Env
 export PS1='\h: \[$(vterm_prompt_end)\]'
 export LESS='-iMFXR' #cat if fits
-export R_HISTFILE="~/.Rhistory"
+export R_HISTFILE="$HOME/.Rhistory"
 
+# Intentionally unlimited history; everything is persisted to HISTFILE.
 export HISTSIZE=
 export HISTFILESIZE=
 export HISTTIMEFORMAT='%Y%m%d %T '
