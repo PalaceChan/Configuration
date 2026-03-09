@@ -23,10 +23,6 @@
                     }
                 }
             }
-        },
-        "outputTruncation": {
-            "lines": 5000,
-            "sizeKb": 200
         }
     },
     "providers": {
