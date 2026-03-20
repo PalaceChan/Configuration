@@ -1194,15 +1194,15 @@ https://github.com/karthink/gptel
 
 remap =term-previous-matching-input= to a helm frontend
 #+BEGIN_SRC emacs-lisp
-  (use-package helm-shell-history
-    :load-path "~/.emacs.d/lisp/helm-shell-history"
-    :after term vterm
-    :config
-    (setq helm-shell-history-file "~/.bash_eternal_history")
-    (setq helm-shell-history-fuzzy-match t)
-    (setq helm-shell-history-fast-parser "~/development/helm-shell-history/src/parse_history")
-    (define-key term-mode-map (kbd "M-r") 'helm-shell-history)
-    (define-key vterm-mode-map (kbd "M-r") 'helm-shell-history))
+(use-package helm-shell-history
+  :load-path "~/.emacs.d/lisp/helm-shell-history"
+  :after term vterm
+  :custom
+  (helm-shell-history-file "~/.bash_eternal_history")
+  (helm-shell-history-fast-parser "~/development/helm-shell-history/src/parse_history")
+  :config
+  (define-key term-mode-map (kbd "M-r") 'helm-shell-history)
+  (define-key vterm-mode-map (kbd "M-r") 'helm-shell-history))
 #+END_SRC
 
 #+BEGIN_SRC emacs-lisp
