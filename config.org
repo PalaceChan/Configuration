@@ -943,6 +943,8 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
   :ensure t
   :custom
   (eca-chat-use-side-window nil)
+  (eca-chat-trust-enable t)
+  (eca-worktree-mode 'isolated)
   :preface
   (defun ava/eca-authinfo-password (host)
     "Return auth-source password for HOST using user \"apikey\"."
