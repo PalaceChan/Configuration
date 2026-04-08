@@ -90,6 +90,8 @@ reduce rendering/line scan work for emacs by not rendering cursors or regions in
 (setq-default cursor-in-non-selected-windows nil
               bidi-display-reordering 'left-to-right
               bidi-paragraph-direction 'left-to-right)
+
+(setq bidi-inhibit-bpa t)
 #+end_src
 *** warnings
 Disable common warnings
@@ -112,6 +114,8 @@ Disable common warnings
       shell-file-name "bash"
       x-alt-keysym 'meta
       kill-ring-max 100
+      save-interprogram-paste-before-kill t
+      kill-do-not-save-duplicates t
       undo-outer-limit 50000000
       make-backup-files nil
       calendar-mode-line-format nil
@@ -121,6 +125,7 @@ Disable common warnings
       display-raw-bytes-as-hex t
       window-combination-resize t
       redisplay-skip-fontification-on-input t
+      read-process-output-max (* 4 1024 1024)
       use-dialog-box nil)
 
 (when (version<= "29.1" emacs-version)
@@ -162,7 +167,15 @@ Disable common warnings
 *** save place
 #+BEGIN_SRC emacs-lisp
   (use-package saveplace
-    :config (save-place-mode))
+    :preface
+    (defun ava/save-place-recenter (&rest _)
+      "Recenter after `save-place' restores point."
+      (when buffer-file-name
+        (ignore-errors (recenter))))
+    :config
+    (advice-remove 'save-place-find-file-hook #'ava/save-place-recenter)
+    (advice-add 'save-place-find-file-hook :after #'ava/save-place-recenter)
+    (save-place-mode))
 #+END_SRC
 *** highlighting
 #+BEGIN_SRC emacs-lisp
@@ -224,8 +237,19 @@ kill current buffer no prompt
 **** winner
 #+BEGIN_SRC emacs-lisp
   (use-package winner
+    :preface
+    (defun ava/toggle-delete-other-windows ()
+      "Delete other windows or restore the previous layout."
+      (interactive)
+      (if (and (bound-and-true-p winner-mode)
+               (one-window-p))
+          (condition-case nil
+              (winner-undo)
+            (error (delete-other-windows)))
+        (delete-other-windows)))
     :bind (("M-N" . winner-redo)
-           ("M-P" . winner-undo))
+           ("M-P" . winner-undo)
+           ("C-x 1" . ava/toggle-delete-other-windows))
     :config
     (when (boundp 'winner-boring-buffers-regexp)
       (setq winner-boring-buffers-regexp "\\*[hH]elm.*"))
