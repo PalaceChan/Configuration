@@ -8,21 +8,7 @@
     },
     "toolCall": {
         "approval": {
-            "byDefault": "allow",
-            "ask": {
-                "eca__shell_command": {
-                    "argsMatchers": {
-                        "command": [
-                            ".*[12&]?>>?\\s*(?!/dev/null($|\\s))(?!&\\d+($|\\s))\\S+.*",
-                            ".*\\b(rm|mv|cp)\\b.*",
-                            ".*\\bfind\\b.*\\s-delete\\b.*",
-                            ".*\\brsync\\b.*\\s--delete\\b.*",
-                            ".*\\bsudo\\b.*",
-                            ".*\\bgit\\s+(reset|clean|rebase)\\b.*"
-                        ]
-                    }
-                }
-            }
+            "byDefault": "allow"
         }
     },
     "providers": {
