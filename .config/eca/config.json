@@ -3,7 +3,7 @@
     "defaultModel": "openai/gpt-5.4-thinking",
     "prompts": {
         "tools": {
-            "eca__shell_command": "${file:/home/avelazqu/.config/eca/prompts/tools/shell_command.md}"
+            "eca__git": "${file:/home/avelazqu/.config/eca/prompts/tools/git.md}"
         }
     },
     "toolCall": {
