@@ -627,8 +627,6 @@ bridge re-builder with query regexp replace
     :custom
     (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
     (aw-background nil))
-    ;:config (set-face-attribute
-    ;         'aw-leading-char-face nil :height 3.0))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -896,6 +894,15 @@ a much nicer dired (can in-place expand subdirectory contents)
               (";" . dired-subtree-remove)
               ("<tab>" . dired-subtree-cycle)))
 #+END_SRC
+
+#+begin_src emacs-lisp
+(use-package dired-narrow
+  :ensure t
+  :after dired
+  :bind (:map dired-mode-map
+              ("C-c C-d n" . dired-narrow-fuzzy)
+              ("C-c C-d r" . dired-narrow-regexp)))
+#+end_src
 
 replaces list-directory with recentf for dirs
 #+begin_src emacs-lisp
@@ -1173,7 +1180,7 @@ https://github.com/karthink/gptel
          ("C-c h m" . helm-man-woman)
          ("C-c h I" . helm-imenu-in-all-buffers)
          ("C-c h l" . helm-locate)
-         ("C-c h g s" . helm-google-suggest)
+         ("C-c h g" . helm-grep-do-git-grep)
          ("C-c h t" . helm-top)
          ("C-c h x" . helm-shell-history)
          ("C-c h <SPC>" . helm-all-mark-rings))
@@ -1206,8 +1213,19 @@ https://github.com/karthink/gptel
     candidates)
   (advice-add 'helm-buffers-sort-transformer
               :override #'ava/around-helm-buffers-sort-transformer)
+  (defvar ava/helm-mini-base-sources helm-mini-default-sources)
   (defun ava/reset-helm-buffer-max-length (&rest ignore) (setq helm-buffer-max-length nil))
+  (defun ava/reset-helm-mini-default-sources (&rest ignore)
+    (let ((sources ava/helm-mini-base-sources))
+      (when (and (require 'helm-ls-git nil t)
+                 (boundp 'helm-source-ls-git)
+                 (fboundp 'helm-ls-git-root-dir)
+                 (ignore-errors (helm-ls-git-root-dir))
+                 (not (memq 'helm-source-ls-git sources)))
+        (setq sources (append sources '(helm-source-ls-git))))
+      (setq helm-mini-default-sources sources)))
   (advice-add 'helm-mini :before #'ava/reset-helm-buffer-max-length)
+  (advice-add 'helm-mini :before #'ava/reset-helm-mini-default-sources)
   (with-eval-after-load 'isearch
     (define-key isearch-mode-map (kbd "M-i") #'helm-occur-from-isearch)))
 #+END_SRC
@@ -1216,6 +1234,12 @@ https://github.com/karthink/gptel
 (use-package helm-rg
   :ensure t
   :bind (("C-c h r g" . helm-rg)))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package helm-ls-git
+  :ensure t
+  :defer t)
 #+end_src
 
 remap =term-previous-matching-input= to a helm frontend
@@ -1442,6 +1466,7 @@ remap =term-previous-matching-input= to a helm frontend
   ;; (remove-hook 'magit-status-section-hook 'magit-insert-unpulled-from-upstream)
   ;; (remove-hook 'magit-status-section-hook 'magit-insert-unpulled-from-pushremote)
   ;; (remove-hook 'magit-status-section-hook 'magit-insert-unpushed-to-upstream-or-recent)
+  (add-hook 'magit-status-sections-hook #'magit-insert-worktrees t)
   (require 'transient)
   (transient-define-prefix ava/magit-tools ()
     "Ava Magit Tools."
@@ -1459,6 +1484,23 @@ remap =term-previous-matching-input= to a helm frontend
   :after magit
   :config
   (remove-hook 'magit-status-sections-hook 'forge-insert-issues))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package log-edit
+  :defer t
+  :bind (:map log-edit-mode-map
+              ("M-s" . nil)
+              ("M-r" . nil)
+              ("M-s s" . log-edit-comment-search-forward)
+              ("M-s r" . log-edit-comment-search-backward)))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package git-commit
+  :after magit
+  :custom
+  (git-commit-major-mode 'log-edit-mode))
 #+end_src
 ** mixed-pitch
 addresses the issues with =variable-pitch-mode= in modes like org (tables/code-blocks)
