@@ -1180,7 +1180,8 @@ https://github.com/karthink/gptel
          ("C-c h m" . helm-man-woman)
          ("C-c h I" . helm-imenu-in-all-buffers)
          ("C-c h l" . helm-locate)
-         ("C-c h g" . helm-grep-do-git-grep)
+         ("C-c h g s" . helm-grep-do-git-grep)
+         ("C-c h g l" . helm-ls-git)
          ("C-c h t" . helm-top)
          ("C-c h x" . helm-shell-history)
          ("C-c h <SPC>" . helm-all-mark-rings))
@@ -1484,23 +1485,6 @@ remap =term-previous-matching-input= to a helm frontend
   :after magit
   :config
   (remove-hook 'magit-status-sections-hook 'forge-insert-issues))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package log-edit
-  :defer t
-  :bind (:map log-edit-mode-map
-              ("M-s" . nil)
-              ("M-r" . nil)
-              ("M-s s" . log-edit-comment-search-forward)
-              ("M-s r" . log-edit-comment-search-backward)))
-#+end_src
-
-#+begin_src emacs-lisp
-(use-package git-commit
-  :after magit
-  :custom
-  (git-commit-major-mode 'log-edit-mode))
 #+end_src
 ** mixed-pitch
 addresses the issues with =variable-pitch-mode= in modes like org (tables/code-blocks)
