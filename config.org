@@ -1219,11 +1219,17 @@ https://github.com/karthink/gptel
   (defun ava/reset-helm-mini-default-sources (&rest ignore)
     (let ((sources ava/helm-mini-base-sources))
       (when (and (require 'helm-ls-git nil t)
-                 (boundp 'helm-source-ls-git)
                  (fboundp 'helm-ls-git-root-dir)
-                 (ignore-errors (helm-ls-git-root-dir))
-                 (not (memq 'helm-source-ls-git sources)))
-        (setq sources (append sources '(helm-source-ls-git))))
+                 (ignore-errors (helm-ls-git-root-dir)))
+        ;; `helm-ls-git' only builds `helm-source-ls-git' when its main
+        ;; command runs, so do ithere when `helm-mini' wants to reuse it.
+        (unless helm-source-ls-git
+          (setq helm-source-ls-git
+                (and (fboundp 'helm-ls-git-build-ls-git-source)
+                     (helm-ls-git-build-ls-git-source))))
+        (when (and helm-source-ls-git
+                   (not (memq 'helm-source-ls-git sources)))
+          (setq sources (append sources '(helm-source-ls-git)))))
       (setq helm-mini-default-sources sources)))
   (advice-add 'helm-mini :before #'ava/reset-helm-buffer-max-length)
   (advice-add 'helm-mini :before #'ava/reset-helm-mini-default-sources)
