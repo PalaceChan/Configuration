@@ -984,6 +984,23 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
   :init
   (setenv "OPENAI_API_KEY"    (ava/eca-authinfo-password "api.openai.com"))
   (setenv "ANTHROPIC_API_KEY" (ava/eca-authinfo-password "api.anthropic.com"))
+  :config
+  (defun ava/eca-chat-display-in-new-window (buffer _alist)
+    "Display BUFFER in a newly split regular window for ECA chat."
+    (let ((window (or (ignore-errors (split-window-right))
+                      (ignore-errors (split-window-below)))))
+      (unless window
+        (user-error "Unable to create a new window for ECA chat"))
+      (set-window-buffer window buffer)
+      window))
+  (defun ava/eca-chat-new-in-new-window (orig-fn &rest args)
+    "Make `eca-chat-new' open in a freshly split regular window."
+    (let ((display-buffer-overriding-action
+           '((ava/eca-chat-display-in-new-window)
+             (inhibit-same-window . t))))
+      (apply orig-fn args)))
+  (unless (advice-member-p #'ava/eca-chat-new-in-new-window 'eca-chat-new)
+    (advice-add 'eca-chat-new :around #'ava/eca-chat-new-in-new-window))
   :bind (("C-c k e" . eca)
          ("C-c k ." . eca-transient-menu)
          ("C-c k c" . eca-chat-toggle-window)
