@@ -984,6 +984,7 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
   :init
   (setenv "OPENAI_API_KEY"    (ava/eca-authinfo-password "api.openai.com"))
   (setenv "ANTHROPIC_API_KEY" (ava/eca-authinfo-password "api.anthropic.com"))
+  (setenv "OPENROUTER_API_KEY" (ava/eca-authinfo-password "api.openrouter.com"))
   :config
   (defun ava/eca-chat-display-in-new-window (buffer _alist)
     "Display BUFFER in a newly split regular window for ECA chat."
