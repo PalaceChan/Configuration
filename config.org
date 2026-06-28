@@ -347,8 +347,7 @@ kill current buffer no prompt
 (use-package eww
   :custom
   (eww-auto-rename-buffer 'title)
-  :config
-  (setq browse-url-browser-function 'eww-browse-url))
+  (browse-url-browser-function 'browse-url-firefox))
 #+end_src
 **** midnight mode
 #+begin_src emacs-lisp
