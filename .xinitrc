@@ -48,5 +48,5 @@ xset r rate 200 70
 # xrandr --output DP-2 --primary --rotate normal \
 #        --output DP-4 --left-of DP-2 \
 #        --output DP-0 --right-of DP-2 --rotate left
-exec openbox-session
+exec ssh-agent openbox-session
 
