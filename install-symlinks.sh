@@ -63,6 +63,7 @@ MAPPINGS=(
     '.Xresources|.Xresources'
     '.bash_profile|.bash_profile'
     '.bashrc|.bashrc'
+    '.config/eca/AGENTS.md|.config/eca/AGENTS.md'
     '.config/eca/config.json|.config/eca/config.json'
     '.config/eca/commands|.config/eca/commands'
     '.config/eca/prompts|.config/eca/prompts'
