@@ -1101,7 +1101,6 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
 (use-package fleet
   :if (file-directory-p "~/development/fleet/lisp")
   :load-path "~/development/fleet/lisp"
-  :after eca
   :commands (fleet-dashboard fleet-new fleet-park fleet-destroy fleet-doctor
              fleet-watch-start fleet-watch-stop
              fleet-commander-stop fleet-commander-replace fleet-install-mcp
