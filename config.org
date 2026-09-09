@@ -1096,6 +1096,19 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
  (define-key ess-r-mode-map "_" #'ess-insert-assign)
  (define-key inferior-ess-r-mode-map "_" #'ess-insert-assign))
 #+END_SRC
+** fleet
+#+BEGIN_SRC emacs-lisp
+(use-package fleet
+  :if (file-directory-p "~/development/fleet/lisp")
+  :load-path "~/development/fleet/lisp"
+  :after eca
+  :commands (fleet-dashboard fleet-new fleet-park fleet-destroy fleet-doctor
+             fleet-watch-start fleet-watch-stop
+             fleet-commander-stop fleet-commander-replace fleet-install-mcp)
+  :bind (("C-c h f" . fleet-dashboard))
+  :custom
+  (fleet-development-root "~/development"))
+#+END_SRC
 ** flycheck
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck :ensure t)
