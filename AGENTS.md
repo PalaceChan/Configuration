@@ -8,6 +8,7 @@ This repo is a curated copy of the user's home-directory dotfiles. Treat changes
 - **Shell:** `.bashrc`, `.bash_profile`
 - **Git:** `.gitconfig`, `.gitignore_global`
 - **ECA:** `.config/eca/`
+- **Fleet:** `.config/fleet/models.json` (operator model policy; see `~/development/fleet/quickstart.md`)
 - **Terminal/session:** `.tmux.conf`
 - **R:** `.Rprofile`, `rPackages.csv`
 - **X/desktop:** `.xinitrc`, `.Xresources`, `.Xmodmap`, `.config/i3/`, `.config/openbox/`, `xorg.conf.d/`

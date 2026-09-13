@@ -71,6 +71,7 @@ MAPPINGS=(
     '.config/eca/skills/elpy|.config/eca/skills/elpy'
     '.config/eca/skills/ess|.config/eca/skills/ess'
     '.config/eca/skills/gcalcli|.config/eca/skills/gcalcli'
+    '.config/fleet/models.json|.config/fleet/models.json'
     '.config/openbox/rc.xml|.config/openbox/rc.xml'
     '.gdbinit|.gdbinit'
     '.gitignore_global|.gitignore_global'
