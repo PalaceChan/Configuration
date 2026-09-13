@@ -1,6 +1,6 @@
 {
     "$schema": "https://eca.dev/config.json",
-    "defaultModel": "openrouter/x-ai/grok-4.6",
+    "defaultModel": "openrouter/x-ai/grok-4.5",
     "chat": {
         "defaultTrust": true
     },
@@ -14,6 +14,7 @@
                 "deepseek/deepseek-v4-pro":     { "limit": { "context": 1048576, "output": 128000 } },
                 "deepseek/deepseek-v4.1-flash": { "limit": { "context": 1048576, "output": 128000 } },
                 "z-ai/glm-5.3":                 { "limit": { "context": 1310720, "output": 128000 } },
+                "x-ai/grok-4.5":                { "limit": { "context": 500000,  "output": 128000 } },
                 "x-ai/grok-4.6":                { "limit": { "context": 500000,  "output": 128000 } },
                 "moonshotai/kimi-k3":           { "limit": { "context": 1048576, "output": 128000 } }
             }
