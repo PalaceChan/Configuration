@@ -1104,7 +1104,7 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
   :commands (fleet-dashboard fleet-new fleet-park fleet-destroy fleet-doctor
              fleet-watch-start fleet-watch-stop
              fleet-commander-stop fleet-commander-replace fleet-install-mcp
-             fleet-timeline fleet-stats)
+             fleet-timeline fleet-stats fleet-task-close)
   :bind (("C-c h f" . fleet-dashboard))
   :custom
   (fleet-development-root "~/development"))
