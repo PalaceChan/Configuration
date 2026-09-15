@@ -1,0 +1,37 @@
+{
+  "version": 1,
+
+  "models": {
+    "default": {"model": "openrouter/x-ai/grok-4.6"},
+
+    "ask_first": ["*"],
+
+    "fallback": {
+      "openrouter/x-ai/grok-4.6": {"model": "openai/gpt-5.6-terra", "variant": "medium"}
+    },
+
+    "rules": [
+      {"when": "non-simple technical or architecture design, planning, research, review, or an involved browser workflow",
+       "use": [{"model": "openai/gpt-6-astra", "variant": "medium"},
+               {"model": "anthropic/claude-fable-5-1", "variant": "high"},
+               "openrouter/moonshotai/kimi-k3"],
+       "why": "thinking-heavy work goes to astra first; fable second; kimi when the expensive ones are declined"},
+
+      {"when": "major feature implementation, or implementation with real ambiguity about approach or scope",
+       "use": [{"model": "anthropic/claude-fable-5-1", "variant": "high"},
+               {"model": "openai/gpt-6-astra", "variant": "medium"},
+               "openrouter/moonshotai/kimi-k3"],
+       "why": "coding-heavy work goes to fable first; astra only for the very hardest of it"},
+
+      {"when": "medium-sized, unambiguous, not risky or sensitive work that still needs a capable model",
+       "use": ["openrouter/x-ai/grok-4.6", {"model": "openai/gpt-5.6-terra", "variant": "medium"}]},
+
+      {"when": "simple bug fix whose root cause is already understood, a documentation update, or a simple chore",
+       "use": ["openrouter/deepseek/deepseek-v4.1-flash", "openrouter/x-ai/grok-4.6"]}
+    ]
+  },
+
+  "fleets": {
+    "master": {}
+  }
+}
