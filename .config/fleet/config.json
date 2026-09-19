@@ -3,18 +3,21 @@
 
   "models": {
     "default": {"model": "openrouter/x-ai/grok-4.6"},
-    "commander": "openrouter/x-ai/grok-4.5",
-    "lieutenant": "openrouter/x-ai/grok-4.5",
+    "commander": {"model": "anthropic/claude-fable-5-1", "variant": "high"},
+    "lieutenant": {"model": "anthropic/claude-fable-5-1", "variant": "high"},
 
     "ask_first": ["*"],
 
     "fallback": {
-      "openrouter/x-ai/grok-4.6": {"model": "openai/gpt-5.6-terra", "variant": "medium"}
+      "openrouter/x-ai/grok-4.6": {"model": "openai/gpt-5.6-luna", "variant": "medium"}
     },
 
     "rules": [
       {"when": "a simple, unambiguous chore: a small fix with a known cause, a documentation update, a rename, a config tweak",
-       "use": [{"model": "openai/gpt-5.6-terra", "variant": "high"}]},
+       "use": [{"model": "openai/gpt-5.6-luna", "variant": "high"}]},
+
+      {"when": "ops, browser or terminal automation: driving a browser or CLI against an external system, deploying, merging, running or checking jobs, anything where the work is operating tools rather than writing code",
+       "use": [{"model": "openai/gpt-5.6-sol", "variant": "medium"}]},
 
       {"when": "simple research: look something up, summarize a file or a repository area, answer a bounded factual question",
        "use": ["openrouter/x-ai/grok-4.6"]},
@@ -28,6 +31,15 @@
   },
 
   "fleets": {
-    "master": {}
+    "master": {
+      "lieutenants": {
+        "fleet": {
+          "charter": "Work on the Fleet project itself at ~/development/fleet. Nothing unrelated to that project."
+        },
+        "openclaw": {
+          "charter": "Work on the user's OpenClaw setup: the ~/development/openclaw repository, its skills, gateway and browser automation, and incidents or post-mortems under ~/.openclaw/workspace. Nothing unrelated to OpenClaw."
+        }
+      }
+    }
   }
 }
