@@ -1107,7 +1107,8 @@ part; +, full path; 9, name with line number.; 8 full name with line number"
              fleet-timeline fleet-stats fleet-task-close)
   :bind (("C-c h f" . fleet-dashboard))
   :custom
-  (fleet-development-root "~/development"))
+  (fleet-development-root "~/development")
+  (fleet-wait-watchdog-sec 600))
 #+END_SRC
 ** flycheck
 #+BEGIN_SRC emacs-lisp
