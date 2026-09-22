@@ -16,6 +16,7 @@
                 "z-ai/glm-5.3":                 { "limit": { "context": 1310720, "output": 128000 } },
                 "x-ai/grok-4.5":                { "limit": { "context": 500000,  "output": 128000 } },
                 "x-ai/grok-4.6":                { "limit": { "context": 500000,  "output": 128000 } },
+                "x-ai/grok-4.7":                { "limit": { "context": 500000,  "output": 128000 } },
                 "moonshotai/kimi-k3":           { "limit": { "context": 1048576, "output": 128000 } }
             }
         }

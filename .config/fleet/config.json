@@ -2,14 +2,14 @@
   "version": 1,
 
   "models": {
-    "default": {"model": "openrouter/x-ai/grok-4.6"},
-    "commander": {"model": "anthropic/claude-fable-5-1", "variant": "high"},
-    "lieutenant": {"model": "anthropic/claude-opus-5", "variant": "high"},
+    "default": {"model": "openrouter/x-ai/grok-4.7"},
+    "commander": {"model": "openai/gpt-5.6-sol", "variant": "high"},
+    "lieutenant": {"model": "openai/gpt-5.6-sol", "variant": "high"},
 
     "ask_first": ["openai/gpt-6-astra", "anthropic/claude-fable-5-1", "anthropic/claude-fable-5"],
 
     "fallback": {
-      "openrouter/x-ai/grok-4.6": {"model": "openai/gpt-5.6-luna", "variant": "medium"}
+      "openrouter/x-ai/grok-4.7": {"model": "openai/gpt-5.6-luna", "variant": "medium"}
     },
 
     "rules": [
@@ -17,13 +17,13 @@
        "use": [{"model": "openai/gpt-5.6-luna", "variant": "high"}]},
 
       {"when": "ops, browser or terminal automation: driving a browser or CLI against an external system, deploying, merging, running or checking jobs, anything where the work is operating tools rather than writing code",
-       "use": [{"model": "openai/gpt-5.6-sol", "variant": "medium"}]},
+       "use": [{"model": "openai/gpt-5.6-sol", "variant": "high"}]},
 
       {"when": "simple research: look something up, summarize a file or a repository area, answer a bounded factual question",
-       "use": ["openrouter/x-ai/grok-4.6"]},
+       "use": ["openrouter/x-ai/grok-4.7"]},
 
       {"when": "in-depth research or technical planning of ordinary difficulty: deep dives, design documents, architecture notes, reviews, investigations with judgement calls, including work that involves reading images or screenshots",
-       "use": [{"model": "openai/gpt-5.6-sol", "variant": "medium"}],
+       "use": [{"model": "openai/gpt-5.6-sol", "variant": "high"}],
        "why": "the bulk of research and design goes here; escalate only per the astra rule"},
 
       {"when": "coding or implementation of ordinary difficulty: features, bug fixes that need investigation, tests, scripts, refactors, anything beyond a trivial chore",
