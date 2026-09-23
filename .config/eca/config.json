@@ -1,6 +1,6 @@
 {
     "$schema": "https://eca.dev/config.json",
-    "defaultModel": "openrouter/x-ai/grok-4.5",
+    "defaultModel": "openai/gpt-6-sol",
     "chat": {
         "defaultTrust": true
     },
