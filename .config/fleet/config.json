@@ -2,41 +2,21 @@
   "version": 1,
 
   "models": {
-    "default": {"model": "openrouter/x-ai/grok-4.7"},
-    "commander": {"model": "openai/gpt-5.6-sol", "variant": "high"},
-    "lieutenant": {"model": "openai/gpt-5.6-sol", "variant": "high"},
+    "default": {"model": "openai/gpt-6-sol", "variant": "high"},
+    "commander": {"model": "openai/gpt-6-sol", "variant": "high"},
+    "lieutenant": {"model": "openai/gpt-6-sol", "variant": "high"},
 
-    "ask_first": ["openai/gpt-6-astra", "anthropic/claude-fable-5-1", "anthropic/claude-fable-5"],
+    "ask_first": [],
 
-    "fallback": {
-      "openrouter/x-ai/grok-4.7": {"model": "openai/gpt-5.6-luna", "variant": "medium"}
-    },
+    "fallback": {},
 
     "rules": [
       {"when": "a simple, unambiguous chore: a small fix with a known cause, a documentation update, a rename, a config tweak",
-       "use": [{"model": "openai/gpt-5.6-luna", "variant": "high"}]},
-
-      {"when": "ops, browser or terminal automation: driving a browser or CLI against an external system, deploying, merging, running or checking jobs, anything where the work is operating tools rather than writing code",
-       "use": [{"model": "openai/gpt-5.6-sol", "variant": "high"}]},
-
-      {"when": "simple research: look something up, summarize a file or a repository area, answer a bounded factual question",
-       "use": ["openrouter/x-ai/grok-4.7"]},
-
-      {"when": "in-depth research or technical planning of ordinary difficulty: deep dives, design documents, architecture notes, reviews, investigations with judgement calls, including work that involves reading images or screenshots",
-       "use": [{"model": "openai/gpt-5.6-sol", "variant": "high"}],
-       "why": "the bulk of research and design goes here; escalate only per the astra rule"},
+       "use": [{"model": "openai/gpt-6-luna", "variant": "high"}]},
 
       {"when": "coding or implementation of ordinary difficulty: features, bug fixes that need investigation, tests, scripts, refactors, anything beyond a trivial chore",
-       "use": [{"model": "anthropic/claude-opus-5", "variant": "high"}],
-       "why": "the bulk of implementation goes here; escalate only per the fable rule"},
-
-      {"when": "exceptionally difficult research or design: novel architecture, root-causing across several systems, problems where the approach itself is unclear, or a research/design task that has already failed or been retasked twice on sol",
-       "use": [{"model": "openai/gpt-6-astra", "variant": "medium"}],
-       "why": "escalation only: the commander must state in model_reason why sol is insufficient or cite the two failed attempts"},
-
-      {"when": "exceptionally difficult implementation: intricate concurrency, protocol or cross-cutting changes, or a coding task that has already failed or been retasked twice on opus",
-       "use": [{"model": "anthropic/claude-fable-5-1", "variant": "high"}],
-       "why": "escalation only: the commander must state in model_reason why opus is insufficient or cite the two failed attempts"}
+       "use": [{"model": "anthropic/claude-opus-5-5", "variant": "high"}],
+       "why": "the bulk of implementation goes here"}
     ]
   },
 
