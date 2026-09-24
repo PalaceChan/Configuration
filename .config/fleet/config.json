@@ -2,9 +2,9 @@
   "version": 1,
 
   "models": {
-    "default": {"model": "openai/gpt-6-sol", "variant": "high"},
-    "commander": {"model": "openai/gpt-6-sol", "variant": "high"},
-    "lieutenant": {"model": "openai/gpt-6-sol", "variant": "high"},
+    "default": {"model": "deepseek/deepseek-v4.1-flash", "variant": "high"},
+    "commander": {"model": "deepseek/deepseek-v4.1-flash", "variant": "high"},
+    "lieutenant": {"model": "deepseek/deepseek-v4.1-flash", "variant": "high"},
 
     "ask_first": [],
 
@@ -14,7 +14,7 @@
       {"when": "a simple, unambiguous chore: a small fix with a known cause, a documentation update, a rename, a config tweak",
        "use": [{"model": "openai/gpt-6-luna", "variant": "high"}]},
 
-      {"when": "coding or implementation of ordinary difficulty: features, bug fixes that need investigation, tests, scripts, refactors, anything beyond a trivial chore",
+      {"when": "Main workhorse for anything that doesn't fit luna's routing description",
        "use": [{"model": "anthropic/claude-opus-5-5", "variant": "high"}],
        "why": "the bulk of implementation goes here"}
     ]
