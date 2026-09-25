@@ -2,9 +2,9 @@
   "version": 1,
 
   "models": {
-    "default": {"model": "openrouter/deepseek/deepseek-v4.1-flash", "variant": "high"},
-    "commander": {"model": "openrouter/deepseek/deepseek-v4.1-flash", "variant": "high"},
-    "lieutenant": {"model": "openrouter/deepseek/deepseek-v4.1-flash", "variant": "high"},
+    "default": {"model": "anthropic/claude-opus-5-5", "variant": "high"},
+    "commander": {"model": "anthropic/claude-opus-5-5", "variant": "high"},
+    "lieutenant": {"model": "anthropic/claude-opus-5-5", "variant": "high"},
 
     "ask_first": [],
 
