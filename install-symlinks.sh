@@ -71,6 +71,8 @@ MAPPINGS=(
     '.config/eca/skills/elpy|.config/eca/skills/elpy'
     '.config/eca/skills/ess|.config/eca/skills/ess'
     '.config/eca/skills/gcalcli|.config/eca/skills/gcalcli'
+    '.config/eca/skills/mermaid|.config/eca/skills/mermaid'
+    '.config/eca/skills/plantuml|.config/eca/skills/plantuml'
     '.config/fleet/config.json|.config/fleet/config.json'
     '.config/openbox/rc.xml|.config/openbox/rc.xml'
     '.gdbinit|.gdbinit'
