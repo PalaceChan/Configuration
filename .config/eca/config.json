@@ -1,6 +1,6 @@
 {
     "$schema": "https://eca.dev/config.json",
-    "defaultModel": "openai/gpt-6-sol",
+    "defaultModel": "anthropic/claude-opus-5-5",
     "chat": {
         "defaultTrust": true
     },
