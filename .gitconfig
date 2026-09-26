@@ -34,4 +34,6 @@
     
 [github]
     user = PalaceChan
-    oauth-token = YYY
+
+[includeIf "gitdir:/home/avelazqu/openclaw-sandbox/development/"]
+    path = /home/avelazqu/.config/git/hooxen.inc

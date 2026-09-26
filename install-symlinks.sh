@@ -74,6 +74,7 @@ MAPPINGS=(
     '.config/fleet/config.json|.config/fleet/config.json'
     '.config/openbox/rc.xml|.config/openbox/rc.xml'
     '.gdbinit|.gdbinit'
+    '.gitconfig|.gitconfig'
     '.gitignore_global|.gitignore_global'
     '.ssh/config|.ssh/config'
     '.tmux.conf|.tmux.conf'
