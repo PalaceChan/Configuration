@@ -1,3 +1,8 @@
+# This first block tangles to line 1 of config.el. It keeps the old dynamic-binding
+# semantics explicitly; Emacs 31 warns when a loaded file has no cookie.
+#+begin_src emacs-lisp
+;; -*- lexical-binding: nil; -*-
+#+end_src
 * settings
 ** startup
 *** system
